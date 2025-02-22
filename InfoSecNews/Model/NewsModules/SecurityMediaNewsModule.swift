@@ -9,6 +9,8 @@ import SwiftSoup
 import WebKit
 
 class SecurityMediaNewsModule: NewsModule {
+    var webView: WKWebView? = nil
+    
     
     var newsCollection: [NewsItem] = []
     
@@ -20,14 +22,16 @@ class SecurityMediaNewsModule: NewsModule {
     const target = document;
     const config = {childList: true, subtree: true};
     var count = 2
-    
+
+
     const callback = function(mutationsList, observer) {
         window.webkit.messageHandlers.notificationCenter.postMessage("changed")
     };
-    
+
     const observer = new MutationObserver(callback);
     observer.observe(target, config);
-    """ }
+    """
+    }
     
     func fetch() throws -> [NewsItem] {
         guard let htmlBody = htmlBody else {
@@ -79,10 +83,7 @@ class SecurityMediaNewsModule: NewsModule {
     var setup = 0
     
     func loadFinished(_ webView: WKWebView) {
-        if setup == 0 {
-            webView.evaluateJavaScript(preAction)
-            setup += 1
-        }
+        webView.evaluateJavaScript(preAction)
     }
     
     func DOMUpdated() {

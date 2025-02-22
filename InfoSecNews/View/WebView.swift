@@ -12,25 +12,34 @@ import AppKit
 struct WebView<T: NewsModule>: NSViewRepresentable {
     @ObservedObject var webModule: T
     
-    private let webKitConfig: WKWebViewConfiguration
-    private var webView: WKWebView
-    private var coordinator: Coordinator<T>?
+    private var webKitConfig: WKWebViewConfiguration!
+    private var webView: WKWebView!
+    private var coordinator: Coordinator<T>!
     private var scriptHandler: ScriptHandler<T>!
     
     func makeNSView(context: Context) -> WKWebView {
+        print("DRAW: \(ObjectIdentifier(webView))")
         return webView
     }
-    init(_ module: ObservedObject<T>) {
-        _webModule = module
+    init(_ module: T) {
+        webModule = module
         let wkconfig = WKWebViewConfiguration()
         webKitConfig = wkconfig
-        webView = WKWebView(frame: .zero, configuration: webKitConfig)
-        scriptHandler = ScriptHandler(parentVM: module, parentWKView: webView)
-        wkconfig.userContentController.add(scriptHandler, name: "notificationCenter")
+        
+        if module.webView == nil {
+            webView = WKWebView(frame: .zero, configuration: webKitConfig)
+            module.webView = webView
+            scriptHandler = ScriptHandler(parentVM: module, parentWKView: webView)
+            wkconfig.userContentController.add(scriptHandler, name: "notificationCenter")
+            webView.load(URLRequest(url: webModule.url))
+        } else {
+            webView = module.webView
+        }
+        
         coordinator = makeCoordinator()
         
         webView.navigationDelegate = coordinator
-        webView.load(URLRequest(url: webModule.url))
+        print(ObjectIdentifier(webView))
     }
     
 //    func load() {
@@ -51,14 +60,14 @@ struct WebView<T: NewsModule>: NSViewRepresentable {
         @ObservedObject var parentVM: TS
         private let webKit: WKWebView
         
-        init(parentVM: ObservedObject<TS>, parentWKView: WKWebView) {
-            self._parentVM = parentVM
+        init(parentVM: TS, parentWKView: WKWebView) {
+            self.parentVM = parentVM
             self.webKit = parentWKView
         }
         
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
             print("notification")
-            webKit.evaluateJavaScript("document.documentElement.outerHTML.toString()") { [self] result, error in
+            webKit.evaluateJavaScript("document.documentElement.innerHTML") { [self] result, error in
                 if let html = result as? String {
                     parentVM.htmlBody = html
                 }

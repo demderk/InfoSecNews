@@ -12,6 +12,7 @@ protocol NewsModule : AnyObject, ObservableObject {
     var id: UUID { get }
     var url: URL { get }
     var moduleName: String { get }
+    var webView: WKWebView? { get set }
 
     var htmlBody: String? { get set }
     var newsCollection: [NewsItem] { get set }

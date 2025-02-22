@@ -41,17 +41,12 @@ struct ContentView: View {
     
     @Environment(\.openWindow) var openWindow
     
-    @ObservedObject var secmod = SecurityMediaNewsModule()
+    @StateObject var secmod = SecurityMediaNewsModule()
     
     var newsModules: [SelectedWindow:any NewsModule] = [:]
     
     init() {
-        newsModules = [
-            .securityMedia:secmod
-        ]
-        secmod.objectWillChange.sink {
-            print("MyViewModel is about to change!")
-        }
+
     }
     
     var body: some View {
@@ -88,7 +83,7 @@ struct ContentView: View {
                 Button("1") {
                     print(try! secmod.fetch())
                 }
-                WebView<SecurityMediaNewsModule>(_secmod)
+                WebView<SecurityMediaNewsModule>(secmod)
 //                if let view = newsModules[currentWindow] {
 //                    view.webWindow
 //                } else {
