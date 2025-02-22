@@ -41,8 +41,7 @@ struct ContentView: View {
     
     @Environment(\.openWindow) var openWindow
     
-    var secmod = SecurityMediaNewsModule()
-    @ObservedObject var secmodVM: WebViewVM
+    @ObservedObject var secmod = SecurityMediaNewsModule()
     
     var newsModules: [SelectedWindow:any NewsModule] = [:]
     
@@ -50,12 +49,13 @@ struct ContentView: View {
         newsModules = [
             .securityMedia:secmod
         ]
-        secmodVM = secmod.webVM
+        secmod.objectWillChange.sink {
+            print("MyViewModel is about to change!")
+        }
     }
     
     var body: some View {
-        print("New body")
-        return NavigationSplitView(sidebar: {
+        NavigationSplitView(sidebar: {
             List(selection: $currentWindow) {
                 Section(header: Text("Control")) {
                     NavigationLink(value: SelectedWindow.home) {
@@ -80,15 +80,20 @@ struct ContentView: View {
             }
         }, detail: {
             VStack {
-                Text(secmodVM.htmlContent)
-//                Button("1") {
-//                    print(try! (newsModules[.securityMedia] as! SecurityMediaNewsModule).parse())
-//                }
-                if let view = newsModules[currentWindow] {
-                    view.webWindow
-                } else {
-                    Text("No view")
+                ScrollView {
+                    ForEach(secmod.newsCollection, id: \.self) { item in
+                        Text(item.title)
+                    }
                 }
+                Button("1") {
+                    print(try! secmod.fetch())
+                }
+                WebView<SecurityMediaNewsModule>(_secmod)
+//                if let view = newsModules[currentWindow] {
+//                    view.webWindow
+//                } else {
+//                    Text("No view")
+//                }
             }
         })
     }

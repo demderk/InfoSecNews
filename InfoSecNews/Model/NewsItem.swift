@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct NewsItem {
+struct NewsItem: Hashable {
     var title: String
     var date: Date
     var short: String

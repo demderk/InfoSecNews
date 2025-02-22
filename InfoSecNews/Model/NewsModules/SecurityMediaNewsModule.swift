@@ -6,54 +6,30 @@
 //
 import Foundation
 import SwiftSoup
+import WebKit
 
-@MainActor
-class SecurityMediaNewsModule: NewsModule, ObservableObject {
-    var webWindow: WebView
+class SecurityMediaNewsModule: NewsModule {
     
-    var url: URL = URL(string: "https://securitymedia.org/news/")!
-    var windowID: String = "securitymedia-web"
-    var moduleName: String = "securitymedia.org"
+    var newsCollection: [NewsItem] = []
     
-    var htmlBody: String? { webWindow.vm.htmlContent }
-    
-    var webVM = WebViewVM()
-    
-    let preAction: String = """
+    @Published var url: URL = URL(string: "https://securitymedia.org/news/")!
+    @Published var moduleName: String = "securitymedia.org"
+    @Published var htmlBody: String?
+        
+    private var preAction: String { """
     const target = document;
     const config = {childList: true, subtree: true};
     var count = 2
-
-    window.scrollTo(0,0);
-    window.scrollTo(0,document.body.scrollHeight-300);
-
-
+    
     const callback = function(mutationsList, observer) {
         window.webkit.messageHandlers.notificationCenter.postMessage("changed")
-        if (count > 0) {
-            window.scrollTo(0,0);
-            window.scrollTo(0,document.body.scrollHeight-300);
-            count--;
-        } else {
-            
-        }
     };
-
+    
     const observer = new MutationObserver(callback);
     observer.observe(target, config);
-    """
+    """ }
     
-    init() {
-        print("Inited SCMM")
-        webVM.onLoadFinished = { [preAction] wk in
-            wk.evaluateJavaScript(preAction)
-        }
-        
-        webWindow = WebView(url: url, vm: webVM)
-        webWindow.load()
-    }
-    
-    func parse() throws -> [NewsItem] {
+    func fetch() throws -> [NewsItem] {
         guard let htmlBody = htmlBody else {
             return []
         }
@@ -100,5 +76,17 @@ class SecurityMediaNewsModule: NewsModule, ObservableObject {
         return news
     }
     
+    var setup = 0
     
+    func loadFinished(_ webView: WKWebView) {
+        if setup == 0 {
+            webView.evaluateJavaScript(preAction)
+            setup += 1
+        }
+    }
+    
+    func DOMUpdated() {
+        try! pull()
+        print("new dom")
+    }
 }
