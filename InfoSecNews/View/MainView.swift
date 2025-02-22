@@ -35,19 +35,10 @@ enum SelectedWindow: CaseIterable, Identifiable {
 
 struct ContentView: View {
     @StateObject var vm = MainVM()
-    @State var htmlContent = "Wait..."
     
     @State var currentWindow: SelectedWindow = .home
     
-    @Environment(\.openWindow) var openWindow
-    
-    @StateObject var secmod = SecurityMediaNewsModule()
-    
-    var newsModules: [SelectedWindow:any NewsModule] = [:]
-    
-    init() {
-
-    }
+    @StateObject var secmod = SecurityMediaNewsModule().preloaded()
     
     var body: some View {
         NavigationSplitView(sidebar: {
@@ -83,12 +74,12 @@ struct ContentView: View {
                 Button("1") {
                     print(try! secmod.fetch())
                 }
-                WebView<SecurityMediaNewsModule>(secmod)
-//                if let view = newsModules[currentWindow] {
-//                    view.webWindow
-//                } else {
-//                    Text("No view")
-//                }
+                switch currentWindow {
+                case .securityMedia:
+                    WebView<SecurityMediaNewsModule>(secmod)
+                default:
+                    Text("No view")
+                }
             }
         })
     }

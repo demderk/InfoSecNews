@@ -39,13 +39,7 @@ struct WebView<T: NewsModule>: NSViewRepresentable {
         coordinator = makeCoordinator()
         
         webView.navigationDelegate = coordinator
-        print(ObjectIdentifier(webView))
     }
-    
-//    func load() {
-//        webView.navigationDelegate = coordinator
-//        webView.load(URLRequest(url: webModule.url))
-//    }
     
     func updateNSView(_ nsView: WKWebView, context: Context) {
         
@@ -66,7 +60,6 @@ struct WebView<T: NewsModule>: NSViewRepresentable {
         }
         
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-            print("notification")
             webKit.evaluateJavaScript("document.documentElement.innerHTML") { [self] result, error in
                 if let html = result as? String {
                     parentVM.htmlBody = html
@@ -90,7 +83,6 @@ struct WebView<T: NewsModule>: NSViewRepresentable {
 //                    parentVM.htmlBody = html
                 }
             }
-            print("Finished")
         }
     }
 }

@@ -79,15 +79,17 @@ class SecurityMediaNewsModule: NewsModule {
         
         return news
     }
-    
-    var setup = 0
-    
+        
     func loadFinished(_ webView: WKWebView) {
         webView.evaluateJavaScript(preAction)
     }
     
     func DOMUpdated() {
         try! pull()
-        print("new dom")
+    }
+    
+    func preloaded() -> Self {
+        webView?.load(URLRequest(url: url))
+        return self
     }
 }
