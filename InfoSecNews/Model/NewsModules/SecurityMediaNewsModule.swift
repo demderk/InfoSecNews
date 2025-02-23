@@ -7,6 +7,7 @@
 import Foundation
 import SwiftSoup
 import WebKit
+import Combine
 
 class SecurityMediaNewsModule: NewsModule {
     var webView: WKWebView?
@@ -15,7 +16,13 @@ class SecurityMediaNewsModule: NewsModule {
     
     @Published var url: URL = URL(string: "https://securitymedia.org/news/")!
     @Published var moduleName: String = "securitymedia.org"
-    @Published var htmlBody: String?
+    @Published var htmlBody: String? {
+        didSet {
+            try! pull()
+        }
+    }
+    
+    private var cancellables: Set<AnyCancellable> = Set<AnyCancellable>()
     
     init() {
 
@@ -84,16 +91,12 @@ class SecurityMediaNewsModule: NewsModule {
     }
         
     func loadFinished(_ webView: WKWebView) {
-        webView.evaluateJavaScript(preAction)
+//        webView.evaluateJavaScript(preAction)
     }
     
     func DOMUpdated() {
-        print("1")
-        try! pull()
+//        print("1")
+//        try! pull()
     }
-    
-    func preloaded() -> Self {
-        webView?.load(URLRequest(url: url))
-        return self
-    }
+
 }

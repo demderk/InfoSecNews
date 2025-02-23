@@ -17,13 +17,16 @@ class WKWebViewNavigationCoordinator<TC: NewsModule>: NSObject, WKNavigationDele
     }
     
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        
+        //TODO: Move preactions functionality to new WebView class
+        WKNotificationCenter.subscribe(webView)
+        
         webView.evaluateJavaScript("document.documentElement.outerHTML.toString()") { [self] result, error in
             if let html = result as? String {
                 parentVM.loadFinished(webView)
                 parentVM.htmlBody = html
             }
         }
-        
     }
 }
 
@@ -35,9 +38,9 @@ struct WebView<T: NewsModule>: NSViewRepresentable {
     private var coordinator: WKWebViewNavigationCoordinator<T>!
     
     func makeNSView(context: Context) -> WKWebView {
-        print("DRAW: \(ObjectIdentifier(webView))")
         return webView
     }
+    
     init(_ module: T) {
         webModule = module
                 
@@ -50,27 +53,6 @@ struct WebView<T: NewsModule>: NSViewRepresentable {
         } else {
             webView = module.webView
         }
-        
-//
-//        print("INIT: \(ObjectIdentifier(webView))")
-
-        
-        
-//        if module.webView == nil {
-//            webView = WKWebView()
-//            webView.enableNotificationCenter(onMessage: { [self] html, _ in
-//                webModule.htmlBody = html
-//                webModule.DOMUpdated()
-//            })
-//            module.webView = webView
-//            webView.load(URLRequest(url: webModule.url))
-//            coordinator = makeCoordinator()
-//            webView.navigationDelegate = coordinator
-//        } else {
-//            webView = module.webView
-//        }
-        
-        
     }
     
     func updateNSView(_ nsView: WKWebView, context: Context) {
