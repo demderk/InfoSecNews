@@ -16,18 +16,18 @@ enum SelectedWindow: CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .home:
-            "Home"
+            "Feed"
         case .securityMedia:
-            "securitymedia.com"
+            "SecurityMedia"
         }
     }
     
     var imageString: String {
         switch self {
         case .home:
-            "house"
+            "dot.radiowaves.up.forward"
         case .securityMedia:
-            "globe"
+            "network"
         }
     }
 }
@@ -48,6 +48,8 @@ struct ContentView: View {
                         HStack {
                             Image(systemName: SelectedWindow.home.imageString)
                                 .frame(width: 24)
+                                .fontWeight(.black)
+                            Spacer().frame(width: 2)
                             Text(SelectedWindow.home.title)
                         }.tag(SelectedWindow.home)
                     }
@@ -58,6 +60,8 @@ struct ContentView: View {
                             HStack {
                                 Image(systemName: item.imageString)
                                     .frame(width: 24)
+                                    .fontWeight(.semibold)
+                                Spacer().frame(width: 2)
                                 Text(item.title)
                             }
                         }
@@ -66,21 +70,22 @@ struct ContentView: View {
             }
         }, detail: {
             VStack {
-                ScrollView {
-                    ForEach(secmod.newsCollection, id: \.self) { item in
-                        Text(item.title)
-                    }
-                }
-                Button("1") {
-                    print(try! secmod.fetch())
-                }
                 switch currentWindow {
                 case .securityMedia:
                     WebView<SecurityMediaNewsModule>(secmod)
+                case .home:
+                    ScrollView {
+                        Spacer().frame(height: 8)
+                        ForEach(secmod.newsCollection, id: \.self) { item in
+                            NewsCard(newsItem: item)
+                            Spacer().frame(height: 0)
+                        }
+                        Spacer().frame(height: 8)
+                    }
                 default:
                     Text("No view")
                 }
-            }
+            }.background(.background)
         })
     }
 }
