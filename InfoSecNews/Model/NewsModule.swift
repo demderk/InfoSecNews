@@ -31,4 +31,17 @@ extension NewsModule {
     func pull() throws {
         newsCollection = try fetch()
     }
+    
+    func prepareWebView(coordinator: WKWebViewNavigationCoordinator<Self>) {
+        let web = WKWebView(frame: .zero, configuration: WKWebViewConfiguration())
+        web.enableNotificationCenter(onMessage: { [self] html, _ in
+            htmlBody = html
+            print("1")
+            DOMUpdated()
+        })
+        
+        web.navigationDelegate = coordinator
+        
+        webView = web
+    }
 }

@@ -9,15 +9,18 @@ import SwiftSoup
 import WebKit
 
 class SecurityMediaNewsModule: NewsModule {
-    var webView: WKWebView? = nil
-    
+    var webView: WKWebView?
     
     var newsCollection: [NewsItem] = []
     
     @Published var url: URL = URL(string: "https://securitymedia.org/news/")!
     @Published var moduleName: String = "securitymedia.org"
     @Published var htmlBody: String?
-        
+    
+    init() {
+
+    }
+    
     private var preAction: String { """
     const target = document;
     const config = {childList: true, subtree: true};
@@ -85,6 +88,7 @@ class SecurityMediaNewsModule: NewsModule {
     }
     
     func DOMUpdated() {
+        print("1")
         try! pull()
     }
     

@@ -38,7 +38,7 @@ struct ContentView: View {
     
     @State var currentWindow: SelectedWindow = .home
     
-    @StateObject var secmod = SecurityMediaNewsModule().preloaded()
+    @StateObject var secmod = SecurityMediaNewsModule()
     
     var body: some View {
         NavigationSplitView(sidebar: {
