@@ -71,13 +71,14 @@ struct ContentView: View {
                 case .securityMedia:
                     WebView(secmod.webKit)
                 case .home:
-                    ScrollView {
+                    VStack {
                         Spacer().frame(height: 8)
-                        ForEach(secmod.newsCollection, id: \.self) { item in
+                        List(secmod.newsCollection, id: \.self) { item in
                             NewsCard(newsItem: item)
-                            Spacer().frame(height: 0)
-                        }
+                                .listRowSeparator(.hidden)
+                        }.listStyle(.plain)
                         Spacer().frame(height: 8)
+                        
                     }
                 }
             }.background(.background)

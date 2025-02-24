@@ -46,9 +46,9 @@ struct NewsCard: View {
         .cornerRadius(20)
         .overlay(
             RoundedRectangle(cornerRadius: 20)
-                .stroke(.gray.opacity(0.05), lineWidth: 2)
+                .stroke(.gray.opacity(0.1), lineWidth: 2)
         )
-        .shadow(color: .gray.opacity(0.1), radius: 10, x: 2, y: 2)
+//        .shadow(color: .gray.opacity(0.1), radius: 10, x: 2, y: 2)
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
     }
