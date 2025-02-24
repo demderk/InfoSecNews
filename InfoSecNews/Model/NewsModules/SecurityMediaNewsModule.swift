@@ -30,17 +30,26 @@ class SecurityMediaNewsModule: NewsModule {
     }
     
     private var preAction: String { """
-    const target = document;
-    const config = {childList: true, subtree: true};
-    var count = 2
+    const SMtarget = document;
+    const SMconfig = {childList: true, subtree: true};
+    var SMcount = 2
+
+    window.scrollTo(0,0);
+    window.scrollTo(0,document.body.scrollHeight-300);
 
 
-    const callback = function(mutationsList, observer) {
-        window.webkit.messageHandlers.notificationCenter.postMessage("changed")
+    const SMPreloadCallback = function(mutationsList, observer) {
+        if (SMcount > 0) {
+            window.scrollTo(0,0);
+            window.scrollTo(0,document.body.scrollHeight-300);
+            SMcount--;
+        } else {
+            observer.disconnect()
+        }
     };
 
-    const observer = new MutationObserver(callback);
-    observer.observe(target, config);
+    const SMPreload = new MutationObserver(SMPreloadCallback);
+    SMPreload.observe(SMtarget, SMconfig);
     """
     }
     
@@ -99,6 +108,7 @@ class SecurityMediaNewsModule: NewsModule {
     }
         
     func loadFinished(_ html: String?, _ webView: WKWebView) {
+        webView.evaluateJavaScript(preAction)
         htmlBody = html
     }
     
