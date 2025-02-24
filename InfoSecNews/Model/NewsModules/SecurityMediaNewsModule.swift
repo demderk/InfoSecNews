@@ -10,7 +10,7 @@ import WebKit
 import Combine
 
 class SecurityMediaNewsModule: NewsModule {
-    var webView: WKWebView?
+    var webKit: WebKitHead = WebKitHead(preloadedUrl: URL(string: "https://securitymedia.org/news/")!)
     
     var newsCollection: [NewsItem] = []
     
@@ -25,7 +25,8 @@ class SecurityMediaNewsModule: NewsModule {
     private var cancellables: Set<AnyCancellable> = Set<AnyCancellable>()
     
     init() {
-
+        webKit.subscribeDOMUpdateAction(action: DOMUpdated)
+        webKit.subscribeLoadAction(action: loadFinished)
     }
     
     private var preAction: String { """
@@ -41,6 +42,13 @@ class SecurityMediaNewsModule: NewsModule {
     const observer = new MutationObserver(callback);
     observer.observe(target, config);
     """
+    }
+    
+    func setup() -> Self {
+        webKit.subscribeDOMUpdateAction(action: DOMUpdated)
+        webKit.subscribeLoadAction(action: loadFinished)
+        
+        return self
     }
     
     func fetch() throws -> [NewsItem] {
@@ -90,13 +98,12 @@ class SecurityMediaNewsModule: NewsModule {
         return news
     }
         
-    func loadFinished(_ webView: WKWebView) {
-//        webView.evaluateJavaScript(preAction)
+    func loadFinished(_ html: String?, _ webView: WKWebView) {
+        htmlBody = html
     }
     
-    func DOMUpdated() {
-//        print("1")
-//        try! pull()
+    func DOMUpdated(_ html: String?, _ webView: WKWebView) {
+        htmlBody = html
     }
 
 }

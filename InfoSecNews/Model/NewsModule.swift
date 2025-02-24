@@ -12,7 +12,7 @@ protocol NewsModule : AnyObject, ObservableObject {
     var id: UUID { get }
     var url: URL { get }
     var moduleName: String { get }
-    var webView: WKWebView? { get set }
+    var webKit: WebKitHead { get set }
 
     var htmlBody: String? { get set }
     var newsCollection: [NewsItem] { get set }
@@ -32,16 +32,16 @@ extension NewsModule {
         newsCollection = try fetch()
     }
     
-    func prepareWebView(coordinator: WKWebViewNavigationCoordinator<Self>) {
-        let web = WKWebView(frame: .zero, configuration: WKWebViewConfiguration())
-        web.enableNotificationCenter(onMessage: { [self] html, _ in
-            htmlBody = html
-            print("1")
-            DOMUpdated()
-        })
-        
-        web.navigationDelegate = coordinator
-        
-        webView = web
-    }
+//    func prepareWebView(coordinator: WKWebViewNavigationCoordinator<Self>) {
+//        let web = WKWebView(frame: .zero, configuration: WKWebViewConfiguration())
+//        web.enableNotificationCenter(onMessage: { [self] html, _ in
+//            htmlBody = html
+//            print("1")
+//            DOMUpdated()
+//        })
+//        
+//        web.navigationDelegate = coordinator
+//        
+//        webView = web
+//    }
 }

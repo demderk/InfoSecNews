@@ -35,7 +35,7 @@ enum SelectedWindow: CaseIterable, Identifiable {
 
 struct ContentView: View {
     @State var currentWindow: SelectedWindow = .home
-    @StateObject var secmod = SecurityMediaNewsModule()
+    @StateObject var secmod = SecurityMediaNewsModule().setup()
     
     var body: some View {
         NavigationSplitView(sidebar: {
@@ -69,7 +69,7 @@ struct ContentView: View {
             VStack {
                 switch currentWindow {
                 case .securityMedia:
-                    WebView<SecurityMediaNewsModule>(secmod)
+                    WebView(secmod.webKit)
                 case .home:
                     ScrollView {
                         Spacer().frame(height: 8)

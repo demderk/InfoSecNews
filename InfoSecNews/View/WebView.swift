@@ -9,58 +9,26 @@ import SwiftUI
 import WebKit
 import AppKit
 
-class WKWebViewNavigationCoordinator<TC: NewsModule>: NSObject, WKNavigationDelegate {
-    @ObservedObject var parentVM: TC
-    
-    init(parentVM: ObservedObject<TC>) {
-        self._parentVM = parentVM
-    }
-    
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        
-        //TODO: Move preactions functionality to new WebView class
-        WKNotificationCenter.subscribe(webView)
-        
-        webView.evaluateJavaScript("document.documentElement.outerHTML.toString()") { [self] result, error in
-            if let html = result as? String {
-                parentVM.loadFinished(webView)
-                parentVM.htmlBody = html
-            }
-        }
-    }
-}
 
-struct WebView<T: NewsModule>: NSViewRepresentable {
-    @ObservedObject var webModule: T
-    
-    private var webKitConfig: WKWebViewConfiguration!
-    private var webView: WKWebView!
-    private var coordinator: WKWebViewNavigationCoordinator<T>!
+
+
+struct WebView: NSViewRepresentable {
+    private var webKitHead: WebKitHead!
     
     func makeNSView(context: Context) -> WKWebView {
-        return webView
+        return webKitHead.webView
     }
     
-    init(_ module: T) {
-        webModule = module
-                
-        if module.webView == nil {
-            let cord = makeCoordinator()
-            coordinator = cord
-            module.prepareWebView(coordinator: cord)
-            webView = module.webView
-            webView.load(URLRequest(url: webModule.url))
-        } else {
-            webView = module.webView
-        }
+    init(_ module: WebKitHead) {
+        webKitHead = module
     }
     
     func updateNSView(_ nsView: WKWebView, context: Context) {
         
     }
 
-    func makeCoordinator() -> WKWebViewNavigationCoordinator<T> {
-        WKWebViewNavigationCoordinator(parentVM: _webModule)
+    func makeCoordinator() -> WKWebViewNavigationCoordinator {
+        webKitHead.coordinator
     }
 }
 
