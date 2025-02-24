@@ -34,10 +34,7 @@ enum SelectedWindow: CaseIterable, Identifiable {
 
 
 struct ContentView: View {
-    @StateObject var vm = MainVM()
-    
     @State var currentWindow: SelectedWindow = .home
-    
     @StateObject var secmod = SecurityMediaNewsModule()
     
     var body: some View {
@@ -82,8 +79,6 @@ struct ContentView: View {
                         }
                         Spacer().frame(height: 8)
                     }
-                default:
-                    Text("No view")
                 }
             }.background(.background)
         })
