@@ -35,7 +35,7 @@ enum SelectedWindow: CaseIterable, Identifiable {
 
 struct ContentView: View {
     @State var currentWindow: SelectedWindow = .home
-    @StateObject var secmod = SecurityMediaNewsModule().setup()
+    @StateObject var secmod = SecurityMediaNewsModule().preloaded()
     
     var body: some View {
         NavigationSplitView(sidebar: {

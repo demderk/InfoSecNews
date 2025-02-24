@@ -9,8 +9,8 @@ import SwiftSoup
 import WebKit
 import Combine
 
-class SecurityMediaNewsModule: NewsModule {
-    var webKit: WebKitHead = WebKitHead(preloadedUrl: URL(string: "https://securitymedia.org/news/")!)
+final class SecurityMediaNewsModule: NewsModule {
+    var webKit: WebKitHead = WebKitHead()
     
     var newsCollection: [NewsItem] = []
     
@@ -21,12 +21,9 @@ class SecurityMediaNewsModule: NewsModule {
             try! pull()
         }
     }
-    
-    private var cancellables: Set<AnyCancellable> = Set<AnyCancellable>()
-    
+        
     init() {
-        webKit.subscribeDOMUpdateAction(action: DOMUpdated)
-        webKit.subscribeLoadAction(action: loadFinished)
+        webKitSetup()
     }
     
     private var preAction: String { """
@@ -51,13 +48,6 @@ class SecurityMediaNewsModule: NewsModule {
     const SMPreload = new MutationObserver(SMPreloadCallback);
     SMPreload.observe(SMtarget, SMconfig);
     """
-    }
-    
-    func setup() -> Self {
-        webKit.subscribeDOMUpdateAction(action: DOMUpdated)
-        webKit.subscribeLoadAction(action: loadFinished)
-        
-        return self
     }
     
     func fetch() throws -> [NewsItem] {
@@ -111,9 +101,4 @@ class SecurityMediaNewsModule: NewsModule {
         webView.evaluateJavaScript(preAction)
         htmlBody = html
     }
-    
-    func DOMUpdated(_ html: String?, _ webView: WKWebView) {
-        htmlBody = html
-    }
-
 }

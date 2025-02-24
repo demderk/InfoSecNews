@@ -8,7 +8,7 @@
 import Foundation
 import WebKit
 
-protocol NewsModule : AnyObject, ObservableObject {
+protocol NewsModule : AnyObject, ObservableObject {    
     var id: UUID { get }
     var url: URL { get }
     var moduleName: String { get }
@@ -18,30 +18,32 @@ protocol NewsModule : AnyObject, ObservableObject {
     var newsCollection: [NewsItem] { get set }
     
     func fetch() throws -> [NewsItem]
-    func loadFinished(_ webView: WKWebView)
-    func DOMUpdated()
+    func loadFinished(_ html: String?, _ webView: WKWebView)
+    func DOMUpdated(_ html: String?, _ webView: WKWebView)
 }
 
 extension NewsModule {
     var id: UUID { UUID() }
-    
-    func loadFinished(_ webView: WKWebView) {}
-    func DOMUpdated() {}
+        
+    func preloaded() -> Self {
+        webKit.load(url: url)
+        return self
+    }
     
     func pull() throws {
         newsCollection = try fetch()
     }
     
-//    func prepareWebView(coordinator: WKWebViewNavigationCoordinator<Self>) {
-//        let web = WKWebView(frame: .zero, configuration: WKWebViewConfiguration())
-//        web.enableNotificationCenter(onMessage: { [self] html, _ in
-//            htmlBody = html
-//            print("1")
-//            DOMUpdated()
-//        })
-//        
-//        web.navigationDelegate = coordinator
-//        
-//        webView = web
-//    }
+    func webKitSetup() {
+        webKit.subscribeDOMUpdateAction(action: DOMUpdated)
+        webKit.subscribeLoadAction(action: loadFinished)
+    }
+    
+    func loadFinished(_ html: String?, _ webView: WKWebView) {
+        htmlBody = html
+    }
+    
+    func DOMUpdated(_ html: String?, _ webView: WKWebView) {
+        htmlBody = html
+    }
 }
