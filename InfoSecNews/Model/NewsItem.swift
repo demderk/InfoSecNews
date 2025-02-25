@@ -8,6 +8,7 @@
 import Foundation
 
 struct NewsItem: Hashable {
+    var source: String
     var title: String
     var date: Date
     var short: String

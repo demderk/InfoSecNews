@@ -22,7 +22,7 @@ struct NewsCard: View {
                     Image(systemName: "newspaper")
                         .fontWeight(.semibold)
                     Spacer().frame(width: 4)
-                    Text("SecurityMedia")
+                    Text(newsItem.source)
                 }.foregroundStyle(.secondary)
                     .padding([.bottom], 4)
                 HStack {
@@ -56,8 +56,8 @@ struct NewsCard: View {
 
 #Preview {
     var mockNewsItem = NewsItem(
-        title: "Белый дом запретит судам принимать иски против Белого дома",
-        date: .now,
+        source: "debug.fm",
+        title: "Белый дом запретит судам принимать иски против Белого дома", date: .now,
         short: "Пресс-секретарь Белого дома Робин Маусс объявил, что президент готовится запретить судам принимать иски против него самого и Белого дома в целом. Он также объяснил, почему готовящийся указ никак не противоречит верховенству права.")
     VStack {
         NewsCard(newsItem: mockNewsItem)
