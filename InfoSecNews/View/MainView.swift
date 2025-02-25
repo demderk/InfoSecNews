@@ -12,6 +12,7 @@ enum SelectedWindow: CaseIterable, Identifiable {
     
     case home
     case securityMedia
+    case securityLab
     
     var title: String {
         switch self {
@@ -19,6 +20,8 @@ enum SelectedWindow: CaseIterable, Identifiable {
             "Feed"
         case .securityMedia:
             "SecurityMedia"
+        case .securityLab:
+            "SecurityLab"
         }
     }
     
@@ -28,18 +31,19 @@ enum SelectedWindow: CaseIterable, Identifiable {
             "dot.radiowaves.up.forward"
         case .securityMedia:
             "network"
+        case .securityLab:
+            "network"
         }
     }
 }
 
 
 struct ContentView: View {
-    @State var currentWindow: SelectedWindow = .home
-    @StateObject var secmod = SecurityMediaNewsModule().preloaded()
-    
+    @State var vm = MainVM()
+        
     var body: some View {
         NavigationSplitView(sidebar: {
-            List(selection: $currentWindow) {
+            List(selection: $vm.currentWindow) {
                 Section(header: Text("Control")) {
                     NavigationLink(value: SelectedWindow.home) {
                         HStack {
@@ -67,13 +71,15 @@ struct ContentView: View {
             }
         }, detail: {
             VStack {
-                switch currentWindow {
+                switch vm.currentWindow {
                 case .securityMedia:
-                    WebView(secmod.webKit)
+                    WebView(vm.secmed.webKit)
+                case .securityLab:
+                    WebView(vm.seclab.webKit)
                 case .home:
                     VStack {
                         Spacer().frame(height: 8)
-                        List(secmod.newsCollection, id: \.self) { item in
+                        List(vm.storage, id: \.self) { item in
                             NewsCard(newsItem: item)
                                 .listRowSeparator(.hidden)
                         }.listStyle(.plain)
@@ -81,6 +87,7 @@ struct ContentView: View {
                         
                     }
                 }
+                
             }.background(.background)
         })
     }

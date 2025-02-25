@@ -9,14 +9,15 @@ import SwiftSoup
 import WebKit
 import Combine
 
+@Observable
 final class SecurityMediaNewsModule: NewsModule {
     var webKit: WebKitHead = WebKitHead()
     
     var newsCollection: [NewsItem] = []
     
-    @Published var url: URL = URL(string: "https://securitymedia.org/news/")!
-    @Published var moduleName: String = "securitymedia.org"
-    @Published var htmlBody: String? {
+    var url: URL = URL(string: "https://securitymedia.org/news/")!
+    var moduleName: String = "SecurityMedia"
+    var htmlBody: String? {
         didSet {
             try! pull()
         }
