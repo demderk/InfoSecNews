@@ -35,6 +35,11 @@ class WebKitHead {
     init() {
         coordinator = WKWebViewNavigationCoordinator(finished: executeFinishActions)
         webView.navigationDelegate = coordinator
+        webView.enableNotificationCenter(onMessage: {  [DOMUpdatedActions] html, wk in
+            for DOMUpdatedAction in DOMUpdatedActions {
+                DOMUpdatedAction(html, wk)
+            }
+        })
     }
     
     convenience init(preloadedUrl: URL) {
@@ -43,11 +48,7 @@ class WebKitHead {
     }
     
     private func executeFinishActions(html: String?, _ webView: WKWebView) {
-        webView.enableNotificationCenter(onMessage: {  [DOMUpdatedActions] html, wk in
-            for DOMUpdatedAction in DOMUpdatedActions {
-                DOMUpdatedAction(html, wk)
-            }
-        })
+        WKNotificationCenter.subscribe(webView)
         
         for loadFinisedAction in loadFinisedActions {
             loadFinisedAction(html, webView)
