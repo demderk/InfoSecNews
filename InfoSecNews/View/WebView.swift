@@ -9,9 +9,6 @@ import SwiftUI
 import WebKit
 import AppKit
 
-
-
-
 struct WebView: NSViewRepresentable {
     private var webKitHead: WebKitHead!
     

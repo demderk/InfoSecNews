@@ -54,10 +54,12 @@ struct NewsCard: View {
     }
 }
 
+// swiftlint:disable line_length
 #Preview {
-    var mockNewsItem = NewsItem(
+    let mockNewsItem = NewsItem(
         source: "debug.fm",
-        title: "Белый дом запретит судам принимать иски против Белого дома", date: .now,
+        title: "Белый дом запретит судам принимать иски против Белого дома",
+        date: .now,
         short: "Пресс-секретарь Белого дома Робин Маусс объявил, что президент готовится запретить судам принимать иски против него самого и Белого дома в целом. Он также объяснил, почему готовящийся указ никак не противоречит верховенству права.")
     VStack {
         NewsCard(newsItem: mockNewsItem)
@@ -67,3 +69,4 @@ struct NewsCard: View {
     }.frame(width: 1024)
         .background(.background)
 }
+// swiftlint:enable line_length

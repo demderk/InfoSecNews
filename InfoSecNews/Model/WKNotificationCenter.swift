@@ -19,8 +19,11 @@ class WKNotificationCenter: NSObject, WKScriptMessageHandler {
         self.webKit = webKit
     }
     
-    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        webKit.evaluateJavaScript("document.documentElement.innerHTML") { [self] result, error in
+    func userContentController(
+        _ userContentController: WKUserContentController,
+        didReceive message: WKScriptMessage
+    ) {
+        webKit.evaluateJavaScript("document.documentElement.innerHTML") { [self] result, _ in
             if let html = result as? String {
                 arrived?(html, webKit)
             }
@@ -47,8 +50,12 @@ class WKNotificationCenter: NSObject, WKScriptMessageHandler {
 }
 
 extension WKWebView {
-    func enableNotificationCenter(onMessage: @escaping ((String, WKWebView) -> Void)) {
+    func enableNotificationCenter(
+        onMessage: @escaping ((String, WKWebView) -> Void)
+    ) {
         WKNotificationCenter.subscribe(self)
-        self.configuration.userContentController.add(WKNotificationCenter(self, arrived: onMessage), name: "notificationCenter")
+        self.configuration.userContentController.add(
+            WKNotificationCenter(self, arrived: onMessage),
+            name: "notificationCenter")
     }
 }

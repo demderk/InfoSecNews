@@ -8,7 +8,7 @@
 import Foundation
 import WebKit
 
-protocol NewsModule : AnyObject {    
+protocol NewsModule: AnyObject {    
     var id: UUID { get }
     var url: URL { get }
     var moduleName: String { get }

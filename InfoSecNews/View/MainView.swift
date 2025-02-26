@@ -37,7 +37,6 @@ enum SelectedWindow: CaseIterable, Identifiable {
     }
 }
 
-
 struct ContentView: View {
     @State var vm = MainVM()
         

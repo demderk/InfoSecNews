@@ -92,7 +92,12 @@ final class SecurityMediaNewsModule: NewsModule {
                 continue
             }
             
-            news.append(NewsItem(source: moduleName, title: newsTitle.trimmingCharacters(in: .whitespaces), date: newsDate, short: newsShort.trimmingCharacters(in: .whitespaces)))
+            news.append(
+                NewsItem(
+                    source: moduleName,
+                    title: newsTitle.trimmingCharacters(in: .whitespaces),
+                    date: newsDate,
+                    short: newsShort.trimmingCharacters(in: .whitespaces)))
         }
         
         return news

@@ -8,7 +8,6 @@
 import Foundation
 import Combine
 
-
 @Observable
 class MainVM {
     
@@ -19,4 +18,3 @@ class MainVM {
     var storage: [NewsItem] { seclab.newsCollection + secmed.newsCollection }
     
 }
-
