@@ -51,6 +51,8 @@ final class SecurityMediaNewsModule: NewsModule {
     """
     }
     
+    //TODO: Remove throws cases
+    
     func fetch() throws -> [NewsItem] {
         guard let htmlBody = htmlBody else {
             return []
@@ -66,6 +68,7 @@ final class SecurityMediaNewsModule: NewsModule {
             var newsTitle: String?
             var newsDate: Date?
             var newsShort: String?
+            var newsFullLink: URL?
             
             if let title = try? item.select(".h4").text() {
                 newsTitle = title
@@ -79,6 +82,9 @@ final class SecurityMediaNewsModule: NewsModule {
             
             if let short = try? item.select("a").first() {
                 newsShort = short.textNodes().last?.text()
+                if let textLink = try? ("https://securitymedia.org\(short.attr("href"))") {
+                    newsFullLink = URL(string: textLink)
+                }
             }
             
             if newsTitle?.isEmpty ?? true,
@@ -88,7 +94,11 @@ final class SecurityMediaNewsModule: NewsModule {
                 continue
             }
             
-            guard let newsTitle = newsTitle, let newsDate = newsDate, let newsShort = newsShort else {
+            guard let newsTitle = newsTitle,
+                  let newsDate = newsDate,
+                  let newsShort = newsShort,
+                  let newsFullLink = newsFullLink
+            else {
                 continue
             }
             
@@ -97,7 +107,8 @@ final class SecurityMediaNewsModule: NewsModule {
                     source: moduleName,
                     title: newsTitle.trimmingCharacters(in: .whitespaces),
                     date: newsDate,
-                    short: newsShort.trimmingCharacters(in: .whitespaces)))
+                    short: newsShort.trimmingCharacters(in: .whitespaces),
+                    fullTextLink: newsFullLink))
         }
         
         return news

@@ -12,4 +12,6 @@ struct NewsItem: Hashable {
     var title: String
     var date: Date
     var short: String
+    var fullTextLink: URL
+    var full: String?
 }

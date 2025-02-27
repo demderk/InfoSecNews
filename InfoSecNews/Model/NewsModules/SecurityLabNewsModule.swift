@@ -35,7 +35,7 @@ final class SecurityLabNewsModule: NewsModule {
         
         let htDoc = try SwiftSoup.parse(htmlBody)
         
-        let x = try htDoc.select(".article-card-details")
+        let x = try htDoc.select(".article-card")
         
         var news: [NewsItem] = []
         
@@ -43,6 +43,7 @@ final class SecurityLabNewsModule: NewsModule {
             var newsTitle: String?
             var newsDate: Date?
             var newsShort: String?
+            var newsFullLink: URL?
             
             if let title = try? item.select(".article-card-title").text() {
                 newsTitle = title
@@ -57,6 +58,12 @@ final class SecurityLabNewsModule: NewsModule {
                 newsShort = short.textNodes().last?.text()
             }
             
+            if let short = try? item.select("a").first() {
+                if let textLink = try? ("https://securitylab.ru\(short.attr("href"))") {
+                    newsFullLink = URL(string: textLink)
+                }
+            }
+            
             if newsTitle?.isEmpty ?? true,
                newsDate == nil,
                newsShort?.isEmpty ?? true
@@ -64,7 +71,11 @@ final class SecurityLabNewsModule: NewsModule {
                 continue
             }
             
-            guard let newsTitle = newsTitle, let newsDate = newsDate, let newsShort = newsShort else {
+            guard let newsTitle = newsTitle,
+                  let newsDate = newsDate,
+                  let newsShort = newsShort,
+                  let newsFullLink = newsFullLink
+            else {
                 continue
             }
             
@@ -73,7 +84,8 @@ final class SecurityLabNewsModule: NewsModule {
                     source: moduleName,
                     title: newsTitle.trimmingCharacters(in: .whitespaces),
                     date: newsDate,
-                    short: newsShort.trimmingCharacters(in: .whitespaces)))
+                    short: newsShort.trimmingCharacters(in: .whitespaces),
+                    fullTextLink: newsFullLink))
         }
         
         return news
