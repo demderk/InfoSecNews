@@ -9,7 +9,7 @@ import Foundation
 import SwiftSoup
 
 @Observable
-final class SecurityLabNewsModule: NewsModule {
+final class SecurityLabNewsModule: WebNewsModule {
     var url: URL = URL(string: "https://www.securitylab.ru/news/")!
     
     var moduleName: String = "SecurityLab"

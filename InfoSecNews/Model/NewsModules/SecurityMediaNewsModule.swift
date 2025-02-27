@@ -10,7 +10,7 @@ import WebKit
 import Combine
 
 @Observable
-final class SecurityMediaNewsModule: NewsModule {
+final class SecurityMediaNewsModule: WebNewsModule {
     var webKit: WebKitHead = WebKitHead()
     
     var newsCollection: [NewsItem] = []
