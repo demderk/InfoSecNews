@@ -13,7 +13,7 @@ class MainVM {
     
     var currentWindow: SelectedWindow = .home
     var secmed = SecurityMediaNewsModule().preloaded()
-    var seclab = SecurityLabNewsModule().preloaded()
+    var seclab = SecurityLabRSSModule().preloaded()
     
     var storage: [NewsItem] { seclab.newsCollection + secmed.newsCollection }
     

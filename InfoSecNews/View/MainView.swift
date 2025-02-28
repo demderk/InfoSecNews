@@ -12,7 +12,7 @@ enum SelectedWindow: CaseIterable, Identifiable {
     
     case home
     case securityMedia
-    case securityLab
+//    case securityLab
     
     var title: String {
         switch self {
@@ -20,8 +20,8 @@ enum SelectedWindow: CaseIterable, Identifiable {
             "Feed"
         case .securityMedia:
             "SecurityMedia"
-        case .securityLab:
-            "SecurityLab"
+//        case .securityLab:
+//            "SecurityLab"
         }
     }
     
@@ -31,8 +31,8 @@ enum SelectedWindow: CaseIterable, Identifiable {
             "dot.radiowaves.up.forward"
         case .securityMedia:
             "network"
-        case .securityLab:
-            "network"
+//        case .securityLab:
+//            "network"
         }
     }
 }
@@ -73,8 +73,6 @@ struct ContentView: View {
                 switch vm.currentWindow {
                 case .securityMedia:
                     WebView(vm.secmed.webKit)
-                case .securityLab:
-                    WebView(vm.seclab.webKit)
                 case .home:
                     VStack {
                         Spacer().frame(height: 8)
