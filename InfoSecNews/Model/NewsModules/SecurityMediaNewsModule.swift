@@ -51,7 +51,7 @@ final class SecurityMediaNewsModule: WebNewsModule {
     """
     }
     
-    //TODO: Remove throws cases
+    // TODO: Remove throws cases
     
     func fetch() throws -> [NewsItem] {
         guard let htmlBody = htmlBody else {

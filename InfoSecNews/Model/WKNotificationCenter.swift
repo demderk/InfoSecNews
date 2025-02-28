@@ -23,7 +23,8 @@ class WKNotificationCenter: NSObject, WKScriptMessageHandler {
         _ userContentController: WKUserContentController,
         didReceive message: WKScriptMessage
     ) {
-        webKit.evaluateJavaScript("document.documentElement.innerHTML") { [self] result, _ in
+        webKit.evaluateJavaScript("document.documentElement.innerHTML") { [weak self] result, _ in
+            guard let self = self else { return }
             if let html = result as? String {
                 arrived?(html, webKit)
             }

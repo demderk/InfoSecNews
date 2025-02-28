@@ -17,7 +17,8 @@ class WKWebViewNavigationCoordinator: NSObject, WKNavigationDelegate {
     }
     
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        webView.evaluateJavaScript("document.documentElement.outerHTML.toString()") { [self] result, _ in
+        webView.evaluateJavaScript("document.documentElement.outerHTML.toString()") { [weak self] result, _ in
+            guard let self = self else { return }
             if let html = result as? String {
                 finished(html, webView)
             }
@@ -35,7 +36,8 @@ class WebKitHead {
     init() {
         coordinator = WKWebViewNavigationCoordinator(finished: executeFinishActions)
         webView.navigationDelegate = coordinator
-        webView.enableNotificationCenter(onMessage: {  [DOMUpdatedActions] html, web in
+        webView.enableNotificationCenter(onMessage: {  [weak self] html, web in
+            guard let self = self else { return }
             for DOMUpdatedAction in DOMUpdatedActions {
                 DOMUpdatedAction(html, web)
             }
