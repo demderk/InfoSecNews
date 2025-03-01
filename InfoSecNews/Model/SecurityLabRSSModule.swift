@@ -6,9 +6,9 @@
 //
 
 import Foundation
+import SwiftSoup
 
-
-fileprivate class SecurityLabRSSParserDelegate: NSObject, XMLParserDelegate {
+private class SecurityLabRSSParserDelegate: NSObject, XMLParserDelegate {
     
     var lastTitle = ""
     var lastDesc = ""
@@ -95,8 +95,55 @@ fileprivate class SecurityLabRSSParserDelegate: NSObject, XMLParserDelegate {
                 title: title,
                 date: date,
                 short: short,
-                fullTextLink: link))
+                fullTextLink: link,
+                fullParserStrategy: parseFull))
     }
+    
+    func parseFull(parent: NewsItem, html: String) -> [NewsItem] {
+        
+        let htDoc = try! SwiftSoup.parse(html)
+        
+        let x = try! htDoc.select(".cpb")
+        
+        var news: [NewsItem] = []
+        
+        for item in x {
+            var newsTitle: String?
+            var newsDate: Date?
+            var newsFull: String?
+            var newsFullLink: URL?
+            
+            if let title = try? item.select(".page-title").text() {
+                newsTitle = title
+            }
+            
+            if let date = try? item.select("time").attr("datetime") {
+                let dateFormatter = ISO8601DateFormatter()
+                newsDate = dateFormatter.date(from: date)
+            }
+            
+            if let full = try? item.select("[itemprop=description]").first() {
+                newsFull = try? full.text()
+            }
+            
+            guard newsTitle == parent.title, newsDate == parent.date else {
+                print("Can't connect full news with short news")
+                continue
+            }
+            
+            guard !(newsTitle?.isEmpty ?? true), let newsDate = newsDate else {
+                continue
+            }
+            
+            var newItem = parent
+            newItem.full = newsFull
+            
+            news.append(newItem)
+        }
+        
+        return news
+    }
+
 }
 
 @Observable
@@ -127,3 +174,5 @@ class SecurityLabRSSModule: RSSNewsModule {
         return self
     }
 }
+
+

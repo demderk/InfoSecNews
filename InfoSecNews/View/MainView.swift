@@ -12,6 +12,7 @@ enum SelectedWindow: CaseIterable, Identifiable {
     
     case home
     case securityMedia
+    case voyager
 //    case securityLab
     
     var title: String {
@@ -20,8 +21,8 @@ enum SelectedWindow: CaseIterable, Identifiable {
             "Feed"
         case .securityMedia:
             "SecurityMedia"
-//        case .securityLab:
-//            "SecurityLab"
+        case .voyager:
+            "Web Voyager"
         }
     }
     
@@ -31,8 +32,8 @@ enum SelectedWindow: CaseIterable, Identifiable {
             "dot.radiowaves.up.forward"
         case .securityMedia:
             "network"
-//        case .securityLab:
-//            "network"
+        case .voyager:
+            "location.square"
         }
     }
 }
@@ -77,12 +78,13 @@ struct ContentView: View {
                     VStack {
                         Spacer().frame(height: 8)
                         List(vm.storage, id: \.self) { item in
-                            NewsCard(newsItem: item)
+                            NewsCard(newsItem: item, voyager: vm.voyager)
                                 .listRowSeparator(.hidden)
                         }.listStyle(.plain)
                         Spacer().frame(height: 8)
-                        
                     }
+                    case .voyager:
+                        WebView(vm.voyager.webKit)
                 }
                 
             }.background(.background)

@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct NewsCard: View {
-    let newsItem: NewsItem
+    @State var newsItem: NewsItem
+    let voyager: WebVoyager
     
     var body: some View {
         HStack {
@@ -32,11 +33,17 @@ struct NewsCard: View {
                         .multilineTextAlignment(.leading)
                 }
                 Spacer().frame(height: 8)
-                Text(newsItem.short)
+                Text(newsItem.full ?? newsItem.short)
                     .font(.title3)
-                    .lineLimit(2)
+                    .lineLimit(nil)
                     .frame(minHeight: 48, alignment: .topLeading)
                     .multilineTextAlignment(.leading)
+                    .animation(.default, value: newsItem.full)
+
+                Button("fetch") {
+                        openFullText()
+                }
+                    
             }.frame(minWidth: 256, maxWidth: 896, alignment: .leading)
                 .padding(.horizontal, 20)
                 .padding(.vertical, 16)
@@ -52,6 +59,15 @@ struct NewsCard: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
     }
+    
+    func openFullText() {
+        voyager.fetch(newsItem: newsItem) { result in
+//            withAnimation {
+                newsItem = result.first ?? newsItem
+//            }
+        }
+        
+    }
 }
 
 // swiftlint:disable line_length
@@ -60,12 +76,12 @@ struct NewsCard: View {
         source: "debug.fm",
         title: "Белый дом запретит судам принимать иски против Белого дома",
         date: .now,
-        short: "Пресс-секретарь Белого дома Робин Маусс объявил, что президент готовится запретить судам принимать иски против него самого и Белого дома в целом. Он также объяснил, почему готовящийся указ никак не противоречит верховенству права.", fullTextLink: URL("google.com")!)
+        short: "Пресс-секретарь Белого дома Робин Маусс объявил, что президент готовится запретить судам принимать иски против него самого и Белого дома в целом. Он также объяснил, почему готовящийся указ никак не противоречит верховенству права.", fullTextLink: URL(string: "google.com")!)
     VStack {
-        NewsCard(newsItem: mockNewsItem)
-        NewsCard(newsItem: mockNewsItem)
-        NewsCard(newsItem: mockNewsItem)
-        NewsCard(newsItem: mockNewsItem)
+        NewsCard(newsItem: mockNewsItem, voyager: WebVoyager())
+        NewsCard(newsItem: mockNewsItem, voyager: WebVoyager())
+        NewsCard(newsItem: mockNewsItem, voyager: WebVoyager())
+        NewsCard(newsItem: mockNewsItem, voyager: WebVoyager())
     }.frame(width: 1024)
         .background(.background)
 }

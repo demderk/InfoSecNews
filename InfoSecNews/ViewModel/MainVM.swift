@@ -14,6 +14,7 @@ class MainVM {
     var currentWindow: SelectedWindow = .home
     var secmed = SecurityMediaNewsModule().preloaded()
     var seclab = SecurityLabRSSModule().preloaded()
+    var voyager = WebVoyager()
     
     var storage: [NewsItem] { seclab.newsCollection + secmed.newsCollection }
     
