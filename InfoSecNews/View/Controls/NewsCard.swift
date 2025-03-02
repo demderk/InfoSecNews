@@ -9,62 +9,108 @@ import SwiftUI
 
 struct NewsCard: View {
     @State var newsItem: NewsItem
+    
+    @State private var text: String
+    @State private var hasFull: Bool = false
+    @State private var buttonAngle: Double = 0
+    @State private var opened: Bool = false
+    @State private var textHeight: CGFloat = 0
+    
     let voyager: WebVoyager
     
+    init(newsItem: NewsItem, voyager: WebVoyager) {
+        self.newsItem = newsItem
+        self.hasFull = newsItem.fullParserStrategy != nil
+        text = newsItem.short
+        self.voyager = voyager
+    }
+    
     var body: some View {
-        HStack {
-            VStack(alignment: .leading) {
-                HStack(alignment: .center) {
-                    Image(systemName: "calendar")
-                        .fontWeight(.semibold)
-                    Spacer().frame(width: 4)
-                    Text(newsItem.date.formatted(date: .complete, time: .omitted))
-                    Spacer().frame(width: 16)
-                    Image(systemName: "newspaper")
-                        .fontWeight(.semibold)
-                    Spacer().frame(width: 4)
-                    Text(newsItem.source)
-                }.foregroundStyle(.secondary)
-                    .padding([.bottom], 4)
-                HStack {
-                    Text(newsItem.title)
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                        .multilineTextAlignment(.leading)
-                }
-                Spacer().frame(height: 8)
-                Text(newsItem.full ?? newsItem.short)
-                    .font(.title3)
-                    .lineLimit(nil)
-                    .frame(minHeight: 48, alignment: .topLeading)
-                    .multilineTextAlignment(.leading)
-                    .animation(.default, value: newsItem.full)
-
-                Button("fetch") {
-                        openFullText()
-                }
+            HStack {
+                VStack(alignment: .leading) {
+                        HStack(alignment: .center) {
+                            Image(systemName: "calendar")
+                                .fontWeight(.semibold)
+                            Spacer().frame(width: 4)
+                            Text(newsItem.date.formatted(date: .complete, time: .omitted))
+                            Spacer().frame(width: 16)
+                            Image(systemName: "newspaper")
+                                .fontWeight(.semibold)
+                            Spacer().frame(width: 4)
+                            Text(newsItem.source)
+                        }.foregroundStyle(.secondary)
+                            .padding([.bottom], 4)
+                        HStack {
+                            Text(newsItem.title)
+                                .font(.title2)
+                                .fontWeight(.semibold)
+                                .multilineTextAlignment(.leading)
+                                .textSelection(.enabled)
+                        }
+                        Spacer().frame(height: 8)
+                        Text(text)
+                            .multilineTextAlignment(.leading)
+                            .font(.title3)
+                            .textSelection(.enabled)
+                            .multilineTextAlignment(.leading)
+                            .frame(maxHeight: .infinity)
+                            .animation(.default, value: text)
+                }.frame(minWidth: 256, maxWidth: 896, maxHeight: .infinity, alignment: .leading)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 16)
                     
-            }.frame(minWidth: 256, maxWidth: 896, alignment: .leading)
-                .padding(.horizontal, 20)
-                .padding(.vertical, 16)
-            Spacer()
-        }
-        .background(.background)
-        .cornerRadius(20)
-        .overlay(
-            RoundedRectangle(cornerRadius: 20)
-                .stroke(.gray.opacity(0.1), lineWidth: 2)
-        )
-//        .shadow(color: .gray.opacity(0.1), radius: 10, x: 2, y: 2)
-        .padding(.horizontal, 16)
-        .padding(.vertical, 8)
+                Spacer()
+                if (hasFull) {
+                    Button(action: openFullText) {
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 24, weight: .medium))
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                            .background(.gray.opacity(0.03))
+                            .rotationEffect(.degrees(buttonAngle))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }.padding(.trailing, 32)
+                        .buttonStyle(.plain)
+                }
+            }
+            .background(.background)
+            .cornerRadius(20)
+            .overlay(
+                RoundedRectangle(cornerRadius: 20)
+                    .stroke(.gray.opacity(0.1), lineWidth: 2)
+            )
+            //        .shadow(color: .gray.opacity(0.1), radius: 10, x: 2, y: 2)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
     }
     
     func openFullText() {
-        voyager.fetch(newsItem: newsItem) { result in
-//            withAnimation {
-                newsItem = result.first ?? newsItem
-//            }
+        if !opened {
+            if let full = newsItem.full {
+                self.text = full
+                withAnimation {
+                    buttonAngle = 180
+                    opened = true
+                }
+                return
+            }
+            voyager.fetch(newsItem: newsItem) { result in
+                let text = result.first?.full ?? self.text
+                DispatchQueue.main.async {
+                    self.text = text
+                    withAnimation {
+                        buttonAngle = 180
+                        opened = true
+                    }
+                }
+            }
+        } else {
+            self.text = newsItem.short
+            withAnimation {
+                buttonAngle = 0
+                opened = false
+            }
         }
         
     }
