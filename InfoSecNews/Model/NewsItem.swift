@@ -8,6 +8,8 @@
 import Foundation
 
 struct NewsItem: Hashable {
+    var id = UUID()
+    
     var source: String
     var title: String
     var date: Date

@@ -15,6 +15,7 @@ struct NewsCard: View {
     @State private var buttonAngle: Double = 0
     @State private var opened: Bool = false
     @State private var textHeight: CGFloat = 0
+    @State private var isLoading: Bool = false
     
     let voyager: WebVoyager
     
@@ -48,23 +49,39 @@ struct NewsCard: View {
                                 .textSelection(.enabled)
                         }
                         Spacer().frame(height: 8)
+                    if opened {
                         Text(text)
+                            .multilineTextAlignment(.leading)
+                            .font(.title3)
+//                            .textSelection(.enabled)
+                            .multilineTextAlignment(.leading)
+                            .frame(maxHeight: .infinity)
+                            .transition(.asymmetric(insertion: AppearanceTransition().asAnyTransition, removal: .identity))
+                    } else {
+                        Text(newsItem.short)
                             .multilineTextAlignment(.leading)
                             .font(.title3)
                             .textSelection(.enabled)
                             .multilineTextAlignment(.leading)
                             .frame(maxHeight: .infinity)
-                            .animation(.default, value: text)
+                            .transition(.opacity)
+                            .animation(nil, value: newsItem.short)
+                    }
                 }.frame(minWidth: 256, maxWidth: 896, maxHeight: .infinity, alignment: .leading)
                     .padding(.horizontal, 20)
                     .padding(.vertical, 16)
                     
                 Spacer()
-                if (hasFull) {
+                if hasFull {
                     Button(action: openFullText) {
-                        Image(systemName: "chevron.down")
-                            .font(.system(size: 24, weight: .medium))
-                            .foregroundStyle(.secondary)
+                        ZStack {
+                            Image(systemName: "chevron.down")
+                                .font(.system(size: 24, weight: .medium))
+                                .opacity(isLoading ? 0 : 1)
+                            ProgressView().progressViewStyle(.circular)
+                                .opacity(isLoading ? 0.9 : 0)
+                                .scaleEffect(0.5)
+                        }.foregroundStyle(.secondary)
                             .padding(.horizontal, 16)
                             .padding(.vertical, 8)
                             .background(.gray.opacity(0.03))
@@ -95,18 +112,20 @@ struct NewsCard: View {
                 }
                 return
             }
+            isLoading = true
             voyager.fetch(newsItem: newsItem) { result in
                 let text = result.first?.full ?? self.text
                 DispatchQueue.main.async {
                     self.text = text
                     withAnimation {
+                        newsItem = result.first ?? newsItem
+                        isLoading = false
                         buttonAngle = 180
                         opened = true
                     }
                 }
             }
         } else {
-            self.text = newsItem.short
             withAnimation {
                 buttonAngle = 0
                 opened = false
@@ -115,6 +134,9 @@ struct NewsCard: View {
         
     }
 }
+
+
+
 
 // swiftlint:disable line_length
 #Preview {
@@ -132,3 +154,5 @@ struct NewsCard: View {
         .background(.background)
 }
 // swiftlint:enable line_length
+
+

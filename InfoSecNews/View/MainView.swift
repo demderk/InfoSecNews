@@ -77,9 +77,12 @@ struct ContentView: View {
                 case .home:
                     VStack {
                         Spacer().frame(height: 8)
-                        List(vm.storage, id: \.self) { item in
-                            NewsCard(newsItem: item, voyager: vm.voyager)
-                                .listRowSeparator(.hidden)
+                        List {
+                            ForEach(vm.storage, id: \.id) { item in
+                                NewsCard(newsItem: item, voyager: vm.voyager)
+                                    .listRowSeparator(.hidden)
+                                    .id(item.id)
+                            }
                         }.listStyle(.plain)
                         Spacer().frame(height: 8)
                     }
