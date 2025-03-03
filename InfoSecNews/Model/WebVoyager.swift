@@ -24,7 +24,7 @@ class WebVoyager {
     
     func fetch(newsItem: NewsItem, onComplete: @escaping ([NewsItem]) -> Void) -> Void {
         webKit.load(url: newsItem.fullTextLink)
-        webKit.subscribeLoadAction { html, _ in
+        webKit.singleLoadAction { html, _ in
             guard let html = html else { return }
             if let strategy = newsItem.fullParserStrategy?(newsItem, html) {
                 onComplete(strategy)
@@ -34,7 +34,7 @@ class WebVoyager {
     
     func webKitSetup() {
         webKit.subscribeDOMUpdateAction(action: DOMUpdated)
-        webKit.subscribeLoadAction(action: loadFinished)
+        webKit.subscribeLoadFinished(action: loadFinished)
     }
     
     func loadFinished(_ html: String?, _ webView: WKWebView) {

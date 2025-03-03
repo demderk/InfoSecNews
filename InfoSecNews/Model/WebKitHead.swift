@@ -31,14 +31,16 @@ class WebKitHead {
     private(set) var coordinator: WKWebViewNavigationCoordinator!
     
     private var loadFinisedActions: [WebAction] = []
-    private var DOMUpdatedActions: [WebAction] = []
+    
+    private var loadFinisedSubscribers: [WebAction] = []
+    private var DOMUpdatedSubscribers: [WebAction] = []
     
     init() {
         coordinator = WKWebViewNavigationCoordinator(finished: executeFinishActions)
         webView.navigationDelegate = coordinator
         webView.enableNotificationCenter(onMessage: {  [weak self] html, web in
             guard let self = self else { return }
-            for DOMUpdatedAction in DOMUpdatedActions {
+            for DOMUpdatedAction in DOMUpdatedSubscribers {
                 DOMUpdatedAction(html, web)
             }
         })
@@ -55,14 +57,24 @@ class WebKitHead {
         for loadFinisedAction in loadFinisedActions {
             loadFinisedAction(html, webView)
         }
+        
+        loadFinisedActions.removeAll()
+        
+        for loadFinisedSubscriber in loadFinisedSubscribers {
+            loadFinisedSubscriber(html, webView)
+        }
     }
     
-    func subscribeLoadAction(action: @escaping WebAction) {
+    func subscribeLoadFinished(action: @escaping WebAction) {
+        loadFinisedSubscribers.append(action)
+    }
+    
+    func singleLoadAction(action: @escaping WebAction) {
         loadFinisedActions.append(action)
     }
     
     func subscribeDOMUpdateAction(action: @escaping WebAction) {
-        DOMUpdatedActions.append(action)
+        DOMUpdatedSubscribers.append(action)
     }
     
     func load(url: URL) {
