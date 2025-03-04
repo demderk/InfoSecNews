@@ -22,7 +22,7 @@ class WebVoyager {
         webKitSetup()
     }
     
-    func fetch(newsItem: NewsItem, onComplete: @escaping ([NewsItem]) -> Void) -> Void {
+    func fetch(newsItem: NewsItem, onComplete: @escaping ([NewsItem]) -> Void) {
         webKit.load(url: newsItem.fullTextLink)
         webKit.singleLoadAction { html, _ in
             guard let html = html else { return }

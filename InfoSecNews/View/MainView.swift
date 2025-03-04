@@ -13,7 +13,7 @@ enum SelectedWindow: CaseIterable, Identifiable {
     case home
     case securityMedia
     case voyager
-//    case securityLab
+    //    case securityLab
     
     var title: String {
         switch self {
@@ -40,7 +40,7 @@ enum SelectedWindow: CaseIterable, Identifiable {
 
 struct ContentView: View {
     @State var vm = MainVM()
-        
+    
     var body: some View {
         NavigationSplitView(sidebar: {
             List(selection: $vm.currentWindow) {
@@ -86,8 +86,8 @@ struct ContentView: View {
                         }.listStyle(.plain)
                         Spacer().frame(height: 8)
                     }
-                    case .voyager:
-                        WebView(vm.voyager.webKit)
+                case .voyager:
+                    WebView(vm.voyager.webKit)
                 }
                 
             }.background(.background)

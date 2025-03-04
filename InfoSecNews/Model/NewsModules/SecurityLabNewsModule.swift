@@ -122,12 +122,6 @@ final class SecurityLabNewsModule: WebNewsModule {
                 newsShort = short.textNodes().last?.text()
             }
             
-//            if let short = try? item.select("a").first() {
-//                if let textLink = try? ("https://securitylab.ru\(short.attr("href"))") {
-//                    newsFullLink = URL(string: textLink)
-//                }
-//            }
-            
             if newsTitle?.isEmpty ?? true,
                newsDate == nil,
                newsShort?.isEmpty ?? true

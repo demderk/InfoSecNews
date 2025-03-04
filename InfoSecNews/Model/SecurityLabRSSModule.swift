@@ -111,7 +111,6 @@ private class SecurityLabRSSParserDelegate: NSObject, XMLParserDelegate {
             var newsTitle: String?
             var newsDate: Date?
             var newsFull: String?
-            var newsFullLink: URL?
             
             if let title = try? item.select(".page-title").text() {
                 newsTitle = title
@@ -131,7 +130,7 @@ private class SecurityLabRSSParserDelegate: NSObject, XMLParserDelegate {
                 continue
             }
             
-            guard !(newsTitle?.isEmpty ?? true), let newsDate = newsDate else {
+            guard !(newsTitle?.isEmpty ?? true), newsDate != nil else {
                 continue
             }
             
@@ -174,5 +173,3 @@ class SecurityLabRSSModule: RSSNewsModule {
         return self
     }
 }
-
-

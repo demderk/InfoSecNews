@@ -53,10 +53,12 @@ struct NewsCard: View {
                         Text(text)
                             .multilineTextAlignment(.leading)
                             .font(.title3)
-//                            .textSelection(.enabled)
                             .multilineTextAlignment(.leading)
                             .frame(maxHeight: .infinity)
-                            .transition(.asymmetric(insertion: AppearanceTransition().asAnyTransition, removal: .identity))
+                            .transition(
+                                .asymmetric(
+                                    insertion: AppearanceTransition().asAnyTransition,
+                                    removal: .identity))
                     } else {
                         Text(newsItem.short)
                             .multilineTextAlignment(.leading)
@@ -97,7 +99,6 @@ struct NewsCard: View {
                 RoundedRectangle(cornerRadius: 20)
                     .stroke(.gray.opacity(0.1), lineWidth: 2)
             )
-            //        .shadow(color: .gray.opacity(0.1), radius: 10, x: 2, y: 2)
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
     }
@@ -135,9 +136,6 @@ struct NewsCard: View {
     }
 }
 
-
-
-
 // swiftlint:disable line_length
 #Preview {
     let mockNewsItem = NewsItem(
@@ -154,5 +152,3 @@ struct NewsCard: View {
         .background(.background)
 }
 // swiftlint:enable line_length
-
-

@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 struct AppearanceEffectRenderer: TextRenderer, Animatable {
     
     var elapsedTime: TimeInterval
@@ -27,26 +26,30 @@ struct AppearanceEffectRenderer: TextRenderer, Animatable {
         
         for (i, item) in layout.enumerated() {
             
+            var copy = ctx
             let timeOffest = delay * TimeInterval(i)
             let elementTime = max(0, min(elapsedTime - timeOffest, perElement))
-            
-            var copy = ctx
-            
             let lineProgress = elementTime / perElement
             
-            let ty = Spring(duration: perElement, bounce: 0.3)
-                .value(fromValue: -item.typographicBounds.descent * 2, toValue: 0, initialVelocity: 3, time: elementTime)
+            let translateFactor = Spring(duration: perElement, bounce: 0.3)
+                .value(
+                    fromValue: -item.typographicBounds.descent * 2,
+                    toValue: 0,
+                    initialVelocity: 3,
+                    time: elementTime)
             
-            let zm = Spring(duration: perElement, bounce: 0.3)
-                .value(fromValue: 0.8, toValue: 1, initialVelocity: 3, time: elementTime)
+            let scaleFactor = Spring(duration: perElement, bounce: 0.3)
+                .value(
+                    fromValue: 0.8,
+                    toValue: 1,
+                    initialVelocity: 3,
+                    time: elementTime)
             
+            let opacityFactor = UnitCurve.easeIn.value(at: 1.4 * lineProgress)
             
-            
-            let t = UnitCurve.easeIn.value(at: 1.4 * lineProgress)
-            
-            copy.opacity = t
-            copy.scaleBy(x: zm, y: zm)
-            copy.translateBy(x: -ty, y: ty)
+            copy.opacity = opacityFactor
+            copy.scaleBy(x: scaleFactor, y: scaleFactor)
+            copy.translateBy(x: -translateFactor, y: translateFactor)
             
             copy.draw(item)
             
