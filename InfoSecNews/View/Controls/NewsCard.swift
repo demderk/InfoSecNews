@@ -114,7 +114,7 @@ struct NewsCard: View {
                 return
             }
             isLoading = true
-            voyager.fetch(newsItem: newsItem) { result in
+            voyager.addRequest(newsItem: newsItem) { result in
                 let text = result.first?.full ?? self.text
                 DispatchQueue.main.async {
                     self.text = text
@@ -126,6 +126,7 @@ struct NewsCard: View {
                     }
                 }
             }
+            voyager.processQueue()
         } else {
             withAnimation {
                 buttonAngle = 0

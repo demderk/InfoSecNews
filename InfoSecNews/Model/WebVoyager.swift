@@ -17,17 +17,37 @@ class WebVoyager {
     var webKit: WebKitHead = WebKitHead()
     var htmlBody: String?
     var newsCollection: [NewsItem] = []
-        
+    
+    var requestQueue: [(newsItem: NewsItem, onComplete: ([NewsItem]) -> Void)] = []
+    var bussy: Bool = false
+    
     init() {
         webKitSetup()
     }
     
     func fetch(newsItem: NewsItem, onComplete: @escaping ([NewsItem]) -> Void) {
-        webKit.load(url: newsItem.fullTextLink)
         webKit.singleLoadAction { html, _ in
             guard let html = html else { return }
             if let strategy = newsItem.fullParserStrategy?(newsItem, html) {
                 onComplete(strategy)
+            }
+        }
+        webKit.load(url: newsItem.fullTextLink)
+    }
+    
+    func addRequest(newsItem: NewsItem, action: @escaping ([NewsItem]) -> Void) {
+        requestQueue.append((newsItem, action))
+    }
+    
+    func processQueue() {
+        guard bussy == false else { return }
+        if let request = requestQueue.first {
+            bussy = true
+            fetch(newsItem: request.newsItem) { [self] in
+                request.onComplete($0)
+                requestQueue.removeFirst()
+                bussy = false
+                processQueue()
             }
         }
     }
