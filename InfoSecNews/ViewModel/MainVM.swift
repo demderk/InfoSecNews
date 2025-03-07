@@ -16,6 +16,6 @@ class MainVM {
     var seclab = SecurityLabRSSModule().preloaded()
     var voyager = WebVoyager()
     
-    var storage: [NewsItem] { seclab.newsCollection + secmed.newsCollection }
+    var storage: [any NewsBehavior] { seclab.newsCollection + secmed.newsCollection }
     
 }

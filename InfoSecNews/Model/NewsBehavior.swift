@@ -7,17 +7,18 @@
 
 import Foundation
 
-struct NewsItem: Hashable {
-    var id = UUID()
-    
-    var source: String
-    var title: String
-    var date: Date
-    var short: String
-    var fullTextLink: URL
-    var full: String?
-    var fullParserStrategy: ((NewsItem, String) -> [NewsItem])?
+protocol NewsBehavior: Hashable, Identifiable, AnyObject {    
+    var source: String { get }
+    var title: String { get }
+    var date: Date { get }
+    var short: String { get }
+    var fullTextLink: URL { get }
+    var full: String? { get }
 
+    func loadRemoteData(voyager: WebVoyager) async
+}
+
+extension NewsBehavior {
     func hash(into hasher: inout Hasher) {
          hasher.combine(source)
          hasher.combine(title)
@@ -27,7 +28,7 @@ struct NewsItem: Hashable {
          hasher.combine(full)
      }
 
-     static func == (lhs: NewsItem, rhs: NewsItem) -> Bool {
+    static func == (lhs: Self, rhs: Self) -> Bool {
          return lhs.source == rhs.source &&
                 lhs.title == rhs.title &&
                 lhs.date == rhs.date &&

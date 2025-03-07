@@ -18,7 +18,7 @@ private class SecurityLabRSSParserDelegate: NSObject, XMLParserDelegate {
     
     var moduleName: String = "Security Lab"
     var currentElement: String?
-    var news: [NewsItem] = []
+    var news: [SecurityLabNews] = []
     
     func parser(_ parser: XMLParser,
                 didStartElement elementName: String,
@@ -90,64 +90,17 @@ private class SecurityLabRSSParserDelegate: NSObject, XMLParserDelegate {
         }
         
         news.append(
-            NewsItem(
+            SecurityLabNews(
                 source: moduleName,
                 title: title,
                 date: date,
                 short: short,
-                fullTextLink: link,
-                fullParserStrategy: parseFull))
+                fullTextLink: link))
     }
     
-    func parseFull(parent: NewsItem, html: String) -> [NewsItem] {
+    func remote() {
         
-        let htDoc = try! SwiftSoup.parse(html)
-        
-        let x = try! htDoc.select(".cpb")
-        
-        var news: [NewsItem] = []
-        
-        for item in x {
-            var newsTitle: String?
-            var newsDate: Date?
-            var newsFull: String?
-            
-            if let title = try? item.select(".page-title").text() {
-                newsTitle = title
-            }
-            
-            if let date = try? item.select("time").attr("datetime") {
-                let dateFormatter = ISO8601DateFormatter()
-                newsDate = dateFormatter.date(from: date)
-            }
-            
-            if let full = try? item.select("[itemprop=description]").first() {
-                var innerText = ""
-                for item in full.children() {
-                    innerText += try! item.text()
-                    innerText += "\n\n"
-                }
-                newsFull = innerText
-            }
-            
-            guard newsTitle == parent.title, newsDate == parent.date else {
-                print("Can't connect full news with short news")
-                continue
-            }
-            
-            guard !(newsTitle?.isEmpty ?? true), newsDate != nil else {
-                continue
-            }
-            
-            var newItem = parent
-            newItem.full = newsFull
-            
-            news.append(newItem)
-        }
-        
-        return news
     }
-
 }
 
 @Observable
@@ -155,11 +108,11 @@ class SecurityLabRSSModule: RSSNewsModule {
     
     var url: URL = URL(string: "https://www.securitylab.ru/_services/export/rss/")!
     var moduleName: String = "Security Lab"
-    var newsCollection: [NewsItem] = []
+    var newsCollection: [SecurityLabNews] = []
     
     private var parserDelegate = SecurityLabRSSParserDelegate()
     
-    func fetch() async -> [NewsItem] {
+    func fetch() async -> [SecurityLabNews] {
         let rssLink = URL(string: "https://www.securitylab.ru/_services/export/rss")!
         var rssRequest = URLRequest(url: rssLink)
         rssRequest.httpMethod = "GET"

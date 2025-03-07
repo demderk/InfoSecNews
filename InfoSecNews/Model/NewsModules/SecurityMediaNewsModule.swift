@@ -13,7 +13,7 @@ import Combine
 final class SecurityMediaNewsModule: WebNewsModule {
     var webKit: WebKitHead = WebKitHead()
     
-    var newsCollection: [NewsItem] = []
+    var newsCollection: [SecurityMediaNews] = []
     
     var url: URL = URL(string: "https://securitymedia.org/news/")!
     var moduleName: String = "SecurityMedia"

@@ -8,6 +8,8 @@
 import Foundation
 
 protocol NewsModule: AnyObject {
+    associatedtype NewsItem: NewsBehavior
+    
     var id: UUID { get }
     var url: URL { get }
     var moduleName: String { get }

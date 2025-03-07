@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct NewsCard: View {
-    @State var newsItem: NewsItem
+    @State var newsItem: any NewsBehavior
     
     @State private var text: String
     @State private var hasFull: Bool = false
@@ -19,9 +19,9 @@ struct NewsCard: View {
     
     let voyager: WebVoyager
     
-    init(newsItem: NewsItem, voyager: WebVoyager) {
+    init(newsItem: any NewsBehavior, voyager: WebVoyager) {
         self.newsItem = newsItem
-        self.hasFull = newsItem.fullParserStrategy != nil
+        self.hasFull = true
         text = newsItem.short
         self.voyager = voyager
     }
@@ -114,19 +114,18 @@ struct NewsCard: View {
                 return
             }
             isLoading = true
-            voyager.addRequest(newsItem: newsItem) { result in
-                let text = result.first?.full ?? self.text
+            Task {
+                await newsItem.loadRemoteData(voyager: voyager)
+                let text = newsItem.full ?? "nope"
                 DispatchQueue.main.async {
                     self.text = text
                     withAnimation {
-                        newsItem = result.first ?? newsItem
                         isLoading = false
                         buttonAngle = 180
                         opened = true
                     }
                 }
             }
-            voyager.processQueue()
         } else {
             withAnimation {
                 buttonAngle = 0
@@ -139,7 +138,7 @@ struct NewsCard: View {
 
 // swiftlint:disable line_length
 #Preview {
-    let mockNewsItem = NewsItem(
+    let mockNewsItem = SecurityLabNews(
         source: "debug.fm",
         title: "Белый дом запретит судам принимать иски против Белого дома",
         date: .now,

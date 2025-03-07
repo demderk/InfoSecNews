@@ -8,50 +8,51 @@
 import Foundation
 import WebKit
 
-typealias ParseStrategy = (String) -> [NewsItem]
+typealias ParseStrategy = (String) -> [any NewsBehavior]
 
-class WebVoyager {
+protocol DataVoyager {
+    associatedtype RemoteData
+    
+    func fetch(url: URL) async -> Result<RemoteData, DataVoyagerError>
+}
+
+enum DataVoyagerError: Error {
+    case badResult
+}
+
+class WebVoyager: DataVoyager {
     
     var url: URL = URL(string: "https://en.wikipedia.org/wiki/Duck")!
     var moduleName: String = "WebVoyager"
     var webKit: WebKitHead = WebKitHead()
     var htmlBody: String?
-    var newsCollection: [NewsItem] = []
     
-    var requestQueue: [(newsItem: NewsItem, onComplete: ([NewsItem]) -> Void)] = []
     var bussy: Bool = false
     
     init() {
         webKitSetup()
     }
     
-    func fetch(newsItem: NewsItem, onComplete: @escaping ([NewsItem]) -> Void) {
-        webKit.singleLoadAction { html, _ in
-            guard let html = html else { return }
-            if let strategy = newsItem.fullParserStrategy?(newsItem, html) {
-                onComplete(strategy)
+    let mainSemaphore = Semaphore(count: 1)
+    
+    @MainActor
+    func fetch(url: URL) async -> Result<String, DataVoyagerError> {
+        await mainSemaphore.wait()
+        let result: Result<String, DataVoyagerError> = await withCheckedContinuation { continuation in
+            webKit.load(url: url)
+            webKit.singleLoadAction { html, _ in
+                guard let html = html else {
+                    continuation.resume(returning: .failure(.badResult))
+                    return
+                }
+                continuation.resume(returning: .success(html))
+                return
             }
         }
-        webKit.load(url: newsItem.fullTextLink)
+        await mainSemaphore.signal()
+        return result
     }
-    
-    func addRequest(newsItem: NewsItem, action: @escaping ([NewsItem]) -> Void) {
-        requestQueue.append((newsItem, action))
-    }
-    
-    func processQueue() {
-        guard bussy == false else { return }
-        if let request = requestQueue.first {
-            bussy = true
-            fetch(newsItem: request.newsItem) { [self] in
-                request.onComplete($0)
-                requestQueue.removeFirst()
-                bussy = false
-                processQueue()
-            }
-        }
-    }
-    
+
     func webKitSetup() {
         webKit.subscribeDOMUpdateAction(action: DOMUpdated)
         webKit.subscribeLoadFinished(action: loadFinished)

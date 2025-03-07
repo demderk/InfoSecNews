@@ -1,0 +1,26 @@
+//
+//  HomeView.swift
+//  InfoSecNews
+//
+//  Created by Roman Zheglov on 07.03.2025.
+//
+
+import SwiftUI
+
+struct FeedView: View {
+    @Environment(MainVM.self) var parentViewModel
+    
+    var body: some View {
+        VStack {
+            Spacer().frame(height: 8)
+            List {
+                ForEach(parentViewModel.storage, id: \.id) { item in
+                    NewsCard(newsItem: item, voyager: parentViewModel.voyager)
+                        .listRowSeparator(.hidden)
+                        .id(item.id)
+                }
+            }.listStyle(.plain)
+            Spacer().frame(height: 8)
+        }
+    }
+}

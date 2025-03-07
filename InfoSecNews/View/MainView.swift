@@ -40,7 +40,7 @@ enum SelectedWindow: CaseIterable, Identifiable {
 
 struct ContentView: View {
     @State var vm = MainVM()
-    
+        
     var body: some View {
         NavigationSplitView(sidebar: {
             List(selection: $vm.currentWindow) {
@@ -73,19 +73,11 @@ struct ContentView: View {
             VStack {
                 switch vm.currentWindow {
                 case .securityMedia:
-                    WebView(vm.secmed.webKit)
+//                    WebView(vm.secmed.webKit)
+                    Text("Not")
                 case .home:
-                    VStack {
-                        Spacer().frame(height: 8)
-                        List {
-                            ForEach(vm.storage, id: \.id) { item in
-                                NewsCard(newsItem: item, voyager: vm.voyager)
-                                    .listRowSeparator(.hidden)
-                                    .id(item.id)
-                            }
-                        }.listStyle(.plain)
-                        Spacer().frame(height: 8)
-                    }
+                    FeedView()
+                        .environment(vm)
                 case .voyager:
                     WebView(vm.voyager.webKit)
                 }
