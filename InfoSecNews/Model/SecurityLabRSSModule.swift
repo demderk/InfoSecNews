@@ -122,7 +122,12 @@ private class SecurityLabRSSParserDelegate: NSObject, XMLParserDelegate {
             }
             
             if let full = try? item.select("[itemprop=description]").first() {
-                newsFull = try? full.text()
+                var innerText = ""
+                for item in full.children() {
+                    innerText += try! item.text()
+                    innerText += "\n\n"
+                }
+                newsFull = innerText
             }
             
             guard newsTitle == parent.title, newsDate == parent.date else {
