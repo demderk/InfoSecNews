@@ -17,6 +17,7 @@ protocol WebNewsModule: AnyObject, NewsModule {
 }
 
 extension WebNewsModule {
+    
     func preloaded() -> Self {
         webKit.load(url: url)
         return self

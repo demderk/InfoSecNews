@@ -8,7 +8,7 @@
 import Foundation
 import SwiftSoup
 
-class SecurityMediaNews: NewsBehavior {
+final class SecurityMediaNews: NewsBehavior {
     var source: String
     var title: String
     var date: Date
@@ -47,7 +47,7 @@ class SecurityMediaNews: NewsBehavior {
                     innerText += try! item.text()
                     innerText += "\n"
                 }
-                newsFull = innerText
+                newsFull = innerText.trimmingCharacters(in: ["\n"])
             }
             full = newsFull
             return
