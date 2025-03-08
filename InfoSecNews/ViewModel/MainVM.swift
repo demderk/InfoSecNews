@@ -12,7 +12,7 @@ import Combine
 class MainVM {
     
     var currentWindow: SelectedWindow = .home
-    var secmed = SecurityMediaModule2()
+    var secmed = NewsResolver(SecurityMediaModule())
     var seclab = SecurityLabRSSModule().preloaded()
     var antMal = AntiMalwareModule().preloaded()
     var voyager = WebVoyager()
