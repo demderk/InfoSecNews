@@ -19,8 +19,18 @@ struct FeedView: View {
                         .listRowSeparator(.hidden)
                         .id(item.id)
                 }
+                HStack {
+                    Spacer()
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .onAppear(perform: parentViewModel.fetchContent)
+                        .opacity(0.9)
+                        .scaleEffect(0.5)
+                    Spacer()
+                }
             }.listStyle(.plain)
             Spacer().frame(height: 8)
+            
         }
     }
 }

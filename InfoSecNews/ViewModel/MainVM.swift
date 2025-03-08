@@ -12,11 +12,21 @@ import Combine
 class MainVM {
     
     var currentWindow: SelectedWindow = .home
-    var secmed = SecurityMediaNewsModule().preloaded()
+    var secmed = SecurityMediaModule2()
     var seclab = SecurityLabRSSModule().preloaded()
     var antMal = AntiMalwareModule().preloaded()
     var voyager = WebVoyager()
     
-    var storage: [any NewsBehavior] { seclab.newsCollection + secmed.newsCollection + antMal.newsCollection }
+    var storage: [any NewsBehavior] { secmed.newsCollection }
+        
+    var bussy: Bool = false
+    
+    func fetchContent() {
+        Task {
+            bussy = true
+            await secmed.fetch()
+            bussy = false
+        }
+    }
     
 }
