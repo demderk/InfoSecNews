@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftSoup
 
 class SecurityMediaNews: NewsBehavior {
     var source: String
@@ -24,6 +25,32 @@ class SecurityMediaNews: NewsBehavior {
     }
     
     func loadRemoteData(voyager: WebVoyager) async {
+        let input = await voyager.fetch(url: fullTextLink)
         
+        if case .success(let html) = input {
+            parseFullArticle(html: html)
+        } else {
+            fatalError("Error")
+        }
+    }
+    
+    private func parseFullArticle(html: String) {
+        
+        let htDoc = try! SwiftSoup.parse(html)
+        let x = try! htDoc.select(".detail_item")
+                
+        for item in x {
+            var newsFull: String?
+            if let full = try? item.select(".article-detail").first() {
+                var innerText = ""
+                for item in full.children() {
+                    innerText += try! item.text()
+                    innerText += "\n"
+                }
+                newsFull = innerText
+            }
+            full = newsFull
+            return
+        }
     }
 }
