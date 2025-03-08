@@ -44,7 +44,7 @@ struct ContentView: View {
     var body: some View {
         NavigationSplitView(sidebar: {
             List(selection: $vm.currentWindow) {
-                Section(header: Text("Control")) {
+                Section(header: Text("Tools")) {
                     NavigationLink(value: SelectedWindow.home) {
                         HStack {
                             Image(systemName: SelectedWindow.home.imageString)
@@ -56,7 +56,7 @@ struct ContentView: View {
                     }
                 }
                 Section(header: Text("News Modules")) {
-                    ForEach(SelectedWindow.allCases[1...], id: \.self) { item in
+                    ForEach(SelectedWindow.allCases[1..<SelectedWindow.allCases.count-1], id: \.self) { item in
                         NavigationLink(value: item) {
                             HStack {
                                 Image(systemName: item.imageString)
@@ -68,13 +68,23 @@ struct ContentView: View {
                         }
                     }
                 }
+                Section(header: Text("Misc")) {
+                    NavigationLink(value: SelectedWindow.voyager) {
+                        HStack {
+                            Image(systemName: SelectedWindow.voyager.imageString)
+                                .frame(width: 24)
+                                .fontWeight(.semibold)
+                            Spacer().frame(width: 2)
+                            Text(SelectedWindow.voyager.title)
+                        }.tag(SelectedWindow.voyager)
+                    }
+                }
             }
         }, detail: {
             VStack {
                 switch vm.currentWindow {
                 case .securityMedia:
-//                    WebView(vm.secmed.webKit)
-                    Text("Not")
+                    WebView(vm.secmed.webKit)
                 case .home:
                     FeedView()
                         .environment(vm)
