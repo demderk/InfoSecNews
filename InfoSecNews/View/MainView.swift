@@ -12,6 +12,7 @@ enum SelectedWindow: CaseIterable, Identifiable {
     
     case home
     case securityMedia
+    case securityLab
     case antiMalware
     case voyager
     
@@ -21,6 +22,8 @@ enum SelectedWindow: CaseIterable, Identifiable {
             "Feed"
         case .securityMedia:
             "SecurityMedia"
+        case .securityLab:
+            "Security Lab"
         case .antiMalware:
             "Anti Malware"
         case .voyager:
@@ -32,7 +35,7 @@ enum SelectedWindow: CaseIterable, Identifiable {
         switch self {
         case .home:
             "dot.radiowaves.up.forward"
-        case .securityMedia, .antiMalware:
+        case .securityMedia, .antiMalware, .securityLab:
             "network"
         case .voyager:
             "location.square"
@@ -87,6 +90,8 @@ struct ContentView: View {
                 switch vm.currentWindow {
                 case .securityMedia:
                     WebView(vm.secmed.webKit)
+                case .securityLab:
+                    WebView(vm.seclab.webKit)
                 case .antiMalware:
                     WebView(vm.antMal.webKit)
                 case .home:

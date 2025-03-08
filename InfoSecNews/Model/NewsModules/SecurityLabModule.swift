@@ -1,28 +1,29 @@
 //
-//  SecurityMediaModule.swift
+//  SecurityLabModule.swift
 //  InfoSecNews
 //
-//  Created by Roman Zheglov on 10.02.2025.
+//  Created by Roman Zheglov on 09.03.2025.
 //
+
 import Foundation
 import SwiftSoup
 
-final class SecurityMediaModule: NewsProvider {
-    var baseUrl: URL = URL(string: "https://securitymedia.org/news/")!
-    var moduleName: String = "SecurityMedia"
-            
-    var pageNumber: Int = 0
-    var currentUrlString: URL { URL(string: "https://securitymedia.org/news/?PAGEN_3=\(pageNumber)")! }
-    var nextUrlString: URL { URL(string: "https://securitymedia.org/news/?PAGEN_3=\(pageNumber + 1)")! }
+final class SecurityLabModule: NewsProvider {
+    var baseUrl: URL = URL(string: "https://www.securitylab.ru/news/")!
+    var moduleName: String = "Security Lab"
     
-    func parse(input html: String) -> [SecurityMediaNews] {
+    var pageNumber: Int = 0
+    var currentUrlString: URL { URL(string: "https://www.securitylab.ru/news/page1_\(pageNumber).php")! }
+    var nextUrlString: URL { URL(string: "https://www.securitylab.ru/news/page1_\(pageNumber+1).php")! }
+    
+    func parse(input html: String) -> [SecurityLabNews] {
         guard let htDoc = try? SwiftSoup.parse(html),
-              let htmlNews = try? htDoc.select("div.col-md-8")
+              let htmlNews = try? htDoc.select(".article-card")
         else {
             return []
         }
         
-        var news: [SecurityMediaNews] = []
+        var news: [SecurityLabNews] = []
         
         for item in htmlNews {
             var newsTitle: String?
@@ -30,19 +31,21 @@ final class SecurityMediaModule: NewsProvider {
             var newsShort: String?
             var newsFullLink: URL?
             
-            if let title = try? item.select(".h4").text() {
+            if let title = try? item.select(".article-card-title").text() {
                 newsTitle = title
             }
             
-            if let date = try? item.select(".date_time").text() {
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "dd.MM.yyyy"
+            if let date = try? item.select("time").attr("datetime") {
+                let dateFormatter = ISO8601DateFormatter()
                 newsDate = dateFormatter.date(from: date)
             }
             
-            if let short = try? item.select("a").first() {
+            if let short = try? item.select("p").first() {
                 newsShort = short.textNodes().last?.text()
-                if let textLink = try? ("https://securitymedia.org\(short.attr("href"))") {
+            }
+            
+            if let short = try? item.select("a").first() {
+                if let textLink = try? ("https://securitylab.ru\(short.attr("href"))") {
                     newsFullLink = URL(string: textLink)
                 }
             }
@@ -63,7 +66,7 @@ final class SecurityMediaModule: NewsProvider {
             }
             
             news.append(
-                SecurityMediaNews(
+                SecurityLabNews(
                     source: moduleName,
                     title: newsTitle.trimmingCharacters(in: .whitespaces),
                     date: newsDate,
