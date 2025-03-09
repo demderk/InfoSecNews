@@ -37,9 +37,9 @@ final class SecurityLabNews: NewsBehavior {
     private func parseFullArticle(html: String) {
         
         let htDoc = try! SwiftSoup.parse(html)
-        let x = try! htDoc.select(".cpb")
+        let htmlNews = try! htDoc.select(".cpb")
                 
-        for item in x {
+        for item in htmlNews {
             var newsFull: String?
             if let full = try? item.select("[itemprop=description]").first() {
                 var innerText = ""
