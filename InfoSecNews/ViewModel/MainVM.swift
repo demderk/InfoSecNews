@@ -22,13 +22,13 @@ class MainVM {
     var currentWindow: SelectedWindow = .home
     var secmed = NewsResolver(SecurityMediaModule())
     var seclab = NewsResolver(SecurityLabModule())
-    var antMal = AntiMalwareModule().preloaded()
+    var antMal = NewsResolver(AntiMalwareModule())
     var voyager = WebVoyager()
     
     var storage: [any NewsBehavior] {
-        var x: [any NewsBehavior] = seclab.newsCollection + secmed.newsCollection
-        x.sort(by: { $0.date > $1.date })
-        return x
+        var newsStorage: [any NewsBehavior] = secmed.newsCollection + seclab.newsCollection + antMal.newsCollection
+        newsStorage.sort(by: { $0.date > $1.date })
+        return newsStorage
     }
     
     var bussy: Bool = false
@@ -39,6 +39,7 @@ class MainVM {
             bussy = true
             await seclab.fetch(pageCount: 3)
             await secmed.fetch()
+            await antMal.fetch(pageCount: 2)
             bussy = false
         }
     }
