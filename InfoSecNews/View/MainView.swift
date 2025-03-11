@@ -61,7 +61,10 @@ struct ContentView: View {
                     }
                 }
                 Section(header: Text("News Modules")) {
-                    ForEach(SelectedWindow.allCases[1..<SelectedWindow.allCases.count-1], id: \.self) { item in
+                    ForEach(
+                        SelectedWindow.allCases[1..<SelectedWindow.allCases.count-1],
+                        id: \.self
+                    ) { item in
                         NavigationLink(value: item) {
                             HStack {
                                 Image(systemName: item.imageString)

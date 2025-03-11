@@ -26,7 +26,11 @@ class MainVM {
     var voyager = WebVoyager()
     
     var storage: [any NewsBehavior] {
-        var newsStorage: [any NewsBehavior] = secmed.newsCollection + seclab.newsCollection + antMal.newsCollection
+        var newsStorage: [any NewsBehavior] =
+            secmed.newsCollection +
+            seclab.newsCollection +
+            antMal.newsCollection
+        
         newsStorage.sort(by: { $0.date > $1.date })
         return newsStorage
     }

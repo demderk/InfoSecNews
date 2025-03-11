@@ -54,7 +54,7 @@ class WebKitHead {
     private func executeFinishActions(html: String?, _ webView: WKWebView) {
         WKNotificationCenter.subscribe(webView)
         
-        for (n, loadFinisedAction) in loadFinisedActions.enumerated() {
+        for n in loadFinisedActions.indices {
             loadFinisedActions.remove(at: n)(html, webView)
         }
                 
