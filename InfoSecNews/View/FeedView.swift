@@ -15,9 +15,10 @@ struct FeedView: View {
             Spacer().frame(height: 8)
             List {
                 ForEach(parentViewModel.storage, id: \.id) { item in
-                    NewsCard(newsItem: item, voyager: parentViewModel.voyager)
-                        .listRowSeparator(.hidden)
-                        .id(item.id)
+                    EquatableView(content:
+                        NewsCard(newsItem: item, voyager: parentViewModel.voyager))
+                    .listRowSeparator(.hidden)
+                    .id(item.id)
                 }
                 HStack {
                     Spacer()

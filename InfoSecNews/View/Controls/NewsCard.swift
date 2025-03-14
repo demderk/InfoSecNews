@@ -7,7 +7,11 @@
 
 import SwiftUI
 
-struct NewsCard: View {
+struct NewsCard: View, Equatable {
+    static func == (lhs: NewsCard, rhs: NewsCard) -> Bool {
+        lhs.newsItem.title == rhs.newsItem.title
+    }
+    
     @State var newsItem: any NewsBehavior
     
     @State private var text: String
