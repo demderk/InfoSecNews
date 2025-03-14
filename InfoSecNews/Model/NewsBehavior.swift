@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol NewsBehavior: Hashable, Identifiable, AnyObject {    
+protocol NewsBehavior: Hashable, Identifiable, Equatable, AnyObject {
     var source: String { get }
     var title: String { get }
     var date: Date { get }
@@ -18,7 +18,7 @@ protocol NewsBehavior: Hashable, Identifiable, AnyObject {
     func loadRemoteData(voyager: WebVoyager) async throws
 }
 
-extension NewsBehavior {
+extension NewsBehavior  {
     func hash(into hasher: inout Hasher) {
          hasher.combine(source)
          hasher.combine(title)

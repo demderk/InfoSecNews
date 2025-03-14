@@ -40,9 +40,22 @@ class MainVM {
     func fetchContent() {
         Task {
             bussy = true
-            await seclab.fetch(pageCount: 3)
-            await secmed.fetch()
-            await antMal.fetch(pageCount: 2)
+            await withTaskGroup(of: Void.self) { group in
+                group.addTask { [weak self] in
+                    guard let self = self else { return }
+                    await seclab.fetch(days: -2)
+                }
+                
+                group.addTask { [weak self] in
+                    guard let self = self else { return }
+                    await secmed.fetch(days: -2)
+                }
+                
+                group.addTask { [weak self] in
+                    guard let self = self else { return }
+                    await antMal.fetch(days: -2)
+                }
+            }
             bussy = false
         }
     }
