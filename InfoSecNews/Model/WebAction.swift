@@ -5,6 +5,7 @@
 //  Created by Roman Zheglov on 15.03.2025.
 //
 
+import WebKit
 
 class WebAction: Identifiable, Equatable{
     typealias Action = (_ html: String?, _ webView: WKWebView) -> Void
