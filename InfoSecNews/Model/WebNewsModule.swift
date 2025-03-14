@@ -28,8 +28,8 @@ extension WebNewsModule {
     }
     
     func webKitSetup() {
-        webKit.subscribeDOMUpdateAction(action: DOMUpdated)
-        webKit.singleLoadAction(action: loadFinished)
+        webKit.subscribeDOMUpdateAction(action: WebAction(DOMUpdated))
+        webKit.singleLoadAction(action: WebAction(loadFinished))
     }
     
     func loadFinished(_ html: String?, _ webView: WKWebView) {

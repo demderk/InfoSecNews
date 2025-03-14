@@ -24,13 +24,18 @@ final class SecurityLabNews: NewsBehavior {
         self.fullTextLink = fullTextLink
     }
     
-    func loadRemoteData(voyager: WebVoyager) async {
+    func loadRemoteData(voyager: WebVoyager) async throws {
         let input = await voyager.fetch(url: fullTextLink)
         
         if case .success(let html) = input {
             parseFullArticle(html: html)
         } else {
-            fatalError("Error")
+            switch input {
+            case .success(let html):
+                parseFullArticle(html: html)
+            case .failure(let failure):
+                throw failure
+            }
         }
     }
     

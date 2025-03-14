@@ -15,7 +15,7 @@ protocol NewsBehavior: Hashable, Identifiable, AnyObject {
     var fullTextLink: URL { get }
     var full: String? { get }
 
-    func loadRemoteData(voyager: WebVoyager) async
+    func loadRemoteData(voyager: WebVoyager) async throws
 }
 
 extension NewsBehavior {

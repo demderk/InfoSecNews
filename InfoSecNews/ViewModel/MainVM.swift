@@ -38,7 +38,6 @@ class MainVM {
     var bussy: Bool = false
     
     func fetchContent() {
-        
         Task {
             bussy = true
             await seclab.fetch(pageCount: 3)

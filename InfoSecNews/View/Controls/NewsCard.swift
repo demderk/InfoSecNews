@@ -16,6 +16,7 @@ struct NewsCard: View {
     @State private var opened: Bool = false
     @State private var textHeight: CGFloat = 0
     @State private var isLoading: Bool = false
+    @State private var failed: Bool = false
     
     let voyager: WebVoyager
     
@@ -77,8 +78,8 @@ struct NewsCard: View {
                 if hasFull {
                     Button(action: openFullText) {
                         ZStack {
-                            Image(systemName: "chevron.down")
-                                .font(.system(size: 24, weight: .medium))
+                            Image(systemName: failed ? "xmark" : "chevron.down")
+                                .font(.system(size: 20, weight: .medium))
                                 .opacity(isLoading ? 0 : 1)
                             ProgressView().progressViewStyle(.circular)
                                 .opacity(isLoading ? 0.9 : 0)
@@ -115,14 +116,32 @@ struct NewsCard: View {
             }
             isLoading = true
             Task {
-                await newsItem.loadRemoteData(voyager: voyager)
-                let text = newsItem.full ?? "nope"
-                DispatchQueue.main.async {
-                    self.text = text
-                    withAnimation {
-                        isLoading = false
-                        buttonAngle = 180
-                        opened = true
+                do {
+                    try await newsItem.loadRemoteData(voyager: voyager)
+                    let text = newsItem.full ?? "nope"
+                    DispatchQueue.main.async {
+                        self.text = text
+                        withAnimation {
+                            isLoading = false
+                            buttonAngle = 180
+                            opened = true
+                        }
+                    }
+                } catch {
+                    DispatchQueue.main.async {
+                        withAnimation {
+                            isLoading = false
+                            opened = false
+                            failed = true
+                        }
+                        Task {
+                            try? await Task.sleep(for: .seconds(3))
+                            DispatchQueue.main.async {
+                                withAnimation {
+                                    failed = false
+                                }
+                            }
+                        }
                     }
                 }
             }

@@ -7,12 +7,10 @@
 
 import WebKit
 
-typealias WebAction = (_ html: String?, _ webView: WKWebView) -> Void
-
 class WKWebViewNavigationCoordinator: NSObject, WKNavigationDelegate {
     var finished: WebAction
     
-    init(finished: @escaping WebAction) {
+    init(finished: WebAction) {
         self.finished = finished
     }
     
@@ -20,7 +18,7 @@ class WKWebViewNavigationCoordinator: NSObject, WKNavigationDelegate {
         webView.evaluateJavaScript("document.documentElement.outerHTML.toString()") { [weak self] result, _ in
             guard let self = self else { return }
             if let html = result as? String {
-                finished(html, webView)
+                finished.action(html, webView)
             }
         }
     }
@@ -36,12 +34,12 @@ class WebKitHead {
     private var DOMUpdatedSubscribers: [WebAction] = []
     
     init() {
-        coordinator = WKWebViewNavigationCoordinator(finished: executeFinishActions)
+        coordinator = WKWebViewNavigationCoordinator(finished: WebAction(executeFinishActions))
         webView.navigationDelegate = coordinator
         webView.enableNotificationCenter(onMessage: {  [weak self] html, web in
             guard let self = self else { return }
             for DOMUpdatedAction in DOMUpdatedSubscribers {
-                DOMUpdatedAction(html, web)
+                DOMUpdatedAction.action(html, web)
             }
         })
     }
@@ -54,24 +52,30 @@ class WebKitHead {
     private func executeFinishActions(html: String?, _ webView: WKWebView) {
         WKNotificationCenter.subscribe(webView)
         
-        for n in loadFinisedActions.indices {
-            loadFinisedActions.remove(at: n)(html, webView)
+        for n in loadFinisedActions {
+            loadFinisedActions.removeAll(where: {
+                if $0 == n {
+                    n.action(html, webView)
+                    return true
+                }
+                return false
+            })
         }
                 
         for loadFinisedSubscriber in loadFinisedSubscribers {
-            loadFinisedSubscriber(html, webView)
+            loadFinisedSubscriber.action(html, webView)
         }
     }
     
-    func subscribeLoadFinished(action: @escaping WebAction) {
+    func subscribeLoadFinished(action: WebAction) {
         loadFinisedSubscribers.append(action)
     }
     
-    func singleLoadAction(action: @escaping WebAction) {
+    func singleLoadAction(action: WebAction) {
         loadFinisedActions.append(action)
     }
     
-    func subscribeDOMUpdateAction(action: @escaping WebAction) {
+    func subscribeDOMUpdateAction(action: WebAction) {
         DOMUpdatedSubscribers.append(action)
     }
     
