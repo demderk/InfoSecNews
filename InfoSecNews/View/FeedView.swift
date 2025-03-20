@@ -31,7 +31,6 @@ struct FeedView: View {
                 }
             }.listStyle(.plain)
             Spacer().frame(height: 8)
-            
-        }
+        }.navigationTitle("InfoSecNews → Feed")
     }
 }
