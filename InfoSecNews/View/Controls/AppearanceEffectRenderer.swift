@@ -35,20 +35,25 @@ struct AppearanceEffectRenderer: TextRenderer, Animatable {
                 .value(
                     fromValue: -item.typographicBounds.descent * 2,
                     toValue: 0,
-                    initialVelocity: 3,
+                    initialVelocity: -0.3,
                     time: elementTime)
             
-            let scaleFactor = Spring(duration: perElement, bounce: 0.3)
+//            let scaleFactor = Spring(duration: perElement, bounce: 0.3)
+//                .value(
+//                    fromValue: 0.9,
+//                    toValue: 1,
+//                    initialVelocity: -0,
+//                    time: elementTime)
+            
+            let opacityFactor = Spring(duration: perElement, bounce: 0.3)
                 .value(
-                    fromValue: 0.8,
+                    fromValue: 0,
                     toValue: 1,
-                    initialVelocity: 3,
+                    initialVelocity: -0.3,
                     time: elementTime)
-            
-            let opacityFactor = UnitCurve.easeIn.value(at: 1.4 * lineProgress)
             
             copy.opacity = opacityFactor
-            copy.scaleBy(x: scaleFactor, y: scaleFactor)
+//            copy.scaleBy(x: scaleFactor, y: scaleFactor)
             copy.translateBy(x: -translateFactor, y: translateFactor)
             
             copy.draw(item)

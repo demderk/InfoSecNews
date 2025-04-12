@@ -61,10 +61,7 @@ struct NewsCard: View, Equatable {
                             .multilineTextAlignment(.leading)
                             .frame(maxHeight: .infinity)
                             .textSelection(.enabled)
-                            .transition(
-                                .asymmetric(
-                                    insertion: AppearanceTransition().asAnyTransition,
-                                    removal: .identity))
+                            .transition(.opacity)
                     } else {
                         Text(newsItem.short)
                             .multilineTextAlignment(.leading)

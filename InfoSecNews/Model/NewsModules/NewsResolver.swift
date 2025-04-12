@@ -52,13 +52,15 @@ final class NewsResolver<T: NewsProvider> {
         }
     }
     
-    func fetch(days: Int) async {
+    func fetch(daysAgo: Int) async {
         let date = Date()
-        guard let dateTo = Calendar.current.date(byAdding: .day, value: days, to: date) else {
+        guard let dateTo = Calendar.current.date(byAdding: .day, value: -daysAgo, to: date) else {
             return
         }
         await fetch(until: dateTo)
     }
+    
+    // FIXME: If date diffrerence between current and pageCount is zero – dont fetch
     
     func fetch(pageCount: Int) async {
         for _ in 1...pageCount {
