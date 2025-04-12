@@ -60,6 +60,7 @@ struct NewsCard: View, Equatable {
                             .font(.title3)
                             .multilineTextAlignment(.leading)
                             .frame(maxHeight: .infinity)
+                            .textSelection(.enabled)
                             .transition(
                                 .asymmetric(
                                     insertion: AppearanceTransition().asAnyTransition,
