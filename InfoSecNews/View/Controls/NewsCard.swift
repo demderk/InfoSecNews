@@ -56,6 +56,7 @@ struct NewsCard: View, Equatable {
                                 .fontWeight(.semibold)
                                 .multilineTextAlignment(.leading)
                                 .textSelection(.enabled)
+                                .layoutPriority(1)
                         }
                         Spacer().frame(height: 8)
                     if opened {
@@ -66,6 +67,7 @@ struct NewsCard: View, Equatable {
                             .frame(maxHeight: .infinity)
                             .textSelection(.enabled)
                             .transition(.opacity)
+                            .layoutPriority(0)
                     } else {
                         Text(newsItem.short)
                             .multilineTextAlignment(.leading)
@@ -75,6 +77,7 @@ struct NewsCard: View, Equatable {
                             .frame(maxHeight: .infinity)
                             .transition(.opacity)
                             .animation(nil, value: newsItem.short)
+                            .layoutPriority(0)
                     }
                 }.frame(minWidth: 256, maxWidth: 896, maxHeight: .infinity, alignment: .leading)
                     .padding(.horizontal, 20)
@@ -91,7 +94,10 @@ struct NewsCard: View, Equatable {
                                     .fontWeight(.bold)
                                     .frame(width: 11, height: 11)
                                     .padding(4)
-                                    .contentTransition(.symbolEffect(.replace.magic(fallback: .downUp.byLayer), options: .nonRepeating))
+                                    .contentTransition(
+                                        .symbolEffect(
+                                            .replace.magic(fallback: .downUp.byLayer),
+                                            options: .nonRepeating))
                             } else {
                                 Image(systemName: copyLinkImageName)
                                     .imageScale(.medium)
@@ -109,7 +115,10 @@ struct NewsCard: View, Equatable {
                                     .imageScale(.medium)
                                     .fontWeight(.bold)
                                     .frame(width: 11, height: 11)
-                                    .contentTransition(.symbolEffect(.replace.magic(fallback: .downUp.byLayer), options: .nonRepeating))
+                                    .contentTransition(
+                                        .symbolEffect(
+                                            .replace.magic(fallback: .downUp.byLayer),
+                                            options: .nonRepeating))
                                     .padding(4)
                             } else {
                                 Image(systemName: copyTextImageName)

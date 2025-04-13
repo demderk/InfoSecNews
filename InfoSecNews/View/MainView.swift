@@ -104,7 +104,7 @@ struct ContentView: View {
                     WebView(vm.voyager.webKit)
                 }
                 
-            }.background(.background)
+            }
         })
     }
 }

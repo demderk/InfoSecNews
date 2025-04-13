@@ -19,6 +19,7 @@ extension Date {
 struct EnabledModules: OptionSet, Hashable, Identifiable {
     let rawValue: Int
     var id: Int { rawValue }
+    var isEmpty: Bool { self.rawValue == 0 }
     
     static let securityMedia = EnabledModules(rawValue: 1 << 1)
     static let securityLab = EnabledModules(rawValue: 1 << 2)
@@ -39,7 +40,7 @@ struct EnabledModules: OptionSet, Hashable, Identifiable {
 
 @Observable
 class MainVM {
-    var enabledModules: EnabledModules = [.antiMalware]
+    var enabledModules: EnabledModules = []
     
     var daysToFetch = 2
     private(set) var daysFetched: [EnabledModules: Int] = [:]
