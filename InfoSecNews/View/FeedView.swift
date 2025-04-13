@@ -23,15 +23,15 @@ struct FeedView: View {
                             .listRowSeparator(.hidden)
                             .id(item.id)
                         }
-                    }
-                    HStack {
-                        Spacer()
-                        ProgressView()
-                            .progressViewStyle(.circular)
-                            .onAppear(perform: parentViewModel.fetchContent)
-                            .opacity(0.9)
-                            .scaleEffect(0.5)
-                        Spacer()
+                        HStack {
+                            Spacer()
+                            ProgressView()
+                                .progressViewStyle(.circular)
+                                .onAppear(perform: parentViewModel.fetchContent)
+                                .opacity(0.9)
+                                .scaleEffect(0.5)
+                            Spacer()
+                        }
                     }
                 }.onChange(of: parentViewModel.enabledModules) {
                     if let id = parentViewModel.storage.first?.id {

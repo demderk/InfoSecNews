@@ -22,6 +22,9 @@ struct NewsCard: View, Equatable {
     @State private var isLoading: Bool = false
     @State private var failed: Bool = false
     
+    @State private var copyLinkImageName: String = "link"
+    @State private var copyTextImageName: String = "document.on.document"
+    
     let voyager: WebVoyager
     
     init(newsItem: any NewsBehavior, voyager: WebVoyager) {
@@ -44,6 +47,7 @@ struct NewsCard: View, Equatable {
                                 .fontWeight(.semibold)
                             Spacer().frame(width: 4)
                             Text(newsItem.source)
+                            Spacer().frame(width: 16)
                         }.foregroundStyle(.secondary)
                             .padding([.bottom], 4)
                         HStack {
@@ -77,24 +81,72 @@ struct NewsCard: View, Equatable {
                     .padding(.vertical, 16)
                     
                 Spacer()
-                if hasFull {
-                    Button(action: openFullText) {
-                        ZStack {
-                            Image(systemName: failed ? "xmark" : "chevron.down")
-                                .font(.system(size: 20, weight: .medium))
-                                .opacity(isLoading ? 0 : 1)
-                            ProgressView().progressViewStyle(.circular)
-                                .opacity(isLoading ? 0.9 : 0)
-                                .scaleEffect(0.5)
-                        }.foregroundStyle(.secondary)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 8)
-                            .background(.gray.opacity(0.03))
-                            .rotationEffect(.degrees(buttonAngle))
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
-                    }.padding(.trailing, 32)
-                        .buttonStyle(.plain)
-                }
+                VStack(alignment: .center) {
+                    if opened {
+                    HStack(alignment: .center) {
+                        Button(action: copyLink) {
+                            if #available(macOS 15.0, *) {
+                                Image(systemName: copyLinkImageName)
+                                    .imageScale(.medium)
+                                    .fontWeight(.bold)
+                                    .frame(width: 11, height: 11)
+                                    .padding(4)
+                                    .contentTransition(.symbolEffect(.replace.magic(fallback: .downUp.byLayer), options: .nonRepeating))
+                            } else {
+                                Image(systemName: copyLinkImageName)
+                                    .imageScale(.medium)
+                                    .fontWeight(.bold)
+                                    .frame(width: 11, height: 11)
+                                    .padding(4)
+                            }
+                        }.buttonStyle(.plain)
+                        Divider()
+                            .frame(height: 16)
+                            
+                        Button(action: copyText) {
+                            if #available(macOS 15.0, *) {
+                                Image(systemName: copyTextImageName)
+                                    .imageScale(.medium)
+                                    .fontWeight(.bold)
+                                    .frame(width: 11, height: 11)
+                                    .contentTransition(.symbolEffect(.replace.magic(fallback: .downUp.byLayer), options: .nonRepeating))
+                                    .padding(4)
+                            } else {
+                                Image(systemName: copyTextImageName)
+                                    .imageScale(.medium)
+                                    .fontWeight(.bold)
+                                    .frame(width: 11, height: 11)
+                                    .padding(4)
+                            }
+                        }.buttonStyle(.plain)
+                    }
+                    .padding(.vertical, 4)
+                    .padding(.horizontal, 16)
+                    .background(.gray.opacity(0.03))
+                    .foregroundStyle(.secondary)
+                    .clipShape(Capsule())
+                    .opacity(opened ? 1 : 0)
+                        Spacer()
+                    }
+                    if hasFull {
+                        Button(action: openFullText) {
+                            ZStack {
+                                Image(systemName: failed ? "xmark" : "chevron.down")
+                                    .font(.system(size: 20, weight: .medium))
+                                    .opacity(isLoading ? 0 : 1)
+                                ProgressView().progressViewStyle(.circular)
+                                    .opacity(isLoading ? 0.9 : 0)
+                                    .scaleEffect(0.5)
+                            }.foregroundStyle(.secondary)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 8)
+                                .background(.gray.opacity(0.03))
+                                .rotationEffect(.degrees(buttonAngle))
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                        }
+                            .buttonStyle(.plain)
+                    }
+                }.padding(32)
             }
             .background(.background)
             .cornerRadius(20)
@@ -154,6 +206,34 @@ struct NewsCard: View, Equatable {
             }
         }
         
+    }
+    
+    func copyLink() {
+        withAnimation {
+            copyLinkImageName = "checkmark"
+        }
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(newsItem.fullTextLink.absoluteString, forType: .URL)
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+            withAnimation {
+                copyLinkImageName = "link"
+            }
+        }
+    }
+    
+    func copyText() {
+        if let full = newsItem.full {
+            withAnimation {
+                copyTextImageName = "checkmark"
+            }
+            NSPasteboard.general.clearContents()
+            NSPasteboard.general.setString(full, forType: .string)
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+                withAnimation {
+                    copyTextImageName = "document.on.document"
+                }
+            }
+        }
     }
 }
 
