@@ -130,6 +130,7 @@ struct FeedView: View {
                 } else {
                     parentViewModel.enabledModules.remove(module)
                 }
+                parentViewModel.saveSelectedModules()
             })
     }
     
@@ -149,6 +150,7 @@ struct FeedView: View {
     
     private func onContinue() {
         parentViewModel.enabledModules = startSelectedModules
+        parentViewModel.saveSelectedModules()
         startSelectedModules = []
     }
 }

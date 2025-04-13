@@ -40,6 +40,8 @@ struct EnabledModules: OptionSet, Hashable, Identifiable {
 
 @Observable
 class MainVM {
+    private let UDSelectedModulesName = "selectedModules"
+    
     var enabledModules: EnabledModules = []
     
     var daysToFetch = 2
@@ -51,8 +53,14 @@ class MainVM {
     var seclab = NewsResolver(SecurityLabModule())
     var antMal = NewsResolver(AntiMalwareModule())
     var voyager = WebVoyager()
-    
     var bussy: Bool = false
+    
+    init() {
+        let preferences = UserDefaults.standard
+        if let raw = preferences.object(forKey: UDSelectedModulesName) as? Int {
+            enabledModules = EnabledModules(rawValue: raw)
+        }
+    }
     
     var storage: [any NewsBehavior] {
         var newsStorage: [any NewsBehavior] = []
@@ -136,4 +144,9 @@ class MainVM {
             bussy = false
         }
     }
+    
+    func saveSelectedModules() {
+           let preferences = UserDefaults.standard
+           preferences.set(self.enabledModules.rawValue, forKey: UDSelectedModulesName)
+       }
 }
