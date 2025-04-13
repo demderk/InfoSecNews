@@ -101,21 +101,23 @@ struct FeedView: View {
                     .progressViewStyle(.circular)
                     .opacity(parentViewModel.bussy ? 1 : 0)
                     .scaleEffect(0.5)
-                Button(action: {
-                    modulesPopoverPresented.toggle()
-                }, label: {
-                    Image(systemName: "newspaper")
-                }).popover(isPresented: $modulesPopoverPresented) {
-                    VStack(alignment: .leading) {
-                        Text("Enabled Modules")
-                            .font(.body)
-                            .fontWeight(.semibold)
-                            .padding(.trailing, 32)
-                        Divider()
-                        ForEach(EnabledModules.allCases) { module in
-                            Toggle(isOn: bindCheckbox(module: module), label: { Text(module.UIName) })
-                        }
-                    }.padding(16)
+                if !parentViewModel.enabledModules.isEmpty {
+                    Button(action: {
+                        modulesPopoverPresented.toggle()
+                    }, label: {
+                        Image(systemName: "newspaper")
+                    }).popover(isPresented: $modulesPopoverPresented) {
+                        VStack(alignment: .leading) {
+                            Text("Enabled Sources")
+                                .font(.body)
+                                .fontWeight(.semibold)
+                                .padding(.trailing, 32)
+                            Divider()
+                            ForEach(EnabledModules.allCases) { module in
+                                Toggle(isOn: bindCheckbox(module: module), label: { Text(module.UIName) })
+                            }
+                        }.padding(16)
+                    }
                 }
             }
     }

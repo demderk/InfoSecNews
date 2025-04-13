@@ -23,9 +23,9 @@ enum SelectedWindow: CaseIterable, Identifiable {
         case .securityMedia:
             "SecurityMedia"
         case .securityLab:
-            "Security Lab"
+            "SecurityLab"
         case .antiMalware:
-            "Anti Malware"
+            "Anti-Malware"
         case .voyager:
             "Web Voyager"
         }
@@ -39,6 +39,18 @@ enum SelectedWindow: CaseIterable, Identifiable {
             "network"
         case .voyager:
             "location.square"
+        }
+    }
+    
+    var asEnabledModule: EnabledModules? {
+        switch self {
+        case .securityMedia:
+            EnabledModules.securityMedia
+        case .securityLab:
+            EnabledModules.securityLab
+        case .antiMalware:
+            EnabledModules.antiMalware
+        default: nil
         }
     }
 }
@@ -60,31 +72,35 @@ struct ContentView: View {
                         }.tag(SelectedWindow.home)
                     }
                 }
-                Section(header: Text("News Modules")) {
-                    ForEach(
-                        SelectedWindow.allCases[1..<SelectedWindow.allCases.count-1],
-                        id: \.self
-                    ) { item in
-                        NavigationLink(value: item) {
-                            HStack {
-                                Image(systemName: item.imageString)
-                                    .frame(width: 24)
-                                    .fontWeight(.semibold)
-                                Spacer().frame(width: 2)
-                                Text(item.title)
+                if !vm.enabledModules.isEmpty {
+                    Section(header: Text("News Sources")) {
+                        ForEach(
+                            SelectedWindow.allCases[1..<SelectedWindow.allCases.count-1],
+                            id: \.self
+                        ) { item in
+                            if let enabled = item.asEnabledModule, vm.enabledModules.contains(enabled) {
+                                HStack {
+                                    Image(systemName: item.imageString)
+                                        .frame(width: 24)
+                                        .fontWeight(.semibold)
+                                    Spacer().frame(width: 2)
+                                    Text(item.title)
+                                }
                             }
                         }
                     }
                 }
-                Section(header: Text("Misc")) {
-                    NavigationLink(value: SelectedWindow.voyager) {
-                        HStack {
-                            Image(systemName: SelectedWindow.voyager.imageString)
-                                .frame(width: 24)
-                                .fontWeight(.semibold)
-                            Spacer().frame(width: 2)
-                            Text(SelectedWindow.voyager.title)
-                        }.tag(SelectedWindow.voyager)
+                if !vm.enabledModules.isEmpty {
+                    Section(header: Text("Misc")) {
+                        NavigationLink(value: SelectedWindow.voyager) {
+                            HStack {
+                                Image(systemName: SelectedWindow.voyager.imageString)
+                                    .frame(width: 24)
+                                    .fontWeight(.semibold)
+                                Spacer().frame(width: 2)
+                                Text(SelectedWindow.voyager.title)
+                            }.tag(SelectedWindow.voyager)
+                        }
                     }
                 }
             }
@@ -101,7 +117,17 @@ struct ContentView: View {
                     FeedView()
                         .environment(vm)
                 case .voyager:
-                    WebView(vm.voyager.webKit)
+                    if vm.voyager.htmlBody != nil {
+                        WebView(vm.voyager.webKit)
+                    } else {
+                        VStack {
+                            Spacer()
+                            Text("Web Voyager is still in the launchpad")
+                                .font(.title)
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                        }
+                    }
                 }
                 
             }

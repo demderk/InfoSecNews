@@ -24,6 +24,17 @@ final class SecurityLabNews: NewsBehavior {
         self.fullTextLink = fullTextLink
     }
     
+    convenience init(source: String,
+                     title: String,
+                     date: Date,
+                     short: String,
+                     fullTextLink: URL,
+                     full: String
+    ) {
+        self.init(source: source, title: title, date: date, short: short, fullTextLink: fullTextLink)
+        self.full = full
+    }
+    
     func loadRemoteData(voyager: WebVoyager) async throws {
         let input = await voyager.fetch(url: fullTextLink)
         

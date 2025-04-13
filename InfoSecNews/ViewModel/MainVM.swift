@@ -30,8 +30,8 @@ struct EnabledModules: OptionSet, Hashable, Identifiable {
     
     var UIName: String {
         switch self {
-        case .securityMedia: "Security Media"
-        case .securityLab: "Security Lab"
+        case .securityMedia: "SecurityMedia"
+        case .securityLab: "SecurityLab"
         case .antiMalware: "Anti-Malware"
         default: "undefined"
         }

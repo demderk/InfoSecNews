@@ -29,7 +29,6 @@ struct AppearanceEffectRenderer: TextRenderer, Animatable {
             var copy = ctx
             let timeOffest = delay * TimeInterval(i)
             let elementTime = max(0, min(elapsedTime - timeOffest, perElement))
-            let lineProgress = elementTime / perElement
             
             let translateFactor = Spring(duration: perElement, bounce: 0.3)
                 .value(

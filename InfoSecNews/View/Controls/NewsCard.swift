@@ -84,7 +84,7 @@ struct NewsCard: View, Equatable {
                     .padding(.vertical, 16)
                     
                 Spacer()
-                VStack(alignment: .center) {
+                VStack(alignment: .trailing) {
                     if opened {
                     HStack(alignment: .center) {
                         Button(action: copyLink) {
@@ -252,7 +252,8 @@ struct NewsCard: View, Equatable {
         source: "debug.fm",
         title: "Белый дом запретит судам принимать иски против Белого дома",
         date: .now,
-        short: "Пресс-секретарь Белого дома Робин Маусс объявил, что президент готовится запретить судам принимать иски против него самого и Белого дома в целом. Он также объяснил, почему готовящийся указ никак не противоречит верховенству права.", fullTextLink: URL(string: "google.com")!)
+        short: "Пресс-секретарь Белого дома Робин Маусс объявил, что президент готовится запретить судам принимать иски против него самого и Белого дома в целом. Он также объяснил, почему готовящийся указ никак не противоречит верховенству права.", fullTextLink: URL(string: "google.com")!,
+        full: "Пресс-секретарь Белого дома Робин Маусс объявил, что президент готовится запретить судам принимать иски против него самого и Белого дома в целом. Он также объяснил, почему готовящийся указ никак не противоречит верховенству права.")
     VStack {
         NewsCard(newsItem: mockNewsItem, voyager: WebVoyager())
         NewsCard(newsItem: mockNewsItem, voyager: WebVoyager())
