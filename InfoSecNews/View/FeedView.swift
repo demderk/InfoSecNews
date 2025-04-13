@@ -19,6 +19,7 @@ struct FeedView: View {
                 ScrollViewReader { proxy in
                     ScrollView {
                         LazyVStack(alignment: .leading) {
+                            Spacer().frame(height: 8)
                             ForEach(parentViewModel.storage, id: \.id) { item in
                                 EquatableView(content:
                                                 NewsCard(newsItem: item, voyager: parentViewModel.voyager))
@@ -34,6 +35,7 @@ struct FeedView: View {
                                     .scaleEffect(0.5)
                                 Spacer()
                             }
+                            Spacer().frame(height: 8)
                         }
                     }.onChange(of: parentViewModel.enabledModules) {
                         if let id = parentViewModel.storage.first?.id {
@@ -53,7 +55,7 @@ struct FeedView: View {
                     .foregroundStyle(.secondary)
                     .padding(.top, 64)
                 Spacer().frame(height: 8)
-                Text("You can select a news source in the menu below")
+                Text("Pick a news source to get started")
                     .font(.body)
                     .foregroundStyle(.secondary)
                 Spacer().frame(height: 32)
@@ -72,14 +74,14 @@ struct FeedView: View {
                     }
                 }
                 .padding(.leading, 32)
-                .padding(.vertical, 8)
+                .padding(.vertical, 16)
                 .background(.background.opacity(0.4))
                 .clipShape(RoundedRectangle(cornerSize: CGSize(width: 24, height: 24)))
                 .frame(maxWidth: 512)
                 HStack {
                     Spacer()
                     Button(action: onContinue) {
-                        Text("Continue")
+                        Text("Start Reading")
                             .padding(.vertical, 8)
                             .padding(.horizontal, 16)
                             .background(.blue)
