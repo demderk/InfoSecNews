@@ -222,7 +222,7 @@ struct NewsCard: View, Equatable {
             copyLinkImageName = "checkmark"
         }
         NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(newsItem.fullTextLink.absoluteString, forType: .URL)
+        NSPasteboard.general.setString(newsItem.fullTextLink.absoluteString, forType: .string)
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
             withAnimation {
                 copyLinkImageName = "link"
