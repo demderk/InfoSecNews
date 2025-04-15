@@ -22,7 +22,11 @@ struct FeedView: View {
                             Spacer().frame(height: 8)
                             ForEach(parentViewModel.storage, id: \.id) { item in
                                 EquatableView(content:
-                                                NewsCard(newsItem: item, voyager: parentViewModel.voyager))
+                                    NewsCard(newsItem: item,
+                                             voyager: parentViewModel.voyager,
+                                             isSelected: bindNewsIsSelected(newsItem: item)
+                                    )
+                                )
                                 .listRowSeparator(.hidden)
                                 .id(item.id)
                             }
@@ -92,7 +96,6 @@ struct FeedView: View {
                 }.frame(maxWidth: 512)
                     .padding(.bottom, 16)
                     .padding(.top, 8)
-                
                 Spacer()
             }
         }.navigationTitle("InfoSecNews → Feed")
@@ -150,6 +153,20 @@ struct FeedView: View {
                     startSelectedModules.remove(module)
                 }
             })
+    }
+    
+    private func bindNewsIsSelected(newsItem: any NewsBehavior) -> Binding<Bool> {
+        Binding<Bool>(
+            get: {
+                parentViewModel.selectedNews.contains(where: { $0.title == newsItem.title })
+            }, set: { new in
+                if new {
+                    parentViewModel.selectedNews.append(newsItem)
+                } else {
+                    parentViewModel.selectedNews.removeAll(where: { $0.title == newsItem.title })
+                }
+            }
+        )
     }
     
     private func onContinue() {

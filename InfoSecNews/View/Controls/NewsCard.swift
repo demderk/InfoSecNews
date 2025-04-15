@@ -24,150 +24,190 @@ struct NewsCard: View, Equatable {
     
     @State private var copyLinkImageName: String = "link"
     @State private var copyTextImageName: String = "document.on.document"
+    @State private var appendImageName: String = "document.on.document"
+    
+    @Binding var isSelected: Bool
     
     let voyager: WebVoyager
     
-    init(newsItem: any NewsBehavior, voyager: WebVoyager) {
+    init(newsItem: any NewsBehavior, voyager: WebVoyager, isSelected: Binding<Bool>) {
         self.newsItem = newsItem
         self.hasFull = true
         text = newsItem.short
         self.voyager = voyager
+        self._isSelected = isSelected
     }
     
     var body: some View {
-            HStack {
-                VStack(alignment: .leading) {
+        HStack {
+            VStack(alignment: .leading) {
+                HStack(alignment: .center) {
+                    Image(systemName: "calendar")
+                        .fontWeight(.semibold)
+                    Spacer().frame(width: 4)
+                    Text(newsItem.date.formatted(date: .complete, time: .omitted))
+                    Spacer().frame(width: 16)
+                    Image(systemName: "newspaper")
+                        .fontWeight(.semibold)
+                    Spacer().frame(width: 4)
+                    Text(newsItem.source)
+                    Spacer().frame(width: 16)
+                }.foregroundStyle(.secondary)
+                    .padding([.bottom], 4)
+                HStack {
+                    Text(newsItem.title)
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        .multilineTextAlignment(.leading)
+                        .textSelection(.enabled)
+                        .layoutPriority(1)
+                }
+                Spacer().frame(height: 8)
+                if opened {
+                    Text(text)
+                        .multilineTextAlignment(.leading)
+                        .font(.title3)
+                        .multilineTextAlignment(.leading)
+                        .frame(maxHeight: .infinity)
+                        .textSelection(.enabled)
+                        .transition(.opacity)
+                        .layoutPriority(0)
+                } else {
+                    Text(newsItem.short)
+                        .multilineTextAlignment(.leading)
+                        .font(.title3)
+                        .textSelection(.enabled)
+                        .multilineTextAlignment(.leading)
+                        .frame(maxHeight: .infinity)
+                        .transition(.opacity)
+                        .animation(nil, value: newsItem.short)
+                        .layoutPriority(0)
+                }
+            }.frame(minWidth: 256, maxWidth: 896, maxHeight: .infinity, alignment: .leading)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 16)
+            
+            Spacer()
+            VStack(alignment: .trailing) {
+                if opened {
+                    HStack {
                         HStack(alignment: .center) {
-                            Image(systemName: "calendar")
-                                .fontWeight(.semibold)
-                            Spacer().frame(width: 4)
-                            Text(newsItem.date.formatted(date: .complete, time: .omitted))
-                            Spacer().frame(width: 16)
-                            Image(systemName: "newspaper")
-                                .fontWeight(.semibold)
-                            Spacer().frame(width: 4)
-                            Text(newsItem.source)
-                            Spacer().frame(width: 16)
-                        }.foregroundStyle(.secondary)
-                            .padding([.bottom], 4)
-                        HStack {
-                            Text(newsItem.title)
-                                .font(.title2)
-                                .fontWeight(.semibold)
-                                .multilineTextAlignment(.leading)
-                                .textSelection(.enabled)
-                                .layoutPriority(1)
-                        }
-                        Spacer().frame(height: 8)
-                    if opened {
-                        Text(text)
-                            .multilineTextAlignment(.leading)
-                            .font(.title3)
-                            .multilineTextAlignment(.leading)
-                            .frame(maxHeight: .infinity)
-                            .textSelection(.enabled)
-                            .transition(.opacity)
-                            .layoutPriority(0)
-                    } else {
-                        Text(newsItem.short)
-                            .multilineTextAlignment(.leading)
-                            .font(.title3)
-                            .textSelection(.enabled)
-                            .multilineTextAlignment(.leading)
-                            .frame(maxHeight: .infinity)
-                            .transition(.opacity)
-                            .animation(nil, value: newsItem.short)
-                            .layoutPriority(0)
-                    }
-                }.frame(minWidth: 256, maxWidth: 896, maxHeight: .infinity, alignment: .leading)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 16)
-                    
-                Spacer()
-                VStack(alignment: .trailing) {
-                    if opened {
-                    HStack(alignment: .center) {
-                        Button(action: copyLink) {
-                            if #available(macOS 15.0, *) {
-                                Image(systemName: copyLinkImageName)
-                                    .imageScale(.medium)
-                                    .fontWeight(.bold)
-                                    .frame(width: 11, height: 11)
-                                    .padding(4)
-                                    .contentTransition(
-                                        .symbolEffect(
-                                            .replace.magic(fallback: .downUp.byLayer),
-                                            options: .nonRepeating))
-                            } else {
-                                Image(systemName: copyLinkImageName)
-                                    .imageScale(.medium)
-                                    .fontWeight(.bold)
-                                    .frame(width: 11, height: 11)
-                                    .padding(4)
-                            }
-                        }.buttonStyle(.plain)
-                        Divider()
-                            .frame(height: 16)
+                            Button(action: copyLink) {
+                                if #available(macOS 15.0, *) {
+                                    Image(systemName: copyLinkImageName)
+                                        .imageScale(.medium)
+                                        .fontWeight(.bold)
+                                        .frame(width: 11, height: 11)
+                                        .padding(4)
+                                        .contentTransition(
+                                            .symbolEffect(
+                                                .replace.magic(fallback: .downUp.byLayer),
+                                                options: .nonRepeating))
+                                } else {
+                                    Image(systemName: copyLinkImageName)
+                                        .imageScale(.medium)
+                                        .fontWeight(.bold)
+                                        .frame(width: 11, height: 11)
+                                        .padding(4)
+                                }
+                            }.buttonStyle(.plain)
+                            Divider()
+                                .frame(height: 16)
                             
-                        Button(action: copyText) {
-                            if #available(macOS 15.0, *) {
-                                Image(systemName: copyTextImageName)
-                                    .imageScale(.medium)
-                                    .fontWeight(.bold)
-                                    .frame(width: 11, height: 11)
-                                    .contentTransition(
-                                        .symbolEffect(
-                                            .replace.magic(fallback: .downUp.byLayer),
-                                            options: .nonRepeating))
-                                    .padding(4)
-                            } else {
-                                Image(systemName: copyTextImageName)
-                                    .imageScale(.medium)
-                                    .fontWeight(.bold)
-                                    .frame(width: 11, height: 11)
-                                    .padding(4)
-                            }
-                        }.buttonStyle(.plain)
-                    }
-                    .padding(.vertical, 4)
-                    .padding(.horizontal, 16)
-                    .background(.gray.opacity(0.03))
-                    .foregroundStyle(.secondary)
-                    .clipShape(Capsule())
-                    .opacity(opened ? 1 : 0)
-                        Spacer()
-                    }
-                    if hasFull {
-                        Button(action: openFullText) {
-                            ZStack {
-                                Image(systemName: failed ? "xmark" : "chevron.down")
-                                    .font(.system(size: 20, weight: .medium))
-                                    .opacity(isLoading ? 0 : 1)
-                                ProgressView().progressViewStyle(.circular)
-                                    .opacity(isLoading ? 0.9 : 0)
-                                    .scaleEffect(0.5)
-                            }.foregroundStyle(.secondary)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 8)
-                                .background(.gray.opacity(0.03))
-                                .rotationEffect(.degrees(buttonAngle))
-                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                            Button(action: copyText) {
+                                if #available(macOS 15.0, *) {
+                                    Image(systemName: copyTextImageName)
+                                        .imageScale(.medium)
+                                        .fontWeight(.bold)
+                                        .frame(width: 11, height: 11)
+                                        .contentTransition(
+                                            .symbolEffect(
+                                                .replace.magic(fallback: .downUp.byLayer),
+                                                options: .nonRepeating))
+                                        .padding(4)
+                                } else {
+                                    Image(systemName: copyTextImageName)
+                                        .imageScale(.medium)
+                                        .fontWeight(.bold)
+                                        .frame(width: 11, height: 11)
+                                        .padding(4)
+                                }
+                            }.buttonStyle(.plain)
+                            Divider()
+                                .frame(height: 16)
+                            Button(action: onAppend) {
+                                if #available(macOS 15.0, *) {
+                                    Image(systemName: isSelected ? "checkmark.square" : "minus.square")
+                                        .imageScale(.medium)
+                                        .fontWeight(.bold)
+                                        .frame(width: 11, height: 11)
+                                        .contentTransition(
+                                            .symbolEffect(
+                                                .replace.magic(fallback: .downUp.byLayer),
+                                                options: .nonRepeating))
+                                        .padding(4)
+                                } else {
+                                    Image(systemName: isSelected ? "checkmark.square" : "square")
+                                        .imageScale(.medium)
+                                        .fontWeight(.bold)
+                                        .frame(width: 11, height: 11)
+                                        .padding(4)
+                                }
+                            }.buttonStyle(.plain)
                         }
-                            .buttonStyle(.plain)
+                        .padding(.vertical, 4)
+                        .padding(.horizontal, 16)
+                        .background(.gray.opacity(0.03))
+                        .foregroundStyle(.secondary)
+                        .clipShape(Capsule())
+                        Button(action: openFullText) {
+                            Image(systemName: "xmark")
+                                .imageScale(.medium)
+                                .fontWeight(.bold)
+                                .frame(width: 11, height: 11)
+                                .padding(4)
+                                .padding(.vertical, 4)
+                                .padding(.horizontal, 8)
+                                .background(.gray.opacity(0.03))
+                                .foregroundStyle(.secondary)
+                                .clipShape(Capsule())
+                        }.buttonStyle(.plain)
+                        
                     }
-                }.padding(32)
-            }
-            .background(.background)
-            .cornerRadius(20)
-            .overlay(
-                RoundedRectangle(cornerRadius: 20)
-                    .stroke(.gray.opacity(0.1), lineWidth: 2)
-            )
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
+                    .opacity(opened ? 1 : 0)
+                    Spacer()
+                }
+                if hasFull {
+                    Button(action: openFullText) {
+                        ZStack {
+                            Image(systemName: failed ? "xmark" : "chevron.down")
+                                .font(.system(size: 20, weight: .medium))
+                                .opacity(isLoading ? 0 : 1)
+                            ProgressView().progressViewStyle(.circular)
+                                .opacity(isLoading ? 0.9 : 0)
+                                .scaleEffect(0.5)
+                        }.foregroundStyle(.secondary)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                            .background(.gray.opacity(0.03))
+                            .rotationEffect(.degrees(buttonAngle))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }.padding(32)
+        }
+        .background(.background)
+        .cornerRadius(20)
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(.gray.opacity(0.1), lineWidth: 2)
+        )
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
     }
     
-    func openFullText() {
+    private func openFullText() {
         if !opened {
             if let full = newsItem.full {
                 self.text = full
@@ -217,7 +257,7 @@ struct NewsCard: View, Equatable {
         
     }
     
-    func copyLink() {
+    private func copyLink() {
         withAnimation {
             copyLinkImageName = "checkmark"
         }
@@ -230,7 +270,7 @@ struct NewsCard: View, Equatable {
         }
     }
     
-    func copyText() {
+    private func copyText() {
         if let full = newsItem.full {
             withAnimation {
                 copyTextImageName = "checkmark"
@@ -244,6 +284,10 @@ struct NewsCard: View, Equatable {
             }
         }
     }
+    
+    func onAppend() {
+        isSelected = !isSelected
+    }
 }
 
 // swiftlint:disable line_length
@@ -255,10 +299,10 @@ struct NewsCard: View, Equatable {
         short: "Пресс-секретарь Белого дома Робин Маусс объявил, что президент готовится запретить судам принимать иски против него самого и Белого дома в целом. Он также объяснил, почему готовящийся указ никак не противоречит верховенству права.", fullTextLink: URL(string: "google.com")!,
         full: "Пресс-секретарь Белого дома Робин Маусс объявил, что президент готовится запретить судам принимать иски против него самого и Белого дома в целом. Он также объяснил, почему готовящийся указ никак не противоречит верховенству права.")
     VStack {
-        NewsCard(newsItem: mockNewsItem, voyager: WebVoyager())
-        NewsCard(newsItem: mockNewsItem, voyager: WebVoyager())
-        NewsCard(newsItem: mockNewsItem, voyager: WebVoyager())
-        NewsCard(newsItem: mockNewsItem, voyager: WebVoyager())
+        NewsCard(newsItem: mockNewsItem, voyager: WebVoyager(), isSelected: Binding.constant(false))
+        NewsCard(newsItem: mockNewsItem, voyager: WebVoyager(), isSelected: Binding.constant(false))
+        NewsCard(newsItem: mockNewsItem, voyager: WebVoyager(), isSelected: Binding.constant(false))
+        NewsCard(newsItem: mockNewsItem, voyager: WebVoyager(), isSelected: Binding.constant(false))
     }.frame(width: 1024)
         .background(.background)
 }

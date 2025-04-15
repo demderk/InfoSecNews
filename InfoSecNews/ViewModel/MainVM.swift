@@ -18,12 +18,14 @@ class MainVM {
     private(set) var daysFetched: [EnabledModules: Int] = [:]
     private var maxFetchedDay: Int { daysFetched.values.max() ?? 0 }
     
-    var currentWindow: SelectedWindow = .home
     var secmed = NewsResolver(SecurityMediaModule())
     var seclab = NewsResolver(SecurityLabModule())
     var antMal = NewsResolver(AntiMalwareModule())
     var voyager = WebVoyager()
+    
+    var currentWindow: SelectedWindow = .home
     var bussy: Bool = false
+    var selectedNews: [any NewsBehavior] = []
     
     init() {
         let preferences = UserDefaults.standard
