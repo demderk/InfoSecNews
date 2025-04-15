@@ -109,16 +109,20 @@ struct ContentView: View {
                 switch vm.currentWindow {
                 case .securityMedia:
                     WebView(vm.secmed.webKit)
+                        .navigationTitle("InfoSecNews → Sources → Security Media")
                 case .securityLab:
                     WebView(vm.seclab.webKit)
+                        .navigationTitle("InfoSecNews → Sources → Security Lab")
                 case .antiMalware:
                     WebView(vm.antMal.webKit)
+                        .navigationTitle("InfoSecNews → Sources → Anti-Malware")
                 case .home:
                     FeedView()
                         .environment(vm)
                 case .voyager:
                     if vm.voyager.htmlBody != nil {
                         WebView(vm.voyager.webKit)
+                            .navigationTitle("InfoSecNews → Web Voyager")
                     } else {
                         VStack {
                             Spacer()
@@ -126,7 +130,7 @@ struct ContentView: View {
                                 .font(.title)
                                 .foregroundStyle(.secondary)
                             Spacer()
-                        }
+                        }.navigationTitle("InfoSecNews → Web Voyager")
                     }
                 }
                 
