@@ -193,6 +193,7 @@ struct NewsCard: View, Equatable {
                             .rotationEffect(.degrees(buttonAngle))
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
+                    .padding(.leading, 96)
                     .buttonStyle(.plain)
                 }
             }.padding(32)
