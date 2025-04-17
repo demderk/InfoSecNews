@@ -11,6 +11,7 @@ enum SelectedWindow: CaseIterable, Identifiable {
     var id: Self { self }
     
     case home
+    case export
     case securityMedia
     case securityLab
     case antiMalware
@@ -28,6 +29,8 @@ enum SelectedWindow: CaseIterable, Identifiable {
             "Anti-Malware"
         case .voyager:
             "Web Voyager"
+        case .export:
+            "Export to AI"
         }
     }
     
@@ -39,6 +42,8 @@ enum SelectedWindow: CaseIterable, Identifiable {
             "network"
         case .voyager:
             "location.square"
+        case .export:
+            "tray.and.arrow.up"
         }
     }
     
@@ -62,15 +67,20 @@ struct ContentView: View {
         NavigationSplitView(sidebar: {
             List(selection: $vm.currentWindow) {
                 Section(header: Text("Tools")) {
-                    NavigationLink(value: SelectedWindow.home) {
-                        HStack {
-                            Image(systemName: SelectedWindow.home.imageString)
-                                .frame(width: 24)
-                                .fontWeight(.black)
-                            Spacer().frame(width: 2)
-                            Text(SelectedWindow.home.title)
-                        }.tag(SelectedWindow.home)
-                    }
+                    HStack {
+                        Image(systemName: SelectedWindow.home.imageString)
+                            .frame(width: 24)
+                            .fontWeight(.black)
+                        Spacer().frame(width: 2)
+                        Text(SelectedWindow.home.title)
+                    }.tag(SelectedWindow.home)
+                    HStack {
+                        Image(systemName: SelectedWindow.export.imageString)
+                            .frame(width: 24)
+                            .fontWeight(.semibold)
+                        Spacer().frame(width: 2)
+                        Text(SelectedWindow.export.title)
+                    }.tag(SelectedWindow.export)
                 }
                 if !vm.enabledModules.isEmpty {
                     Section(header: Text("News Sources")) {
@@ -132,6 +142,8 @@ struct ContentView: View {
                             Spacer()
                         }.navigationTitle("InfoSecNews → Web Voyager")
                     }
+                case .export:
+                    NewsActionView(newsItems: vm.selectedNews)
                 }
                 
             }
