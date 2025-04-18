@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct NewsActionView: View {
-    @State var newsItems: [any NewsBehavior]
+    @Binding var newsItems: [any NewsBehavior]
     
     @State var selectedMode: Int = 1
     
@@ -30,19 +30,23 @@ struct NewsActionView: View {
                 Spacer().frame(height: 8)
                 Divider()
                 Spacer().frame(height: 0)
-                List(newsItems, id: \.title) { item in
-                    VStack(alignment: .leading) {
-                        Text(item.title)
-                            .font(.title3)
-                            .fontWeight(.semibold)
-                            .lineLimit(2)
-                            .padding(.bottom, 4)
-                            .padding(.leading, 4)
-                        Text(item.short)
-                            .lineLimit(3)
-                            .lineSpacing(1.3)
-                            .padding(.leading, 4)
-                            .padding(.bottom, 8)
+                List {
+                    ForEach(newsItems, id: \.title) { item in
+                        VStack(alignment: .leading) {
+                            Text(item.title)
+                                .font(.title3)
+                                .fontWeight(.semibold)
+                                .lineLimit(2)
+                                .padding(.bottom, 4)
+                                .padding(.leading, 4)
+                            Text(item.short)
+                                .lineLimit(3)
+                                .lineSpacing(1.3)
+                                .padding(.leading, 4)
+                                .padding(.bottom, 8)
+                        }
+                    }.onDelete { i in
+                        newsItems.remove(atOffsets: i)
                     }
                 }
             }.background(.background)
@@ -92,7 +96,7 @@ struct NewsActionView: View {
 
 #Preview {
     // AXAXAXAXA
-    @Previewable @State var mocks: [SecurityLabNews] = [SecurityLabNews(
+    @Previewable @State var mocks: [any NewsBehavior] = [SecurityLabNews(
         source: "debug.fm",
         title: "Белый дом запретит судам принимать иски против Белого дома",
         date: .now,
@@ -113,6 +117,6 @@ struct NewsActionView: View {
                     date: .now,
                     short: "Пресс-секретарь Белого дома Робин Маусс объявил, что президент готовится запретить судам принимать иски против него самого и Белого дома в целом. Он также объяснил, почему готовящийся указ никак не противоречит верховенству права.", fullTextLink: URL(string: "google.com")!,
                     full: "Пресс-секретарь Белого дома Робин Маусс объявил, что президент готовится запретить судам принимать иски против него самого и Белого дома в целом. Он также объяснил, почему готовящийся указ никак не противоречит верховенству права.")]
-    NewsActionView(newsItems: mocks)
+    NewsActionView(newsItems: $mocks)
         .frame(width: 1000, height: 500)
 }
