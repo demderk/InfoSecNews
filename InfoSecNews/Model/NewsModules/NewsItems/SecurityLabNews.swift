@@ -59,10 +59,16 @@ final class SecurityLabNews: NewsBehavior {
             var newsFull: String?
             if let full = try? item.select("[itemprop=description]").first() {
                 var innerText = ""
-                for item in full.children() {
-                    if let text = try? item.text(), !text.isEmpty {
-                        innerText += text
-                        innerText += "\n\n"
+                let allTextNodes = full.getChildNodes()
+                    .flatMap({ $0.getChildNodes().count > 0 ? $0.getChildNodes() : [$0] })
+                    .compactMap({ $0 as? TextNode })
+                for item in allTextNodes {
+                    if let text = try? item.outerHtml(), !text.isEmpty {
+                        if text == " " {
+                            innerText += "\n\n"
+                        } else {
+                            innerText += text.trimmingCharacters(in: .whitespacesAndNewlines)
+                        }
                     } else { continue }
                 }
                 newsFull = innerText.trimmingCharacters(in: ["\n"])
