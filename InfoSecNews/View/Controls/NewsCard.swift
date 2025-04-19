@@ -98,7 +98,9 @@ struct NewsCard: View, Equatable {
                                         .imageScale(.medium)
                                         .fontWeight(.bold)
                                         .frame(width: 11, height: 11)
-                                        .padding(4)
+                                        .padding(.vertical, 8)
+                                        .padding(.horizontal, 16)
+                                        .background(.gray.opacity(0.03))
                                         .contentTransition(
                                             .symbolEffect(
                                                 .replace.magic(fallback: .downUp.byLayer),
@@ -108,11 +110,15 @@ struct NewsCard: View, Equatable {
                                         .imageScale(.medium)
                                         .fontWeight(.bold)
                                         .frame(width: 11, height: 11)
-                                        .padding(4)
+                                        .padding(.vertical, 8)
+                                        .padding(.horizontal, 16)
+                                        .background(.gray.opacity(0.03))
                                 }
                             }.buttonStyle(.plain)
+                            Spacer().frame(width: 0)
                             Divider()
                                 .frame(height: 16)
+                            Spacer().frame(width: 0)
                             
                             Button(action: copyText) {
                                 if #available(macOS 15.0, *) {
@@ -124,17 +130,23 @@ struct NewsCard: View, Equatable {
                                             .symbolEffect(
                                                 .replace.magic(fallback: .downUp.byLayer),
                                                 options: .nonRepeating))
-                                        .padding(4)
+                                        .padding(.vertical, 8)
+                                        .padding(.horizontal, 16)
+                                        .background(.gray.opacity(0.03))
                                 } else {
                                     Image(systemName: copyTextImageName)
                                         .imageScale(.medium)
                                         .fontWeight(.bold)
                                         .frame(width: 11, height: 11)
-                                        .padding(4)
+                                        .padding(.vertical, 8)
+                                        .padding(.horizontal, 16)
+                                        .background(.gray.opacity(0.03))
                                 }
                             }.buttonStyle(.plain)
+                            Spacer().frame(width: 0)
                             Divider()
                                 .frame(height: 16)
+                            Spacer().frame(width: 0)
                             Button(action: onAppend) {
                                 if #available(macOS 15.0, *) {
                                     Image(systemName: isSelected ? "checkmark.square" : "minus.square")
@@ -145,18 +157,20 @@ struct NewsCard: View, Equatable {
                                             .symbolEffect(
                                                 .replace.magic(fallback: .downUp.byLayer),
                                                 options: .nonRepeating))
-                                        .padding(4)
+                                        .padding(.vertical, 8)
+                                        .padding(.horizontal, 16)
+                                        .background(.gray.opacity(0.03))
                                 } else {
                                     Image(systemName: isSelected ? "checkmark.square" : "square")
                                         .imageScale(.medium)
                                         .fontWeight(.bold)
                                         .frame(width: 11, height: 11)
-                                        .padding(4)
+                                        .padding(.vertical, 8)
+                                        .padding(.horizontal, 16)
+                                        .background(.gray.opacity(0.03))
                                 }
                             }.buttonStyle(.plain)
                         }
-                        .padding(.vertical, 4)
-                        .padding(.horizontal, 16)
                         .background(.gray.opacity(0.03))
                         .foregroundStyle(.secondary)
                         .clipShape(Capsule())
@@ -166,7 +180,7 @@ struct NewsCard: View, Equatable {
                                 .fontWeight(.bold)
                                 .frame(width: 11, height: 11)
                                 .padding(4)
-                                .padding(.vertical, 4)
+                                .padding(.vertical, 8)
                                 .padding(.horizontal, 8)
                                 .background(.gray.opacity(0.03))
                                 .foregroundStyle(.secondary)
