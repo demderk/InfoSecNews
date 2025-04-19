@@ -50,46 +50,41 @@ struct NewsActionView: View {
                     }
                 }
             }.background(.background)
-                .clipShape(RoundedRectangle(cornerSize: CGSize(width: 24, height: 24)))
-                .padding(8)
-            VStack(alignment: .trailing) {
+                .frame(minWidth: 256, idealWidth: 256)
+                .layoutPriority(0)
+            VStack(alignment: .leading) {
                 HStack {
-                    Image(systemName: "arrow.forward")
-                        .imageScale(.large)
-                        .fontWeight(.bold)
-                        .padding(8)
-                    VStack {
-                        HStack {
-                            Picker(
-                                selection: $selectedMode,
-                                content: {
-                                    Text("Better Quality (T5 Small)").tag(1)
-                                    Text("Better Performance (T5)").tag(2)
-                                    Text("Prompt").tag(3)
-                                },
-                                label: {
-                                    Text("Model")
-                                }
-                            ).frame(minWidth: 256)
-                        }.padding(16)
-                            .background(.background)
-                            .clipShape(RoundedRectangle(cornerSize: CGSize(width: 24, height: 24)))
-                    }
-                }.padding(.top, 8)
-                    .padding(.trailing, 8)
+                    Text("News Export")
+                        .font(.title2)
+                        .fontWeight(.medium)
+                    Spacer()
+                    Picker(
+                        selection: $selectedMode,
+                        content: {
+                            Text("Better Quality (T5 Small)").tag(1)
+                            Text("Better Performance (T5)").tag(2)
+                            Text("Prompt").tag(3)
+                        },
+                        label: {
+                            Text("Model")
+                        }
+                    ).frame(maxWidth: 256)
+                }.padding(.vertical, 10).padding(.horizontal, 16)
+                Spacer().frame(height: 0)
+                Divider()
+                Spacer().frame(height: 0)
                 ScrollView {
-                    VStack {
+                    VStack(alignment: .leading) {
+                        HStack { Spacer() }
                         ForEach(newsItems, id: \.title) { item in
                             Text("\(item.full ?? "")")
-                                .padding(4)
+                                .padding(2)
+                                .textSelection(.enabled)
                         }
                     }
-                }.padding(8)
-                    .background(.background)
-                    .clipShape(RoundedRectangle(cornerSize: CGSize(width: 24, height: 24)))
-                    .padding([.bottom, .trailing], 8)
-                Spacer()
-            }
+                }.padding(.horizontal, 8)
+            }.background(.background)
+                .layoutPriority(1)
         }
     }
 }
