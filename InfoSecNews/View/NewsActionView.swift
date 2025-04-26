@@ -10,8 +10,8 @@ import SwiftUI
 struct NewsActionView: View {
     @Binding var newsItems: [any NewsBehavior]
     
-    @State var selectedMode: Int = 1
-    
+    @State var vm: NewsActionVM = NewsActionVM()
+ 
     var body: some View {
         HSplitView {
             VStack(alignment: .leading) {
@@ -57,13 +57,15 @@ struct NewsActionView: View {
                     Text("News Export")
                         .font(.title2)
                         .fontWeight(.medium)
+                    Button("Push", action: {vm.ollamaPush(newsItems: newsItems)})
                     Spacer()
                     Picker(
-                        selection: $selectedMode,
+                        selection: $vm.selectedModeName,
                         content: {
-                            Text("Better Quality (T5 Small)").tag(1)
-                            Text("Better Performance (T5)").tag(2)
-                            Text("Prompt").tag(3)
+                            Text("Prompt").tag("prompt")
+                            ForEach(vm.availableModels, id: \.name) { available in
+                                Text(available.name)
+                            }
                         },
                         label: {
                             Text("Model")
@@ -76,10 +78,13 @@ struct NewsActionView: View {
                 ScrollView {
                     VStack(alignment: .leading) {
                         HStack { Spacer() }
-                        ForEach(newsItems, id: \.title) { item in
-                            Text("\(item.full ?? "")")
+                        ForEach(vm.neuroNewsCollection) { item in
+                            Text("\(item.summary)")
                                 .padding(2)
                                 .textSelection(.enabled)
+//                            Text("\(stream.text ?? "")")
+//                                .padding(2)
+//                                .textSelection(.enabled)
                         }
                     }
                 }.padding(.horizontal, 8)

@@ -8,13 +8,15 @@
 import Foundation
 import os
 
+import Foundation
+
 @Observable
 class NewsActionVM {
     let remote = OllamaRemote(selectedModel: .gemma31b)
 
-    var selectedMode: String = "prompt"
-    var text: String = ""
+    var selectedModeName: String = "prompt"
     var availableModels: [MLModel] = []
+    var neuroNewsCollection: [NeuroNews] = []
     
     init() {
         ollamaUpdateModels()
@@ -25,18 +27,34 @@ class NewsActionVM {
             do {
                 availableModels = try await remote.listModels()
             } catch {
+                // swiftlint:disable:next line_length
                 Logger.ollamaLogger.error("[NewsActionVM] (ollamaUpdateModels) raised an error. AvailableModels not updated. Description: \(error.localizedDescription)")
             }
         }
     }
     
-    func ollamaPush() {
-        Task {
-            availableModels = (try? await remote.listModels()) ?? availableModels
+    func ollamaPush(newsItems: [any NewsBehavior]) {
+        guard selectedModeName != "prompt" else {
+            Logger.ollamaLogger.debug("Push with prompt mode was initiated")
+            return
         }
-//        guard let item = newsItems.first, let text = item.full else { return }
-//        remote.generateStream(prompt: text, system: "Суммаризируй текст, в 2-3 предложения.") { text in
-//            self.text += text
-//        }
+        
+        neuroNewsCollection.removeAll()
+        
+        for item in newsItems {
+            guard let prompt = item.full else {
+                Logger.ollamaLogger.debug("NewsItems contains objects where full == nil")
+                return
+            }
+            
+            let neuro = NeuroNews(baseBehavior: item, summary: "")
+            neuro.summary = ""
+            remote.generateStream(prompt: prompt, system: "Суммаризируй текст, в 2-3 предложения.") { text in
+                neuro.summary += text
+                print(neuro.summary)
+                print(text)
+            }
+            neuroNewsCollection.append(neuro)
+        }
     }
 }
