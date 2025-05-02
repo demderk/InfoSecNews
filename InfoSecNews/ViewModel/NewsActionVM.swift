@@ -15,10 +15,14 @@ class NewsActionVM {
     let remote = OllamaRemote(selectedModel: .gemma31b)
 
     var selectedModeName: String = "prompt"
+    var tts: String = "Привет!"
     var availableModels: [MLModel] = []
     var neuroNewsCollection: [NeuroNews] = []
+
+    var chat: OllamaConversation
     
     init() {
+        chat = OllamaConversation(ollamaRemote: remote)
         ollamaUpdateModels()
     }
     
@@ -39,22 +43,26 @@ class NewsActionVM {
             return
         }
         
-        neuroNewsCollection.removeAll()
-        
-        for item in newsItems {
-            guard let prompt = item.full else {
-                Logger.ollamaLogger.debug("NewsItems contains objects where full == nil")
-                return
-            }
-            
-            let neuro = NeuroNews(baseBehavior: item, summary: "")
-            neuro.summary = ""
-            remote.generateStream(prompt: prompt, system: "Суммаризируй текст, в 2-3 предложения.") { text in
-                neuro.summary += text
-                print(neuro.summary)
-                print(text)
-            }
-            neuroNewsCollection.append(neuro)
+        Task {
+            try! await chat.sendMessage(prompt: tts)
         }
+        
+//        neuroNewsCollection.removeAll()
+//        
+//        for item in newsItems {
+//            guard let prompt = item.full else {
+//                Logger.ollamaLogger.debug("NewsItems contains objects where full == nil")
+//                return
+//            }
+//            
+//            let neuro = NeuroNews(baseBehavior: item, summary: "")
+//            neuro.summary = ""
+//            try! remote.generateStream(prompt: prompt, system: "Суммаризируй текст, в 2-3 предложения.") { text in
+//                neuro.summary += text
+//                print(neuro.summary)
+//                print(text)
+//            }
+//            neuroNewsCollection.append(neuro)
+//        }
     }
 }

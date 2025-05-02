@@ -8,7 +8,33 @@
 import Foundation
 import os
 
+enum MLRole: String, Codable {
+    case system
+    case user
+    case assistant
+}
+
+struct MLMessage: Codable {
+    var role: MLRole
+    var content: String
+}
+
+// BACKEND
+struct MLChatRequest: Codable {
+    var model: String // MLModel in future (model name)
+    var messages: [MLMessage]
+    // format
+    // stream
+}
+
+// BACKEND
+struct MLChatResponse: Codable {
+    var message: MLMessage
+    var done: Bool
+}
+
 class OllamaRemote {
+    // TODO: Remove hardcoded creds
     let remoteServerURL: URL = URL(string: "http://127.0.0.1:11434")!
     var selectedModel: MLModel
     
@@ -18,9 +44,8 @@ class OllamaRemote {
     
     func generateStream(
         prompt: String,
-        system: String? = nil,
-        onDataAppeared: @escaping (String) -> Void
-    ) {
+        system: String? = nil
+    ) async throws -> NDJsonStream<OllamaStreamResponse> {
         let generationURL = remoteServerURL.appending(path: "/api/generate")
         
         var requestBody: [String: String] = [
@@ -32,16 +57,28 @@ class OllamaRemote {
             requestBody["system"] = system
         }
         
+        let array = try await readRemoteStream(
+            streamURL: generationURL,
+            jsonBody: requestBody,
+            as: OllamaStreamResponse.self)
+        
+        return array
+    }
+    
+    func generateStream(
+        prompt: String,
+        system: String? = nil,
+        onDataAppeared: @escaping (String) -> Void
+    ) throws {
         Task {
-            let array = try! await readRemoteStream(streamURL: generationURL, jsonBody: requestBody, as: OllamaStreamResponse.self)
-            
             do {
-                
+                let array = try await generateStream(prompt: prompt, system: system)
                 for try await item in array {
                     onDataAppeared(item.response)
                 }
             } catch {
                 Logger.ollamaLogger.error("\(error.localizedDescription)")
+                throw error
             }
             
         }
@@ -65,6 +102,15 @@ class OllamaRemote {
         return []
     }
     
+    func chatStream(
+        chatRequest: MLChatRequest,
+    ) async throws -> NDJsonStream<MLChatResponse> {
+        let chatURL = remoteServerURL.appending(path: "/api/chat")
+        
+        let stream = try await readRemoteStream(streamURL: chatURL, jsonBody: chatRequest, as: MLChatResponse.self)
+        return stream
+    }
+    
     private func readRemoteStream(
         streamURL: URL,
         jsonBody: any Encodable
@@ -73,7 +119,10 @@ class OllamaRemote {
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        request.httpBody = try JSONEncoder().encode(jsonBody)
+        let encoder = JSONEncoder()
+        encoder.keyEncodingStrategy = .convertToSnakeCase
+        
+        request.httpBody = try encoder.encode(jsonBody)
         
         let (stream, _) = try await URLSession.shared.bytes(for: request)
         
@@ -115,6 +164,10 @@ struct NDJsonStream<T: Decodable>: AsyncSequence {
                 }
                 
                 guard let next = try await iterator.next() else {
+                    if !buffer.isEmpty {
+                        let tail = String(data: buffer, encoding: .utf8)
+                        Logger.ollamaLogger.info("Not null data. \(tail ?? "No tail")")
+                    }
                     return nil
                 }
                 

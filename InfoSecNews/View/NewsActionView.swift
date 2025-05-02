@@ -57,6 +57,7 @@ struct NewsActionView: View {
                     Text("News Export")
                         .font(.title2)
                         .fontWeight(.medium)
+                    TextField("x", text: $vm.tts)
                     Button("Push", action: {vm.ollamaPush(newsItems: newsItems)})
                     Spacer()
                     Picker(
@@ -78,14 +79,17 @@ struct NewsActionView: View {
                 ScrollView {
                     VStack(alignment: .leading) {
                         HStack { Spacer() }
-                        ForEach(vm.neuroNewsCollection) { item in
-                            Text("\(item.summary)")
-                                .padding(2)
-                                .textSelection(.enabled)
-//                            Text("\(stream.text ?? "")")
+                        ForEach(vm.chat.storage) { item in
+                            Text(item.content)
+                        }
+//                        ForEach(vm.neuroNewsCollection) { item in
+//                            Text("\(item.summary)")
 //                                .padding(2)
 //                                .textSelection(.enabled)
-                        }
+////                            Text("\(stream.text ?? "")")
+////                                .padding(2)
+////                                .textSelection(.enabled)
+//                        }
                     }
                 }.padding(.horizontal, 8)
             }.background(.background)
