@@ -38,12 +38,12 @@ class OllamaConversation {
         
         let chatRequest = MLChatRequest(
             model: remote.selectedModel.name,
-            messages: storage.map({ $0.asMLMessage() }) + [userMessage])
+            messages: storage.map({ $0.asMLMessage() }) + [userMessage.asMLMessage()])
         
         let stream = try await remote.chatStream(chatRequest: chatRequest)
         let assistantMessage = ChatMessage(MLMessage(role: .assistant, content: ""))
         
-        storage.append(ChatMessage(userMessage))
+        storage.append(userMessage)
         storage.append(assistantMessage)
         
         for try await item in stream {
