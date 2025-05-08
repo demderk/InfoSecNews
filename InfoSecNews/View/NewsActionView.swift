@@ -57,7 +57,6 @@ struct NewsActionView: View {
                     Text("News Export")
                         .font(.title2)
                         .fontWeight(.medium)
-                    TextField("x", text: $vm.tts)
                     Button("Push", action: {vm.ollamaPush(newsItems: newsItems)})
                     Spacer()
                     Picker(
@@ -79,8 +78,8 @@ struct NewsActionView: View {
                 ScrollView {
                     VStack(alignment: .leading) {
                         HStack { Spacer() }
-                        ForEach(vm.chat.storage) { item in
-                            Text(item.content)
+                        ForEach(vm.chats) { item in
+                            ChatCardView(conversation: item)
                         }
 //                        ForEach(vm.neuroNewsCollection) { item in
 //                            Text("\(item.summary)")

@@ -19,10 +19,10 @@ class NewsActionVM {
     var availableModels: [MLModel] = []
     var neuroNewsCollection: [NeuroNews] = []
 
-    var chat: OllamaConversation
+    var chats: [OllamaConversation]
     
     init() {
-        chat = OllamaConversation(ollamaRemote: remote)
+        chats = [OllamaConversation(ollamaRemote: remote), Omock(), Omock()]
         ollamaUpdateModels()
     }
     
@@ -44,7 +44,7 @@ class NewsActionVM {
         }
         
         Task {
-            try! await chat.sendMessage(prompt: tts)
+            try! await chats.first!.sendMessage(prompt: tts)
         }
         
 //        neuroNewsCollection.removeAll()

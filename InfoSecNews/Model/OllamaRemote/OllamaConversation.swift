@@ -25,12 +25,34 @@ class ChatMessage: Identifiable {
 }
 
 @Observable
-class OllamaConversation {
+class OllamaConversation: Identifiable {
+    let id = UUID()
+    
     let remote: OllamaRemote
-    private(set) var storage: [ChatMessage] = []
+    let newsItem: (any NewsBehavior)?
+    //FIXME: PUBLIC SET ONLY FOR DEBUG
+    
+    var storage: [ChatMessage] = []
+    
+    var firstResponse: String {
+        get {
+            storage.first(where: { $0.role == .assistant })?.content ?? ""
+        }
+        set {
+            
+        }
+    }
+    
+//    var firstResponseNN: String = storage.first(where: { $0.role == .assistant })?.content ?? ""
     
     init(ollamaRemote: OllamaRemote) {
-        remote = ollamaRemote
+        self.remote = ollamaRemote
+        newsItem = nil
+    }
+    
+    init(ollamaRemote: OllamaRemote, newsItem: any NewsBehavior) {
+        self.remote = ollamaRemote
+        self.newsItem = newsItem
     }
     
     func sendMessage(prompt: String) async throws {
