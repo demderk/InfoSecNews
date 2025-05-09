@@ -7,13 +7,17 @@
 
 import SwiftUI
 
-struct ChatResponse: View {    
-    @Binding var title: String
-    @Binding var content: String
+struct ChatResponse: View {
+    @Bindable var conversation: OllamaConversation
     
-    @State var background: Color = .gray.opacity(0.1)
-    @State var foreground: Color = .primary
-    @State var buttonsBackground: Color = .white.opacity(0.3)
+    @Binding var isOriginal: Bool
+    
+    @State private var background: Color = .gray.opacity(0.1)
+    @State private var foreground: Color = .primary
+    @State private var buttonsBackground: Color = .white.opacity(0.3)
+    
+    @State private var title: String = "No title"
+    @State private var content: String = "No content"
     
     var onRefresh: (() -> Void)?
     var onChatOpen: (() -> Void)?
@@ -77,7 +81,34 @@ struct ChatResponse: View {
             .foregroundStyle(foreground)
             .background(background)
             .clipShape(RoundedRectangle(cornerSize: CGSize(width: 16, height: 16)))
+        }.onAppear {
+            changeMode(isOriginal: isOriginal)
         }
+        .onChange(of: isOriginal) {
+            withAnimation(.easeOut(duration: 0.25)) {
+                changeMode(isOriginal: isOriginal)
+            }
+        }
+    }
+    
+    private func changeMode(isOriginal: Bool) {
+        if isOriginal {
+            background = .blue.opacity(0.85)
+            foreground = .white
+            buttonsBackground = .white.opacity(0.15)
+            
+            // FIXME: Log if no title
+            
+            title = conversation.newsItem?.title ?? "No title"
+            content = conversation.newsItem?.full ?? "No content"
+        } else {
+            background = .gray.opacity(0.1)
+            foreground = .primary
+            buttonsBackground = .white.opacity(0.3)
+            title = "Summary"
+            content = conversation.firstResponse
+        }
+        
     }
 }
 
@@ -96,5 +127,12 @@ extension ChatResponse {
 }
 
 #Preview {
-//    ChatResponse(title: .constant("Title"), content: .constant("Some"), background: .blue, foreground: .white, buttonsBackground: .white.opacity(0.15))
+    @Previewable @State var test: Bool = true
+    
+    VStack {
+        Button("x") {
+            test = !test
+        }
+        ChatResponse(conversation: Omock(), isOriginal: $test)
+    }
 }

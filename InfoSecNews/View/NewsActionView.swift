@@ -11,6 +11,8 @@ struct NewsActionView: View {
     @Binding var newsItems: [any NewsBehavior]
     
     @State var vm: NewsActionVM = NewsActionVM()
+    
+    @State var showOriginals = false
  
     var body: some View {
         HSplitView {
@@ -58,6 +60,9 @@ struct NewsActionView: View {
                         .font(.title2)
                         .fontWeight(.medium)
                     Button("Push", action: {vm.ollamaPush(newsItems: newsItems)})
+                    Button("Show Originals") {
+                        showOriginals = !showOriginals
+                    }
                     Spacer()
                     Picker(
                         selection: $vm.selectedModeName,
@@ -79,7 +84,7 @@ struct NewsActionView: View {
                     VStack(alignment: .leading) {
                         HStack { Spacer() }
                         ForEach(vm.chats) { item in
-                            ChatCardView(conversation: item)
+                            ChatResponse(conversation: item, isOriginal: $showOriginals)
                         }
 //                        ForEach(vm.neuroNewsCollection) { item in
 //                            Text("\(item.summary)")
