@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import os
 
 struct ChatResponse: View {
     @Bindable var conversation: OllamaConversation
@@ -97,10 +98,21 @@ struct ChatResponse: View {
             foreground = .white
             buttonsBackground = .white.opacity(0.15)
             
-            // FIXME: Log if no title
+            guard let news = conversation.newsItem else {
+                Logger.UILogger.warning("ChatResponse without full article text was found. Using default values for title and content.")
+                title = "No title"
+                content = "No content"
+                return
+            }
+            guard let full = news.full else {
+                Logger.UILogger.warning("[ChatResponse] NewsItem with nil \"full\" was found. Using default value.")
+                title = "No title"
+                content = "No content"
+                return
+            }
             
-            title = conversation.newsItem?.title ?? "No title"
-            content = conversation.newsItem?.full ?? "No content"
+            title = news.title
+            content = full
         } else {
             background = .gray.opacity(0.1)
             foreground = .primary
