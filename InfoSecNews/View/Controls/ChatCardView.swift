@@ -85,13 +85,15 @@ struct ChatCardView: View {
                                     .background(.blue)
                                     .clipShape(MessageBubble(isUserMessage: true))
                                     .padding(.leading, 128)
+                                    .textSelection(.enabled)
                             } else {
                                 Text("\(item.content)")
                                     .padding(.vertical, 8)
                                     .padding(.horizontal, 16)
-                                    .background(.gray.opacity(0.2))
+                                    .background(.gray.opacity(0.1))
                                     .clipShape(MessageBubble(isUserMessage: false))
                                     .padding(.trailing, 128)
+                                    .textSelection(.enabled)
                             }
                         }
                     }

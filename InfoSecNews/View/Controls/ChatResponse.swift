@@ -13,7 +13,7 @@ struct ChatResponse: View {
     
     @Binding var isOriginal: Bool
     
-    @State private var background: Color = .gray.opacity(0.1)
+    @State private var background: Color = .gray.opacity(0.05)
     @State private var foreground: Color = .primary
     @State private var buttonsBackground: Color = .white.opacity(0.3)
     
@@ -29,8 +29,10 @@ struct ChatResponse: View {
                 Text(title)
                     .font(.title3)
                     .fontWeight(.semibold)
+                    .textSelection(.enabled)
                 Text(content)
                     .fixedSize(horizontal: false, vertical: true)
+                    .textSelection(.enabled)
                 HStack {
                     Button(action: {}) {
                         Image(systemName: "document.on.document")
@@ -114,11 +116,14 @@ struct ChatResponse: View {
             title = news.title
             content = full
         } else {
-            background = .gray.opacity(0.1)
+            background = .gray.opacity(0.05)
             foreground = .primary
             buttonsBackground = .white.opacity(0.3)
-            title = "Summary"
-            content = conversation.firstResponse
+            var hasResponse: Bool = !conversation.firstResponse.isEmpty
+            title = hasResponse ? "Summary" : "Message Unsent"
+            content = hasResponse
+                ? conversation.firstResponse
+                : "This news is still pending delivery to the target"
         }
         
     }
@@ -146,5 +151,6 @@ extension ChatResponse {
             test = !test
         }
         ChatResponse(conversation: Omock(), isOriginal: $test)
+            .frame(height: 256)
     }
 }
