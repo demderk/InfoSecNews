@@ -71,7 +71,7 @@ struct ChatCardView: View {
                     .fontWeight(.semibold)
                     .foregroundStyle(.secondary)
                     .padding(16)
-                VStack(alignment: .leading) {
+                VStack(alignment: .leading, spacing: 16) {
                     ForEach(conversation.storage) { item in
                         HStack {
                             if item.role == .user {
