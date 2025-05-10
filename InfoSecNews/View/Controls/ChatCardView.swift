@@ -11,6 +11,8 @@ import Foundation
 struct ChatCardView: View {
     @Bindable var conversation: OllamaConversation
     @State var isOrignalPresented: Bool
+    @State var message: String = ""
+    @FocusState var isFieldFocused: Bool
     
     var closeAction: (() -> Void)?
     
@@ -61,7 +63,14 @@ struct ChatCardView: View {
                     ChatResponse(conversation: conversation,
                                  isOriginal: $isOrignalPresented)
                     .matchedGeometryEffect(id: conversation.id, in: parentNameSpace)
-                }.padding()
+                }
+                
+                .padding(.top, 16)
+                Text("Conversation started")
+                    .font(.callout)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.secondary)
+                    .padding(16)
                 VStack(alignment: .leading) {
                     ForEach(conversation.storage) { item in
                         HStack {
@@ -84,11 +93,41 @@ struct ChatCardView: View {
                                     .clipShape(MessageBubble(isUserMessage: false))
                                     .padding(.trailing, 128)
                             }
-                        }.padding(.vertical, 4)
-                        
+                        }
                     }
                 }
-            }.layoutPriority(10)
+            }.padding(.horizontal, 16)
+            HStack(spacing: 8) {
+                TextField("Message", text: $message, axis: .vertical)
+                    .lineLimit(5)
+                    .padding(.vertical, 6)
+                    .padding(.horizontal, 12)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 24)
+                            .stroke(.gray.opacity(0.4), lineWidth: 1)
+                    }
+                    .contentShape(Capsule(style: .continuous))
+                    .focused($isFieldFocused)
+                    .textFieldStyle(.plain)
+                    .onTapGesture {
+                        isFieldFocused = !isFieldFocused
+                    }
+                    .onSubmit(sendMessage)
+                Button(action: sendMessage) {
+                    Image(systemName: "paperplane")
+                        .fontWeight(.semibold)
+                        .font(.title3)
+                        .contentShape(Rectangle())
+                        .foregroundStyle(.secondary)
+                }.buttonStyle(.plain)
+            }.padding(16)
+        }
+    }
+    
+    private func sendMessage() {
+        message = ""
+        Task {
+//            try! await conversation.sendMessage(prompt: message)
         }
     }
 }
