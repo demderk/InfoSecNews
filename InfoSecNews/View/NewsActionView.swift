@@ -13,7 +13,11 @@ struct NewsActionView: View {
     @State var vm: NewsActionVM = NewsActionVM()
     
     @State var showOriginals = false
- 
+    
+    @State var selectedConversation: OllamaConversation?
+    
+    @Namespace var animationNamespace
+    
     var body: some View {
         HSplitView {
             VStack(alignment: .leading) {
@@ -54,50 +58,64 @@ struct NewsActionView: View {
             }.background(.background)
                 .frame(minWidth: 256, idealWidth: 256)
                 .layoutPriority(0)
-            VStack(alignment: .leading) {
-                HStack {
-                    Text("News Export")
-                        .font(.title2)
-                        .fontWeight(.medium)
-                    Button("Push", action: {vm.ollamaPush(newsItems: newsItems)})
-                    Button("Show Originals") {
-                        showOriginals = !showOriginals
-                    }
-                    Spacer()
-                    Picker(
-                        selection: $vm.selectedModeName,
-                        content: {
-                            Text("Prompt").tag("prompt")
-                            ForEach(vm.availableModels, id: \.name) { available in
-                                Text(available.name)
-                            }
-                        },
-                        label: {
-                            Text("Model")
+            ZStack {
+                if let selected = selectedConversation {
+                    ChatCardView(conversation: selected,
+                                 isOrignalPresented: showOriginals,
+                                 parentNameSpace: animationNamespace)
+                    .close {
+                        withAnimation(.bouncy(duration: 0.35)) {
+                            selectedConversation = nil
                         }
-                    ).frame(maxWidth: 256)
-                }.padding(.vertical, 10).padding(.horizontal, 16)
-                Spacer().frame(height: 0)
-                Divider()
-                Spacer().frame(height: 0)
-                ScrollView {
+                    }
+                    .opacity(selectedConversation == nil ? 0 : 1)
+                    .background(.background)
+                }
+                else {
                     VStack(alignment: .leading) {
-                        HStack { Spacer() }
-                        ForEach(vm.chats) { item in
-                            ChatResponse(conversation: item, isOriginal: $showOriginals)
-                        }
-//                        ForEach(vm.neuroNewsCollection) { item in
-//                            Text("\(item.summary)")
-//                                .padding(2)
-//                                .textSelection(.enabled)
-////                            Text("\(stream.text ?? "")")
-////                                .padding(2)
-////                                .textSelection(.enabled)
-//                        }
-                    }
-                }.padding(.horizontal, 8)
-            }.background(.background)
-                .layoutPriority(1)
+                        HStack {
+                            Text("News Export")
+                                .font(.title2)
+                                .fontWeight(.medium)
+                            Button("Push", action: {vm.ollamaPush(newsItems: newsItems)})
+                            Button("Show Originals") {
+                                showOriginals = !showOriginals
+                            }
+                            Spacer()
+                            Picker(
+                                selection: $vm.selectedModeName,
+                                content: {
+                                    Text("Prompt").tag("prompt")
+                                    ForEach(vm.availableModels, id: \.name) { available in
+                                        Text(available.name)
+                                    }
+                                },
+                                label: {
+                                    Text("Model")
+                                }
+                            ).frame(maxWidth: 256)
+                        }.padding(.vertical, 10).padding(.horizontal, 16)
+                        Spacer().frame(height: 0)
+                        Divider()
+                        Spacer().frame(height: 0)
+                        ScrollView {
+                            VStack(alignment: .leading) {
+                                HStack { Spacer() }
+                                ForEach(vm.chats) { item in
+                                    ChatResponse(conversation: item, isOriginal: $showOriginals)
+                                        .onChatOpen {
+                                            withAnimation(.bouncy(duration: 0.35)) {
+                                                selectedConversation = item
+                                            }
+                                        }.matchedGeometryEffect(id: item.id, in: animationNamespace)
+                                }
+                            }
+                        }.padding(16)
+                    }.background(.background)
+                        .opacity(selectedConversation == nil ? 1 : 0)
+                }
+            }
+            .layoutPriority(1)
         }
     }
 }

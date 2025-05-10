@@ -25,12 +25,12 @@ struct ChatResponse: View {
     
     var body: some View {
         VStack {
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.title3)
                     .fontWeight(.semibold)
-                Spacer().frame(height: 4)
                 Text(content)
+                    .fixedSize(horizontal: false, vertical: true)
                 HStack {
                     Button(action: {}) {
                         Image(systemName: "document.on.document")
@@ -142,7 +142,7 @@ extension ChatResponse {
     @Previewable @State var test: Bool = true
     
     VStack {
-        Button("x") {
+        Button("Change Mode") {
             test = !test
         }
         ChatResponse(conversation: Omock(), isOriginal: $test)
