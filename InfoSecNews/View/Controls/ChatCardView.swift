@@ -21,22 +21,24 @@ struct ChatCardView: View {
             ScrollView {
                 VStack {
                     HStack {
-                        HStack {
+                        HStack(spacing: 0) {
                             Button(action: { isOrignalPresented = false }) {
                                 Image(systemName: "quote.bubble")
-                                    .padding(.vertical, 4)
-                                    .padding(.leading, 16)
-                                    .padding(.trailing, 16)
+                                    .padding(.vertical, 8)
+                                    .padding(.leading, 8)
+                                    .padding(.horizontal, 8)
                                     .fontWeight(.semibold)
                                     .foregroundStyle(isOrignalPresented ? .gray : .blue)
+                                    .contentShape(Rectangle())
                             }.buttonStyle(.plain)
-                            Spacer().frame(width: 0)
                             Button(action: { isOrignalPresented = true }) {
                                 Image(systemName: "newspaper")
                                     .padding(.vertical, 8)
-                                    .padding(.trailing, 16)
+                                    .padding(.horizontal, 8)
+                                    .padding(.trailing, 8)
                                     .fontWeight(.semibold)
                                     .foregroundStyle(isOrignalPresented ? .blue : .gray)
+                                    .contentShape(Rectangle())
                             }.buttonStyle(.plain)
                         }
                         .background(.gray.opacity(0.1))
@@ -50,10 +52,10 @@ struct ChatCardView: View {
                                     .padding(.vertical, 8)
                                     .padding(.horizontal, 8)
                                     .fontWeight(.semibold)
+                                    .background(.gray.opacity(0.1))
+                                    .foregroundStyle(.secondary)
+                                    .clipShape(Circle())
                             }.buttonStyle(.plain)
-                                .background(.gray.opacity(0.1))
-                                .foregroundStyle(.secondary)
-                                .clipShape(Capsule())
                         }
                     }
                     ChatResponse(conversation: conversation,
