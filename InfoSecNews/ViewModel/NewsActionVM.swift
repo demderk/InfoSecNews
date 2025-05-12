@@ -19,11 +19,10 @@ class NewsActionVM {
     var availableModels: [MLModel] = []
     var neuroNewsCollection: [NeuroNews] = []
 
-    var chats: [OllamaConversation]
+    var chats: [OllamaConversation] = []
     
     init() {
-        chats = [OllamaConversation(ollamaRemote: remote), Omock(), Omock()]
-        ollamaUpdateModels()
+//        ollamaUpdateModels()
     }
     
     func ollamaUpdateModels() {
@@ -46,23 +45,21 @@ class NewsActionVM {
         Task {
             try! await chats.first!.sendMessage(prompt: tts)
         }
-        
-//        neuroNewsCollection.removeAll()
-//        
-//        for item in newsItems {
-//            guard let prompt = item.full else {
-//                Logger.ollamaLogger.debug("NewsItems contains objects where full == nil")
-//                return
-//            }
-//            
-//            let neuro = NeuroNews(baseBehavior: item, summary: "")
-//            neuro.summary = ""
-//            try! remote.generateStream(prompt: prompt, system: "Суммаризируй текст, в 2-3 предложения.") { text in
-//                neuro.summary += text
-//                print(neuro.summary)
-//                print(text)
-//            }
-//            neuroNewsCollection.append(neuro)
-//        }
+    }
+    
+    func initChats(news: [any NewsBehavior]) {
+        for item in news {
+            let ollamaConversation = OllamaConversation(ollamaRemote: remote, newsItem: item)
+//            ollamaConversation.pull(role: .system, message: "Разговаривай только на русском языке, представь что ты Марио.")
+            chats.append(ollamaConversation)
+        }
+    }
+    
+    func sumarizeAll() {
+        Task {
+            for item in chats {
+                 try? await item.sumarize()
+            }
+        }
     }
 }

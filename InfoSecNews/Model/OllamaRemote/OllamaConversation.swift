@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import os
 
 @Observable
 class ChatMessage: Identifiable {
@@ -19,9 +20,18 @@ class ChatMessage: Identifiable {
         content = base.content
     }
     
+    init(role: MLRole, content: String) {
+        self.role = role
+        self.content = content
+    }
+    
     func asMLMessage() -> MLMessage {
         MLMessage(role: role, content: content)
     }
+}
+
+enum MLConversationError: Error {
+    case emptyNewsBody
 }
 
 @Observable
@@ -29,33 +39,43 @@ class OllamaConversation: Identifiable {
     let id = UUID()
     
     let remote: OllamaRemote
-    let newsItem: (any NewsBehavior)?
-    //FIXME: PUBLIC SET ONLY FOR DEBUG
+    let newsItem: any NewsBehavior
     
-    var storage: [ChatMessage] = []
+    private(set) var storage: [ChatMessage] = []
     
-    var firstResponse: String {
-        get {
-            storage.first(where: { $0.role == .assistant })?.content ?? ""
+    // MARK: UI Properties
+    
+    private var selectedResponse: ChatMessage?
+    
+    var selectedContent: String {
+        if let content = selectedResponse {
+            return content.content
         }
-        set {
-            
+        if let content = storage.first(where: { $0.role == .assistant })?.content {
+            return content
+        } else {
+            return "This news is still pending delivery to the target"
         }
     }
     
-//    var firstResponseNN: String = storage.first(where: { $0.role == .assistant })?.content ?? ""
-    
-    init(ollamaRemote: OllamaRemote) {
-        self.remote = ollamaRemote
-        newsItem = nil
+    var newsContent: String {
+        guard let content = newsItem.full else {
+            // swiftlint:disable:next line_length
+            Logger.UILogger.warning("[OllamaConversation] NewsItem with nil \"full\" was found. Using default \"short\".")
+            return newsItem.short
+        }
+        return content
     }
+    
+    // END
     
     init(ollamaRemote: OllamaRemote, newsItem: any NewsBehavior) {
         self.remote = ollamaRemote
         self.newsItem = newsItem
     }
     
-    func sendMessage(prompt: String) async throws {
+    @discardableResult
+    func sendMessage(prompt: String) async throws -> ChatMessage {
         let userMessage = ChatMessage(MLMessage(role: .user, content: prompt))
         
         let chatRequest = MLChatRequest(
@@ -72,5 +92,28 @@ class OllamaConversation: Identifiable {
             assistantMessage.content += item.message.content
             print(assistantMessage.content)
         }
+        
+        return assistantMessage
+    }
+    
+    func pull(role: MLRole, message: String) {
+        let message = ChatMessage(role: role, content: message)
+        storage.append(message)
+    }
+    
+    func sumarize() async throws {
+        guard let full = newsItem.full else {
+            throw MLConversationError.emptyNewsBody
+        }
+        
+        // TODO: Import system message for summarization
+        let instructions = ChatMessage(
+            role: .user,
+            content: "Сумаризируй сообщение ниже. Нужно в 2-3 предложения."
+        )
+        storage.append(instructions)
+        
+        let lastSummarized = try await sendMessage(prompt: full)
+        selectedResponse = selectedResponse ?? lastSummarized
     }
 }

@@ -18,87 +18,98 @@ struct ChatCardView: View {
     
     var parentNameSpace: Namespace.ID
     
+    // TODO: Disable autoscroll
+    // TODO: ZStack instead of VStack. Shrink padding and enable background blur
+    
     var body: some View {
         VStack {
-            ScrollView {
-                VStack {
-                    HStack {
-                        HStack(spacing: 0) {
-                            Button(action: { isOrignalPresented = false }) {
-                                Image(systemName: "quote.bubble")
-                                    .padding(.vertical, 8)
-                                    .padding(.leading, 8)
-                                    .padding(.horizontal, 8)
-                                    .fontWeight(.semibold)
-                                    .foregroundStyle(isOrignalPresented ? .gray : .blue)
-                                    .contentShape(Rectangle())
-                            }.buttonStyle(.plain)
-                            Button(action: { isOrignalPresented = true }) {
-                                Image(systemName: "newspaper")
-                                    .padding(.vertical, 8)
-                                    .padding(.horizontal, 8)
-                                    .padding(.trailing, 8)
-                                    .fontWeight(.semibold)
-                                    .foregroundStyle(isOrignalPresented ? .blue : .gray)
-                                    .contentShape(Rectangle())
-                            }.buttonStyle(.plain)
-                        }
-                        .background(.gray.opacity(0.1))
-                        .clipShape(Capsule())
-                        Spacer()
-                        if let action = closeAction {
-                            Button(action: {
-                                action()
-                            }) {
-                                Image(systemName: "xmark")
-                                    .padding(.vertical, 8)
-                                    .padding(.horizontal, 8)
-                                    .fontWeight(.semibold)
-                                    .background(.gray.opacity(0.1))
-                                    .foregroundStyle(.secondary)
-                                    .clipShape(Circle())
-                            }.buttonStyle(.plain)
-                        }
-                    }
-                    ChatResponse(conversation: conversation,
-                                 isOriginal: $isOrignalPresented)
-                    .matchedGeometryEffect(id: conversation.id, in: parentNameSpace)
-                }
-                
-                .padding(.top, 16)
-                Text("Conversation started")
-                    .font(.callout)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.secondary)
-                    .padding(16)
-                VStack(alignment: .leading, spacing: 16) {
-                    ForEach(conversation.storage) { item in
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack {
                         HStack {
-                            if item.role == .user {
-                                Spacer()
+                            HStack(spacing: 0) {
+                                Button(action: { isOrignalPresented = false }) {
+                                    Image(systemName: "quote.bubble")
+                                        .padding(.vertical, 8)
+                                        .padding(.leading, 8)
+                                        .padding(.horizontal, 8)
+                                        .fontWeight(.semibold)
+                                        .foregroundStyle(isOrignalPresented ? .gray : .blue)
+                                        .contentShape(Rectangle())
+                                }.buttonStyle(.plain)
+                                Button(action: { isOrignalPresented = true }) {
+                                    Image(systemName: "newspaper")
+                                        .padding(.vertical, 8)
+                                        .padding(.horizontal, 8)
+                                        .padding(.trailing, 8)
+                                        .fontWeight(.semibold)
+                                        .foregroundStyle(isOrignalPresented ? .blue : .gray)
+                                        .contentShape(Rectangle())
+                                }.buttonStyle(.plain)
                             }
-                            if item.role == .user {
-                                Text("\(item.content)")
-                                    .padding(.vertical, 8)
-                                    .padding(.horizontal, 16)
-                                    .foregroundStyle(.white)
-                                    .background(.blue)
-                                    .clipShape(MessageBubble(isUserMessage: true))
-                                    .padding(.leading, 128)
-                                    .textSelection(.enabled)
-                            } else {
-                                Text("\(item.content)")
-                                    .padding(.vertical, 8)
-                                    .padding(.horizontal, 16)
-                                    .background(.gray.opacity(0.1))
-                                    .clipShape(MessageBubble(isUserMessage: false))
-                                    .padding(.trailing, 128)
-                                    .textSelection(.enabled)
+                            .background(.gray.opacity(0.1))
+                            .clipShape(Capsule())
+                            Spacer()
+                            if let action = closeAction {
+                                Button(action: {
+                                    action()
+                                }) {
+                                    Image(systemName: "xmark")
+                                        .padding(.vertical, 8)
+                                        .padding(.horizontal, 8)
+                                        .fontWeight(.semibold)
+                                        .background(.gray.opacity(0.1))
+                                        .foregroundStyle(.secondary)
+                                        .clipShape(Circle())
+                                }.buttonStyle(.plain)
                             }
                         }
+                        ChatResponse(conversation: conversation,
+                                     isOriginal: $isOrignalPresented)
+                        .matchedGeometryEffect(id: conversation.id, in: parentNameSpace)
                     }
+                    .padding(.top, 16)
+                    .padding(.horizontal, 16)
+                    Text("Conversation started")
+                        .font(.callout)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.secondary)
+                        .padding(16)
+                    VStack(alignment: .leading, spacing: 16) {
+                        ForEach(conversation.storage.filter({ $0.role != .system })) { item in
+                            HStack {
+                                if item.role == .user {
+                                    Spacer()
+                                }
+                                if item.role == .user {
+                                    Text(item.content)
+                                        .padding(.vertical, 8)
+                                        .padding(.horizontal, 16)
+                                        .foregroundStyle(.white)
+                                        .background(.blue)
+                                        .clipShape(MessageBubble(isUserMessage: true))
+                                        .padding(.leading, 128)
+                                        .textSelection(.enabled)
+                                } else {
+                                    Text(item.content)
+                                        .padding(.vertical, 8)
+                                        .padding(.horizontal, 16)
+                                        .background(.gray.opacity(0.1))
+                                        .clipShape(MessageBubble(isUserMessage: false))
+                                        .padding(.trailing, 128)
+                                        .textSelection(.enabled)
+                                        .onChange(of: item.content) {
+                                            proxy.scrollTo("CHAT_BOTTOM", anchor: .bottom)
+                                        }
+                                }
+                            }
+                        }
+                        
+                        Color.clear.id("CHAT_BOTTOM")
+                    }.padding(.horizontal, 16)
+                    
                 }
-            }.padding(.horizontal, 16)
+            }
             HStack(spacing: 8) {
                 TextField("Message", text: $message, axis: .vertical)
                     .lineLimit(5)
@@ -127,10 +138,10 @@ struct ChatCardView: View {
     }
     
     private func sendMessage() {
-        message = ""
-        Task {
-//            try! await conversation.sendMessage(prompt: message)
+        Task { [message] in
+            try! await conversation.sendMessage(prompt: message)
         }
+        message = ""
     }
 }
 
@@ -154,9 +165,11 @@ class Omock: OllamaConversation {
         super.init(ollamaRemote: OllamaRemote(
             selectedModel: .gemma31b),
                    newsItem: mockNewsItem)
-        storage.append(ChatMessage(MLMessage(role: .assistant, content: "Пресс-секретарь Белого дома Робин Маусс объявил, что президент готовится запретить судам принимать иски против него самого и Белого дома в целом. Он также объяснил, почему готовящийся указ никак не противоречит верховенству права.")))
-        storage.append(ChatMessage(MLMessage(role: .user, content: "Почему белый дом, белый?")))
-        storage.append(ChatMessage(MLMessage(role: .assistant, content: "хз...")))
+        pull(role: .assistant,
+             message: "Пресс-секретарь Белого дома Робин Маусс объявил, что президент готовится запретить судам принимать иски против него самого и Белого дома в целом. Он также объяснил, почему готовящийся указ никак не противоречит верховенству права.")
+        pull(role: .assistant, message: "Пресс-секретарь Белого дома Робин Маусс объявил, что президент готовится запретить судам принимать иски против него самого и Белого дома в целом. Он также объяснил, почему готовящийся указ никак не противоречит верховенству права.")
+        pull(role: .user, message: "Почему белый дом, белый?")
+        pull(role: .assistant, message: "хз...")
     }
 }
 // swiftlint:enable line_length

@@ -77,14 +77,23 @@ struct NewsConversationView: View {
                             .foregroundStyle(showOriginals ? .blue : .secondary)
                             .contentShape(Rectangle())
                     }.buttonStyle(.plain)
-                }.padding(.trailing, 8)
+                }
+                .padding(.trailing, 8)
+                .opacity(selectedConversation == nil ? 1 : 0)
             }
             ToolbarItem(placement: .primaryAction) {
-                Button(action: { }) {
+                Button(action: {
+                    showOriginals = false
+                    vm.sumarizeAll()
+                }) {
                     Image(systemName: "play.fill")                        .contentShape(Rectangle())
                         .padding(.horizontal, 8)
                 }
+                .opacity(selectedConversation == nil ? 1 : 0)
             }
+        }
+        .onAppear {
+            vm.initChats(news: newsItems)
         }
     }
 }

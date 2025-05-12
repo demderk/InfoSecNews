@@ -17,20 +17,17 @@ struct ChatResponse: View {
     @State private var foreground: Color = .primary
     @State private var buttonsBackground: Color = .white.opacity(0.3)
     
-    @State private var title: String = "No title"
-    @State private var content: String = "No content"
-    
     var onRefresh: (() -> Void)?
     var onChatOpen: (() -> Void)?
     
     var body: some View {
         VStack {
             VStack(alignment: .leading, spacing: 4) {
-                Text(title)
+                Text(isOriginal ? conversation.newsItem.title: "Summary")
                     .font(.title3)
                     .fontWeight(.semibold)
                     .textSelection(.enabled)
-                Text(content)
+                Text(isOriginal ? conversation.newsContent : conversation.selectedContent)
                     .fixedSize(horizontal: false, vertical: true)
                     .textSelection(.enabled)
                 HStack {
@@ -99,31 +96,10 @@ struct ChatResponse: View {
             background = .blue.opacity(0.85)
             foreground = .white
             buttonsBackground = .white.opacity(0.15)
-            
-            guard let news = conversation.newsItem else {
-                Logger.UILogger.warning("ChatResponse without full article text was found. Using default values for title and content.")
-                title = "No title"
-                content = "No content"
-                return
-            }
-            guard let full = news.full else {
-                Logger.UILogger.warning("[ChatResponse] NewsItem with nil \"full\" was found. Using default value.")
-                title = "No title"
-                content = "No content"
-                return
-            }
-            
-            title = news.title
-            content = full
         } else {
             background = .gray.opacity(0.05)
             foreground = .primary
             buttonsBackground = .white.opacity(0.3)
-            var hasResponse: Bool = !conversation.firstResponse.isEmpty
-            title = hasResponse ? "Summary" : "Message Unsent"
-            content = hasResponse
-                ? conversation.firstResponse
-                : "This news is still pending delivery to the target"
         }
         
     }
