@@ -17,7 +17,6 @@ class NewsActionVM {
     var selectedModeName: String = "prompt"
     var tts: String = "Привет!"
     var availableModels: [MLModel] = []
-    var neuroNewsCollection: [NeuroNews] = []
 
     var chats: [OllamaConversation] = []
     
