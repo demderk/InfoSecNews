@@ -60,15 +60,6 @@ final class NewsResolver<T: NewsProvider> {
         await fetch(until: dateTo)
     }
     
-    // FIXME: If date diffrerence between current and pageCount is zero – dont fetch
-    
-    func fetch(pageCount: Int) async {
-        for _ in 1...pageCount {
-            await fetch()
-            try? await Task.sleep(for: pagesDelay)
-        }
-    }
-    
     func preloaded() -> Self {
         Task {
             await fetch()

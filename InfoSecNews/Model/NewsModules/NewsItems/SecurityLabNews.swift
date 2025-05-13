@@ -61,14 +61,9 @@ final class SecurityLabNews: NewsBehavior {
                 var innerText = ""
                 let allTextNodes = try! full.select("p, li")
                 for item in allTextNodes {
-                    guard let cleared = try? item.text() else {
+                    guard let text = try? item.text() else {
                         continue
                     }
-                    
-                    let text = cleared
-//                        .replacingOccurrences(of: "\n", with: "")
-//                        .replacingOccurrences(of: "\t", with: "")
-//                        .trimmingCharacters(in: .whitespacesAndNewlines)
                     
                     if !text.isEmpty {
                         innerText += "\n\n"

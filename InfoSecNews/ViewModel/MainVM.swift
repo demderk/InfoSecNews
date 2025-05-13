@@ -67,6 +67,13 @@ class MainVM {
         
     }
     
+    // For UI purposes
+    func spinnerAppear() {
+        if !bussy {
+            fetchContent()
+        }
+    }
+    
     func fetchContent() {
         let days = daysToFetch
         Task {

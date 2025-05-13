@@ -34,7 +34,7 @@ struct FeedView: View {
                                 Spacer()
                                 ProgressView()
                                     .progressViewStyle(.circular)
-                                    .onAppear(perform: parentViewModel.fetchContent)
+                                    .onAppear(perform: parentViewModel.spinnerAppear)
                                     .opacity(0.9)
                                     .scaleEffect(0.5)
                                 Spacer()
