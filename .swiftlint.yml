@@ -73,4 +73,5 @@ identifier_name:
     - n
     - vm
     - ml
+    - as
 reporter: "xcode" # reporter type (xcode, json, csv, checkstyle, junit, html, emoji)
