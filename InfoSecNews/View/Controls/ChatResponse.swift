@@ -24,121 +24,68 @@ struct ChatResponse: View {
     var onChatOpen: (() -> Void)?
     
     var body: some View {
-        VStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(isOriginal ? conversation.newsItem.title: "Summary")
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                    .textSelection(.enabled)
-                Text(isOriginal ? conversation.newsContent : conversation.selectedContent)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .textSelection(.enabled)
-                HStack(spacing: 4) {
-                    if #available(macOS 15.0, *) {
-                        Button(action: copyText) {
-                            Image(systemName: copyTextImageName)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 12, height: 12)
-                                .fontWeight(.bold)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 4)
-                                .background(buttonsBackground)
-                                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                                .foregroundStyle(foreground.opacity(0.8))
-                                .contentTransition(
-                                    .symbolEffect(
-                                        .replace.magic(fallback: .downUp.byLayer),
-                                        options: .nonRepeating))
-                        }.buttonStyle(.plain)
-                    } else {
-                        Button(action: copyText) {
-                            Image(systemName: copyTextImageName)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 12, height: 12)
-                                .fontWeight(.bold)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 4)
-                                .background(buttonsBackground)
-                                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                                .foregroundStyle(foreground.opacity(0.8))
-                        }.buttonStyle(.plain)
-                    }
-                    if #available(macOS 15.0, *) {
-                        Button(action: copyLink) {
-                            Image(systemName: copyLinkImageName)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 12, height: 12)
-                                .fontWeight(.bold)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 4)
-                                .background(buttonsBackground)
-                                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                                .foregroundStyle(foreground.opacity(0.8))
-                                .contentTransition(
-                                    .symbolEffect(
-                                        .replace.magic(fallback: .downUp.byLayer),
-                                        options: .nonRepeating))
-                        }.buttonStyle(.plain)
-                    } else {
-                        Button(action: copyLink) {
-                            Image(systemName: copyLinkImageName)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 12, height: 12)
-                                .fontWeight(.bold)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 4)
-                                .background(buttonsBackground)
-                                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                                .foregroundStyle(foreground.opacity(0.8))
-                        }.buttonStyle(.plain)
-                    }
-                    if let refreshAction = onRefresh {
-                        Button(action: refreshAction) {
-                            Image(systemName: "arrow.clockwise")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 12, height: 12)
-                                .fontWeight(.bold)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 4)
-                                .background(buttonsBackground)
-                                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                                .foregroundStyle(foreground.opacity(0.8))
-                        }.buttonStyle(.plain)
-                    }
-                    
-                    if let chatAction = onChatOpen {
-                        Button(action: chatAction) {
-                            Image(systemName: "bubble")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 12, height: 12)
-                                .fontWeight(.bold)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 4)
-                                .background(buttonsBackground)
-                                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                                .foregroundStyle(foreground.opacity(0.8))
-                        }.buttonStyle(.plain)
-                    }
-                    Spacer()
+        VStack(alignment: .leading, spacing: 4) {
+            Text(isOriginal ? conversation.newsItem.title: "Summary")
+                .font(.title3)
+                .fontWeight(.semibold)
+                .textSelection(.enabled)
+            Text(isOriginal ? conversation.newsContent : conversation.selectedContent)
+                .fixedSize(horizontal: false, vertical: true)
+                .textSelection(.enabled)
+            HStack(spacing: 4) {
+                makeMiniButton(imageSystemName: copyTextImageName, action: copyText)
+                makeMiniButton(imageSystemName: copyLinkImageName, action: copyLink)
+                
+                if let refreshAction = onRefresh {
+                    makeMiniButton(imageSystemName: "arrow.clockwise", action: refreshAction)
                 }
+                if let chatAction = onChatOpen {
+                    makeMiniButton(imageSystemName: "bubble", action: chatAction)
+                }
+                
+                Spacer()
             }
-            .padding(16)
-            .foregroundStyle(foreground)
-            .background(background)
-            .clipShape(RoundedRectangle(cornerSize: CGSize(width: 16, height: 16)))
-        }.onAppear {
-            changeMode(isOriginal: isOriginal)
         }
+        .padding(16)
+        .foregroundStyle(foreground)
+        .background(background)
+        .clipShape(RoundedRectangle(cornerSize: CGSize(width: 16, height: 16)))
+        .onAppear { changeMode(isOriginal: isOriginal) }
         .onChange(of: isOriginal) {
             withAnimation(.easeOut(duration: 0.25)) {
                 changeMode(isOriginal: isOriginal)
             }
+        }
+    }
+    
+    // TODO: This could be extracted into a separate ButtonStyle
+    
+    private func makeMiniButton(
+        imageSystemName: String,
+        action: @escaping () -> Void
+    ) -> some View {
+        let baseImage = Image(systemName: imageSystemName)
+            .resizable()
+            .scaledToFit()
+            .frame(width: 12, height: 12)
+            .fontWeight(.bold)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 4)
+            .background(buttonsBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .foregroundStyle(foreground.opacity(0.8))
+            
+        let baseButton = Button(action: action) {
+            baseImage
+        }.buttonStyle(.plain)
+        
+        if #available(macOS 15.0, *) {
+            return baseButton.contentTransition(
+                .symbolEffect(
+                    .replace.magic(fallback: .downUp.byLayer),
+                    options: .nonRepeating))
+        } else {
+            return baseButton
         }
     }
     
