@@ -17,6 +17,9 @@ struct ChatResponse: View {
     @State private var foreground: Color = .primary
     @State private var buttonsBackground: Color = .white.opacity(0.3)
     
+    @State private var copyLinkImageName: String = "link"
+    @State private var copyTextImageName: String = "document.on.document"
+    
     var onRefresh: (() -> Void)?
     var onChatOpen: (() -> Void)?
     
@@ -30,20 +33,69 @@ struct ChatResponse: View {
                 Text(isOriginal ? conversation.newsContent : conversation.selectedContent)
                     .fixedSize(horizontal: false, vertical: true)
                     .textSelection(.enabled)
-                HStack {
-                    Button(action: {}) {
-                        Image(systemName: "document.on.document")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 12, height: 12)
-                            .fontWeight(.bold)
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 4)
-                            .background(buttonsBackground)
-                            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                            .foregroundStyle(foreground.opacity(0.8))
-                    }.buttonStyle(.plain)
-                    Spacer().frame(width: 4)
+                HStack(spacing: 4) {
+                    if #available(macOS 15.0, *) {
+                        Button(action: copyText) {
+                            Image(systemName: copyTextImageName)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 12, height: 12)
+                                .fontWeight(.bold)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 4)
+                                .background(buttonsBackground)
+                                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                                .foregroundStyle(foreground.opacity(0.8))
+                                .contentTransition(
+                                    .symbolEffect(
+                                        .replace.magic(fallback: .downUp.byLayer),
+                                        options: .nonRepeating))
+                        }.buttonStyle(.plain)
+                    } else {
+                        Button(action: copyText) {
+                            Image(systemName: copyTextImageName)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 12, height: 12)
+                                .fontWeight(.bold)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 4)
+                                .background(buttonsBackground)
+                                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                                .foregroundStyle(foreground.opacity(0.8))
+                        }.buttonStyle(.plain)
+                    }
+                    if #available(macOS 15.0, *) {
+                        Button(action: copyLink) {
+                            Image(systemName: copyLinkImageName)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 12, height: 12)
+                                .fontWeight(.bold)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 4)
+                                .background(buttonsBackground)
+                                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                                .foregroundStyle(foreground.opacity(0.8))
+                                .contentTransition(
+                                    .symbolEffect(
+                                        .replace.magic(fallback: .downUp.byLayer),
+                                        options: .nonRepeating))
+                        }.buttonStyle(.plain)
+                    } else {
+                        Button(action: copyLink) {
+                            Image(systemName: copyLinkImageName)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 12, height: 12)
+                                .fontWeight(.bold)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 4)
+                                .background(buttonsBackground)
+                                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                                .foregroundStyle(foreground.opacity(0.8))
+                        }.buttonStyle(.plain)
+                    }
                     if let refreshAction = onRefresh {
                         Button(action: refreshAction) {
                             Image(systemName: "arrow.clockwise")
@@ -57,7 +109,6 @@ struct ChatResponse: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
                                 .foregroundStyle(foreground.opacity(0.8))
                         }.buttonStyle(.plain)
-                        Spacer().frame(width: 4)
                     }
                     
                     if let chatAction = onChatOpen {
@@ -102,6 +153,34 @@ struct ChatResponse: View {
             buttonsBackground = .white.opacity(0.3)
         }
         
+    }
+    
+    private func copyLink() {
+        withAnimation {
+            copyLinkImageName = "checkmark"
+        }
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(conversation.newsItem.fullTextLink.absoluteString, forType: .string)
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+            withAnimation {
+                copyLinkImageName = "link"
+            }
+        }
+    }
+    
+    private func copyText() {
+        if let full = conversation.newsItem.full {
+            withAnimation {
+                copyTextImageName = "checkmark"
+            }
+            NSPasteboard.general.clearContents()
+            NSPasteboard.general.setString(full, forType: .string)
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+                withAnimation {
+                    copyTextImageName = "document.on.document"
+                }
+            }
+        }
     }
 }
 
