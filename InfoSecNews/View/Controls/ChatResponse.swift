@@ -44,7 +44,7 @@ struct ChatResponse: View {
                 }
                 
                 Spacer()
-            }
+            }.padding(.top, 8)
         }
         .padding(16)
         .foregroundStyle(foreground)
@@ -67,12 +67,12 @@ struct ChatResponse: View {
         let baseImage = Image(systemName: imageSystemName)
             .resizable()
             .scaledToFit()
-            .frame(width: 12, height: 12)
+            .frame(width: 16, height: 16)
             .fontWeight(.bold)
-            .padding(.horizontal, 6)
-            .padding(.vertical, 4)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 6)
             .background(buttonsBackground)
-            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             .foregroundStyle(foreground.opacity(0.8))
             
         let baseButton = Button(action: action) {
