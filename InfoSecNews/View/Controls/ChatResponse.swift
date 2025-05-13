@@ -17,8 +17,12 @@ struct ChatResponse: View {
     @State private var foreground: Color = .primary
     @State private var buttonsBackground: Color = .white.opacity(0.3)
     
+    @State private var expanded: Bool = false
+    @State private var newsText: String = ""
+    
     @State private var copyLinkImageName: String = "link"
     @State private var copyTextImageName: String = "document.on.document"
+    @State private var expandNewsImageName: String = "chevron.down"
     
     var onRefresh: (() -> Void)?
     var onChatOpen: (() -> Void)?
@@ -29,7 +33,7 @@ struct ChatResponse: View {
                 .font(.title3)
                 .fontWeight(.semibold)
                 .textSelection(.enabled)
-            Text(isOriginal ? conversation.newsContent : conversation.selectedContent)
+            Text(isOriginal ? newsText : conversation.selectedContent)
                 .fixedSize(horizontal: false, vertical: true)
                 .textSelection(.enabled)
             HStack(spacing: 4) {
@@ -42,20 +46,29 @@ struct ChatResponse: View {
                 if let chatAction = onChatOpen {
                     makeMiniButton(imageSystemName: "bubble", action: chatAction)
                 }
-                
+
                 Spacer()
+                
+                if isOriginal {
+                    makeMiniButton(imageSystemName: expandNewsImageName, action: changeExpandNewsMode)
+                }
             }.padding(.top, 8)
         }
         .padding(16)
         .foregroundStyle(foreground)
         .background(background)
         .clipShape(RoundedRectangle(cornerSize: CGSize(width: 16, height: 16)))
-        .onAppear { changeMode(isOriginal: isOriginal) }
+        .onAppear(perform: viewAppeared)
         .onChange(of: isOriginal) {
             withAnimation(.easeOut(duration: 0.25)) {
                 changeMode(isOriginal: isOriginal)
             }
         }
+    }
+    
+    private func viewAppeared() {
+        changeMode(isOriginal: isOriginal)
+        newsText = conversation.newsItem.short
     }
     
     // TODO: This could be extracted into a separate ButtonStyle
@@ -126,6 +139,20 @@ struct ChatResponse: View {
                 withAnimation {
                     copyTextImageName = "document.on.document"
                 }
+            }
+        }
+    }
+    
+    private func changeExpandNewsMode() {
+        withAnimation {
+            if expanded {
+                expanded = false
+                newsText = conversation.newsItem.short
+                expandNewsImageName = "chevron.down"
+            } else {
+                expanded = true
+                newsText = conversation.newsContent
+                expandNewsImageName = "chevron.up"
             }
         }
     }
