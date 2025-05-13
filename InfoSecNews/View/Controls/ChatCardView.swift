@@ -46,26 +46,23 @@ struct ChatCardView: View {
             .background(.gray.opacity(0.1))
             .clipShape(Capsule())
             Spacer()
-            HStack {
-                Spacer()
-                if let action = closeAction {
-                    Button(action: {
-                        action()
-                    }) {
-                        Image(systemName: "xmark")
-                            .padding(.vertical, 8)
-                            .padding(.horizontal, 8)
-                            .fontWeight(.semibold)
-                            .background(.gray.opacity(0.1))
-                            .foregroundStyle(.secondary)
-                            .clipShape(Circle())
-                    }.buttonStyle(.plain)
-                }
+            if let action = closeAction {
+                Button(action: {
+                    action()
+                }) {
+                    Image(systemName: "xmark")
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 8)
+                        .fontWeight(.semibold)
+                        .background(.gray.opacity(0.1))
+                        .foregroundStyle(.secondary)
+                        .clipShape(Circle())
+                }.buttonStyle(.plain)
             }
         }
     }
     
-    func makeChatBody(scrollProxy proxy: ScrollViewProxy) -> some View {
+    func makeChatBody(scrollProxy proxy: ScrollViewProxy, scrollTo: String) -> some View {
         VStack(alignment: .leading, spacing: 16) {
             ForEach(conversation.storage.filter({ $0.role != .system })) { item in
                 HStack {
@@ -90,13 +87,11 @@ struct ChatCardView: View {
                             .padding(.trailing, 128)
                             .textSelection(.enabled)
                             .onChange(of: item.content) {
-                                proxy.scrollTo("CHAT_BOTTOM", anchor: .bottom)
+                                proxy.scrollTo(scrollTo, anchor: .bottom)
                             }
                     }
                 }
             }
-            
-            Color.clear.id("CHAT_BOTTOM")
         }
     }
     
@@ -128,25 +123,37 @@ struct ChatCardView: View {
     }
     
     var body: some View {
-        ScrollViewReader { proxy in
-            ScrollView {
-                VStack {
-                    responseHeader
-                    ChatResponse(conversation: conversation,
-                                 isOriginal: $isOrignalPresented)
-                    .matchedGeometryEffect(id: conversation.id, in: parentNameSpace)
-                }
-                .padding(.top, 16)
-                .padding(.horizontal, 16)
-                Text("Conversation started")
-                    .font(.callout)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.secondary)
-                    .padding(16)
-                makeChatBody(scrollProxy: proxy)
+        ZStack {
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack {
+                        responseHeader
+                        ChatResponse(conversation: conversation,
+                                     isOriginal: $isOrignalPresented)
+                        .matchedGeometryEffect(id: conversation.id, in: parentNameSpace)
+                    }
+                    .padding(.top, 16)
                     .padding(.horizontal, 16)
+                    Text("Conversation started")
+                        .font(.callout)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.secondary)
+                        .padding(16)
+                    makeChatBody(scrollProxy: proxy, scrollTo: "CHAT_BOTTOM")
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 64)
+                    Color.clear.id("CHAT_BOTTOM")
+                    Spacer()
+                }
+            }
+            VStack {
+                Spacer()
                 chatField
                     .padding(16)
+                    .background(
+                        Color.white.opacity(0.8)
+                            .background(.thinMaterial)
+                    )
             }
         }
     }

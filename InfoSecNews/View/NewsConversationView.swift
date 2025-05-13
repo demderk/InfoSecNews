@@ -86,7 +86,8 @@ struct NewsConversationView: View {
                     showOriginals = false
                     vm.sumarizeAll()
                 }) {
-                    Image(systemName: "play.fill")                        .contentShape(Rectangle())
+                    Image(systemName: "play.fill")
+                        .contentShape(Rectangle())
                         .padding(.horizontal, 8)
                 }
                 .opacity(selectedConversation == nil ? 1 : 0)
