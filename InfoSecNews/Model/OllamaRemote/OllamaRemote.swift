@@ -107,7 +107,11 @@ class OllamaRemote {
     ) async throws -> NDJsonStream<MLChatResponse> {
         let chatURL = remoteServerURL.appending(path: "/api/chat")
         
-        let stream = try await readRemoteStream(streamURL: chatURL, jsonBody: chatRequest, as: MLChatResponse.self)
+        let stream = try await readRemoteStream(
+            streamURL: chatURL,
+            jsonBody: chatRequest,
+            as: MLChatResponse.self
+        )
         return stream
     }
     

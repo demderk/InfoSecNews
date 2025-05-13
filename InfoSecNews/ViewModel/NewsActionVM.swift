@@ -8,8 +8,6 @@
 import Foundation
 import os
 
-import Foundation
-
 @Observable
 class NewsActionVM {
     let remote = OllamaRemote(selectedModel: .gemma31b)

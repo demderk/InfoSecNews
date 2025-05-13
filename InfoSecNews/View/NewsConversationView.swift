@@ -98,6 +98,7 @@ struct NewsConversationView: View {
     }
 }
 
+// swiftlint:disable line_length
 #Preview {
     // AXAXAXAXA
     @Previewable @State var mocks: [any NewsBehavior] = [SecurityLabNews(
@@ -124,3 +125,4 @@ struct NewsConversationView: View {
     NewsConversationView(newsItems: $mocks)
         .frame(width: 1000, height: 500)
 }
+// swiftlint:enable line_length

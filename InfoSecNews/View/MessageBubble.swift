@@ -49,4 +49,4 @@ struct MessageBubble: Shape {
         return Path(bezierPath.cgPath)
     }
 }
-//swiftlint:enable line_length
+// swiftlint:enable line_length

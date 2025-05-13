@@ -16,5 +16,10 @@ struct MLModel: Codable {
         var parameterSize: String
     }
     
-    static let gemma31b: MLModel = MLModel(name: "gemma3:1b", details: MLModelDetails(family: "gemma3", parameterSize: "999.89M"))
+    static let gemma31b: MLModel = MLModel(
+        name: "gemma3:1b",
+        details: MLModelDetails(
+            family: "gemma3",
+            parameterSize: "999.89M")
+    )
 }
