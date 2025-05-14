@@ -12,6 +12,7 @@ struct NewsConversationView: View {
     
     @State var vm: NewsActionVM = NewsActionVM()
     @State var showOriginals = true
+    @State var extendedNews = true
     @State var selectedConversation: OllamaConversation?
     
     @Namespace var animationNamespace
@@ -35,12 +36,16 @@ struct NewsConversationView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         HStack { Spacer() }
                         ForEach(vm.chats) { item in
-                            ChatResponse(conversation: item, isOriginal: $showOriginals)
-                                .onChatOpen {
-                                    withAnimation(.bouncy(duration: 0.35)) {
-                                        selectedConversation = item
-                                    }
-                                }.matchedGeometryEffect(id: item.id, in: animationNamespace)
+                            ChatResponse(
+                                conversation: item,
+                                isOriginal: $showOriginals,
+                                roExpanded: $extendedNews
+                            )
+                            .onChatOpen {
+                                withAnimation(.bouncy(duration: 0.35)) {
+                                    selectedConversation = item
+                                }
+                            }.matchedGeometryEffect(id: item.id, in: animationNamespace)
                         }
                     }
                     .padding(.vertical, 0)
@@ -58,11 +63,10 @@ struct NewsConversationView: View {
                     Button(action: { showOriginals = false }) {
                         Image(systemName: "quote.bubble")
                             .padding(.vertical, 8)
-                            .padding(.leading, 8)
                             .imageScale(.large)
                             .padding(.horizontal, 8)
                             .fontWeight(.medium)
-                            .foregroundStyle(showOriginals ? Color.secondary : .blue)
+                            .foregroundStyle(showOriginals ? .gray.opacity(0.8) : .blue)
                             .contentShape(Rectangle())
                     }.buttonStyle(.plain)
                     Divider()
@@ -74,9 +78,23 @@ struct NewsConversationView: View {
                             .padding(.trailing, 8)
                             .imageScale(.large)
                             .fontWeight(.medium)
-                            .foregroundStyle(showOriginals ? .blue : .secondary)
+                            .foregroundStyle(showOriginals ? .blue : .gray.opacity(0.8))
                             .contentShape(Rectangle())
                     }.buttonStyle(.plain)
+                    Button(action: { extendedNews = !extendedNews }) {
+                        Image(systemName: extendedNews
+                              ? "arrow.up.and.line.horizontal.and.arrow.down"
+                              : "arrow.down.and.line.horizontal.and.arrow.up")
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 8)
+                            .imageScale(.medium)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.gray.opacity(0.8))
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.trailing, 8)
+                    .opacity(showOriginals ? 1 : 0)
                 }
                 .padding(.trailing, 8)
                 .opacity(selectedConversation == nil && vm.chats.count > 0

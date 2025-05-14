@@ -13,16 +13,46 @@ struct ChatResponse: View {
     
     @Binding var isOriginal: Bool
     
+    var roExpanded: Binding<Bool>?
+    @State private var expanded: Bool
+    
+    private var newsIsExpanded: Binding<Bool> {
+        roExpanded ?? .constant(false)
+    }
+    
     @State private var background: Color = .gray.opacity(0.05)
     @State private var foreground: Color = .primary
     @State private var buttonsBackground: Color = .white.opacity(0.3)
     
-    @State private var expanded: Bool = false
-    @State private var newsText: String = ""
+    @State private var newsText: String
     
     @State private var copyLinkImageName: String = "link"
     @State private var copyTextImageName: String = "document.on.document"
-    @State private var expandNewsImageName: String = "chevron.down"
+    @State private var expandNewsImageName: String
+    
+    /// ChatResponse
+    /// - Parameters:
+    ///     - roExpanded: Read-only Binding: external changes can update the card’s expanded state,
+    /// but the card can’t modify the binding. It listens to updates but uses its own state.
+    init(conversation: OllamaConversation,
+         isOriginal: Binding<Bool>,
+         roExpanded: Binding<Bool>? = nil,
+    ) {
+        self.conversation = conversation
+        _isOriginal = isOriginal
+        self.roExpanded = roExpanded
+        
+        let expanded = roExpanded?.wrappedValue ?? false
+        
+        if expanded {
+            newsText = conversation.newsItem.short
+            expandNewsImageName = "chevron.down"
+        } else {
+            newsText = conversation.newsContent
+            expandNewsImageName = "chevron.up"
+        }
+        self.expanded = expanded
+    }
     
     var onRefresh: (() -> Void)?
     var onChatOpen: (() -> Void)?
@@ -33,9 +63,10 @@ struct ChatResponse: View {
                 .font(.title3)
                 .fontWeight(.semibold)
                 .textSelection(.enabled)
+                .transaction { $0.animation = nil }
             Text(isOriginal ? newsText : conversation.selectedContent)
                 .fixedSize(horizontal: false, vertical: true)
-                .textSelection(.enabled)
+                .transaction { $0.animation = nil }
             HStack(spacing: 4) {
                 makeMiniButton(imageSystemName: copyTextImageName, action: copyText)
                 makeMiniButton(imageSystemName: copyLinkImageName, action: copyLink)
@@ -50,7 +81,9 @@ struct ChatResponse: View {
                 Spacer()
                 
                 if isOriginal {
-                    makeMiniButton(imageSystemName: expandNewsImageName, action: changeExpandNewsMode)
+                    makeMiniButton(imageSystemName: expandNewsImageName, action: {
+                        changeExpandNewsMode(expand: !expanded)
+                    })
                 }
             }.padding(.top, 8)
         }
@@ -64,11 +97,14 @@ struct ChatResponse: View {
                 changeMode(isOriginal: isOriginal)
             }
         }
+        .onChange(of: newsIsExpanded.wrappedValue) {
+            changeExpandNewsMode(expand: newsIsExpanded.wrappedValue)
+        }
     }
     
     private func viewAppeared() {
         changeMode(isOriginal: isOriginal)
-        newsText = conversation.newsItem.short
+//        changeExpandNewsMode(expand: newsIsExpanded.wrappedValue)
     }
     
     // TODO: This could be extracted into a separate ButtonStyle
@@ -143,17 +179,16 @@ struct ChatResponse: View {
         }
     }
     
-    private func changeExpandNewsMode() {
+    private func changeExpandNewsMode(expand: Bool) {
         withAnimation {
-            if expanded {
-                expanded = false
+            if expand {
                 newsText = conversation.newsItem.short
                 expandNewsImageName = "chevron.down"
             } else {
-                expanded = true
                 newsText = conversation.newsContent
                 expandNewsImageName = "chevron.up"
             }
+            expanded = expand
         }
     }
 }
