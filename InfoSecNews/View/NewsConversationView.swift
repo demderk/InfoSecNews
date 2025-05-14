@@ -79,7 +79,9 @@ struct NewsConversationView: View {
                     }.buttonStyle(.plain)
                 }
                 .padding(.trailing, 8)
-                .opacity(selectedConversation == nil ? 1 : 0)
+                .opacity(selectedConversation == nil && vm.chats.count > 0
+                         ? 1
+                         : 0)
             }
             ToolbarItem(placement: .primaryAction) {
                 Button(action: {
@@ -90,7 +92,9 @@ struct NewsConversationView: View {
                         .contentShape(Rectangle())
                         .padding(.horizontal, 8)
                 }
-                .opacity(selectedConversation == nil ? 1 : 0)
+                .opacity(selectedConversation == nil && vm.chats.count > 0
+                         ? 1
+                         : 0)
             }
         }
         .onAppear {

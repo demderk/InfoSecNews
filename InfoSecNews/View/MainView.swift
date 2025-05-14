@@ -11,7 +11,7 @@ enum SelectedWindow: CaseIterable, Identifiable {
     var id: Self { self }
     
     case home
-    case export
+    case conversations
     case securityMedia
     case securityLab
     case antiMalware
@@ -29,8 +29,8 @@ enum SelectedWindow: CaseIterable, Identifiable {
             "Anti-Malware"
         case .voyager:
             "Web Voyager"
-        case .export:
-            "Export to AI"
+        case .conversations:
+            "Conversations"
         }
     }
     
@@ -42,8 +42,8 @@ enum SelectedWindow: CaseIterable, Identifiable {
             "network"
         case .voyager:
             "location.square"
-        case .export:
-            "tray.and.arrow.up"
+        case .conversations:
+            "bubble.left.and.bubble.right"
         }
     }
     
@@ -75,12 +75,12 @@ struct ContentView: View {
                         Text(SelectedWindow.home.title)
                     }.tag(SelectedWindow.home)
                     HStack {
-                        Image(systemName: SelectedWindow.export.imageString)
+                        Image(systemName: SelectedWindow.conversations.imageString)
                             .frame(width: 24)
                             .fontWeight(.semibold)
                         Spacer().frame(width: 2)
-                        Text(SelectedWindow.export.title)
-                    }.tag(SelectedWindow.export)
+                        Text(SelectedWindow.conversations.title)
+                    }.tag(SelectedWindow.conversations)
                 }
                 if !vm.enabledModules.isEmpty {
                     Section(header: Text("News Sources")) {
@@ -142,7 +142,7 @@ struct ContentView: View {
                             Spacer()
                         }.navigationTitle("InfoSecNews → Web Voyager")
                     }
-                case .export:
+                case .conversations:
                     NewsConversationView(newsItems: $vm.selectedNews)
                 }
                 
