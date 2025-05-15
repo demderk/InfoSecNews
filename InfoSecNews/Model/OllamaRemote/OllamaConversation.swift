@@ -75,7 +75,7 @@ class OllamaConversation: Identifiable {
     }
     
     @discardableResult
-    func sendMessage(prompt: String) async throws -> ChatMessage {
+    func sendMessage(prompt: String, makeSelected: Bool = false) async throws -> ChatMessage {
         let userMessage = ChatMessage(MLMessage(role: .user, content: prompt))
         
         let chatRequest = MLChatRequest(
@@ -87,6 +87,10 @@ class OllamaConversation: Identifiable {
         
         storage.append(userMessage)
         storage.append(assistantMessage)
+        
+        if makeSelected {
+            selectedResponse = assistantMessage
+        }
         
         for try await item in stream {
             assistantMessage.content += item.message.content
@@ -113,7 +117,6 @@ class OllamaConversation: Identifiable {
         )
         storage.append(instructions)
         
-        let lastSummarized = try await sendMessage(prompt: full)
-        selectedResponse = selectedResponse ?? lastSummarized
+        try await sendMessage(prompt: full, makeSelected: true)
     }
 }

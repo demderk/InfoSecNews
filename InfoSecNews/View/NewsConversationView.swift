@@ -102,17 +102,30 @@ struct NewsConversationView: View {
                          : 0)
             }
             ToolbarItem(placement: .primaryAction) {
-                Button(action: {
-                    showOriginals = false
-                    vm.sumarizeAll()
-                }) {
-                    Image(systemName: "play.fill")
-                        .contentShape(Rectangle())
-                        .padding(.horizontal, 8)
+                if vm.bussy {
+                    Button(action: {
+                        vm.cancelSummarize()
+                    }) {
+                        Image(systemName: "stop.fill")
+                            .contentShape(Rectangle())
+                            .padding(.horizontal, 8)
+                    }
+                    .opacity(selectedConversation == nil && vm.chats.count > 0
+                             ? 1
+                             : 0)
+                } else {
+                    Button(action: {
+                        showOriginals = false
+                        vm.sumarizeAll()
+                    }) {
+                        Image(systemName: "play.fill")
+                            .contentShape(Rectangle())
+                            .padding(.horizontal, 8)
+                    }
+                    .opacity(selectedConversation == nil && vm.chats.count > 0
+                             ? 1
+                             : 0)
                 }
-                .opacity(selectedConversation == nil && vm.chats.count > 0
-                         ? 1
-                         : 0)
             }
         }
         .onAppear {
