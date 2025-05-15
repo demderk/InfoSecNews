@@ -17,24 +17,28 @@ struct NewsConversationView: View {
     
     @Namespace var animationNamespace
     
-    private var toolsPresented: Bool {
+    private var hasItems: Bool {
         selectedConversation == nil && vm.chats.count > 0
     }
     
     var body: some View {
         ZStack {
-            if let selected = selectedConversation {
-                fullscreenChat(conversation: selected)
-            }
-            else {
-                conversationList
+            if hasItems {
+                if let selected = selectedConversation {
+                    fullscreenChat(conversation: selected)
+                }
+                else {
+                    conversationList
+                }
+            } else {
+                nothing
             }
         }
         .navigationTitle("")
         .toolbar {
             ToolbarItem(placement: .navigation) {
                 tools
-                    .opacity(toolsPresented ? 1 : 0)
+                    .opacity(hasItems ? 1 : 0)
                 
             }
             ToolbarItem(placement: .primaryAction) {
@@ -43,6 +47,21 @@ struct NewsConversationView: View {
         }
         .onAppear {
             vm.initChats(news: newsItems)
+        }
+    }
+    
+    private var nothing: some View {
+        VStack {
+            Spacer()
+            Text("No news selected")
+                .font(.title)
+                .foregroundStyle(.secondary)
+            Spacer().frame(height: 8)
+            Text("Pick a news from feed to get started")
+                .font(.body)
+                .foregroundStyle(.secondary)
+                .padding(.bottom, 64)
+            Spacer()
         }
     }
     
