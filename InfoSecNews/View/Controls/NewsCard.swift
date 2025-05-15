@@ -303,20 +303,20 @@ struct NewsCard: View, Equatable {
     }
 }
 
-// swiftlint:disable line_length
 #Preview {
-    let mockNewsItem = SecurityLabNews(
-        source: "debug.fm",
-        title: "Белый дом запретит судам принимать иски против Белого дома",
-        date: .now,
-        short: "Пресс-секретарь Белого дома Робин Маусс объявил, что президент готовится запретить судам принимать иски против него самого и Белого дома в целом. Он также объяснил, почему готовящийся указ никак не противоречит верховенству права.", fullTextLink: URL(string: "google.com")!,
-        full: "Пресс-секретарь Белого дома Робин Маусс объявил, что президент готовится запретить судам принимать иски против него самого и Белого дома в целом. Он также объяснил, почему готовящийся указ никак не противоречит верховенству права.")
     VStack {
-        NewsCard(newsItem: mockNewsItem, voyager: WebVoyager(), isSelected: Binding.constant(false))
-        NewsCard(newsItem: mockNewsItem, voyager: WebVoyager(), isSelected: Binding.constant(false))
-        NewsCard(newsItem: mockNewsItem, voyager: WebVoyager(), isSelected: Binding.constant(false))
-        NewsCard(newsItem: mockNewsItem, voyager: WebVoyager(), isSelected: Binding.constant(false))
+        NewsCard(newsItem: MockNewsItem(),
+                 voyager: WebVoyager(),
+                 isSelected: Binding.constant(false))
+        NewsCard(newsItem: MockNewsItem(),
+                 voyager: WebVoyager(),
+                 isSelected: Binding.constant(false))
+        NewsCard(newsItem: MockNewsItem(),
+                 voyager: WebVoyager(),
+                 isSelected: Binding.constant(false))
+        NewsCard(newsItem: MockNewsItem(),
+                 voyager: WebVoyager(),
+                 isSelected: Binding.constant(false))
     }.frame(width: 1024)
         .background(.background)
 }
-// swiftlint:enable line_length

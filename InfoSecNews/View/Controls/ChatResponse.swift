@@ -214,7 +214,7 @@ extension ChatResponse {
         Button("Change Mode") {
             test = !test
         }
-        ChatResponse(conversation: Omock(), isOriginal: $test)
+        ChatResponse(conversation: MockOllamaConversation(), isOriginal: $test)
             .frame(height: 256)
     }
 }

@@ -9,32 +9,6 @@ import Foundation
 import os
 
 @Observable
-class ChatMessage: Identifiable {
-    var id = UUID()
-    
-    var role: MLRole
-    var content: String
-    
-    init(_ base: MLMessage) {
-        role = base.role
-        content = base.content
-    }
-    
-    init(role: MLRole, content: String) {
-        self.role = role
-        self.content = content
-    }
-    
-    func asMLMessage() -> MLMessage {
-        MLMessage(role: role, content: content)
-    }
-}
-
-enum MLConversationError: Error {
-    case emptyNewsBody
-}
-
-@Observable
 class OllamaConversation: Identifiable {
     let id = UUID()
     

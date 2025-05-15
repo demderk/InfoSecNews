@@ -20,7 +20,7 @@ struct NewsConversationView: View {
     var body: some View {
         ZStack {
             if let selected = selectedConversation {
-                ChatCardView(conversation: selected,
+                ChatView(conversation: selected,
                              isOrignalPresented: showOriginals,
                              parentNameSpace: animationNamespace)
                 .close {

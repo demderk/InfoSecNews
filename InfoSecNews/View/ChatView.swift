@@ -8,7 +8,7 @@
 import SwiftUI
 import Foundation
 
-struct ChatCardView: View {
+struct ChatView: View {
     @Bindable var conversation: OllamaConversation
     @Bindable var vm: ChatCardVM = ChatCardVM()
     @State var isOrignalPresented: Bool
@@ -18,9 +18,6 @@ struct ChatCardView: View {
     var closeAction: (() -> Void)?
     
     var parentNameSpace: Namespace.ID
-    
-    // TODO: Disable autoscroll
-    // TODO: ZStack instead of VStack. Shrink padding and enable background blur
     
     var responseHeader: some View {
         HStack {
@@ -178,7 +175,7 @@ struct ChatCardView: View {
     }
 }
 
-extension ChatCardView {
+extension ChatView {
     func close(_ action: @escaping () -> Void) -> Self {
         var copy = self
         copy.closeAction = action
@@ -186,31 +183,10 @@ extension ChatCardView {
     }
 }
 
-// swiftlint:disable line_length
-class Omock: OllamaConversation {
-    init() {
-        let mockNewsItem = SecurityLabNews(
-            source: "debug.fm",
-            title: "Белый дом запретит судам принимать иски против Белого дома",
-            date: .now,
-            short: "Пресс-секретарь Белого дома Робин Маусс объявил, что президент готовится запретить судам принимать иски против него самого и Белого дома в целом. Он также объяснил, почему готовящийся указ никак не противоречит верховенству права.", fullTextLink: URL(string: "google.com")!,
-            full: "Пресс-секретарь Белого дома Робин Маусс объявил, что президент готовится запретить судам принимать иски против него самого и Белого дома в целом. Он также объяснил, почему готовящийся указ никак не противоречит верховенству права.")
-        super.init(ollamaRemote: OllamaRemote(
-            selectedModel: .gemma31b),
-                   newsItem: mockNewsItem)
-        pull(role: .assistant,
-             message: "Пресс-секретарь Белого дома Робин Маусс объявил, что президент готовится запретить судам принимать иски против него самого и Белого дома в целом. Он также объяснил, почему готовящийся указ никак не противоречит верховенству права.")
-        pull(role: .assistant, message: "Пресс-секретарь Белого дома Робин Маусс объявил, что президент готовится запретить судам принимать иски против него самого и Белого дома в целом. Он также объяснил, почему готовящийся указ никак не противоречит верховенству права.")
-        pull(role: .user, message: "Почему белый дом, белый?")
-        pull(role: .assistant, message: "хз...")
-    }
-}
-// swiftlint:enable line_length
-
 #Preview {
     @Previewable @Namespace var namespace
     
-    ChatCardView(conversation: Omock(), isOrignalPresented: false, parentNameSpace: namespace)
+    ChatView(conversation: MockOllamaConversation(), isOrignalPresented: false, parentNameSpace: namespace)
         .frame(width: 600, height: 600)
         .background(.white)
 }
