@@ -10,7 +10,9 @@ import os
 
 @Observable
 class NewsActionVM {
-    let remote = OllamaRemote(selectedModel: .gemma31b)
+    // TODO: Hardcoded creds still here!
+    
+    let remote = OllamaRemote(selectedModel: .gemma31b, url: URL(string: "http://127.0.0.1:11434")!)
 
 //    var availableModels: [MLModel] = []
 

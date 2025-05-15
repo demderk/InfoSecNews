@@ -34,12 +34,12 @@ struct MLChatResponse: Codable {
 }
 
 class OllamaRemote {
-    // TODO: Remove hardcoded creds
-    let remoteServerURL: URL = URL(string: "http://127.0.0.1:11434")!
+    let remoteServerURL: URL
     var selectedModel: MLModel
     
-    init(selectedModel: MLModel) {
+    init(selectedModel: MLModel, url: URL) {
         self.selectedModel = selectedModel
+        remoteServerURL = url
     }
     
     func generateStream(
