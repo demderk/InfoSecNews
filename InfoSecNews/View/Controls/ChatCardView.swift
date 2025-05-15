@@ -10,8 +10,9 @@ import Foundation
 
 struct ChatCardView: View {
     @Bindable var conversation: OllamaConversation
+    @Bindable var vm: ChatCardVM = ChatCardVM()
     @State var isOrignalPresented: Bool
-    @State var message: String = ""
+    
     @FocusState var isFieldFocused: Bool
     
     var closeAction: (() -> Void)?
@@ -97,7 +98,7 @@ struct ChatCardView: View {
     
     var chatField: some View {
         HStack(spacing: 8) {
-            TextField("Message", text: $message, axis: .vertical)
+            TextField("Message", text: $vm.message, axis: .vertical)
                 .lineLimit(5)
                 .padding(.vertical, 6)
                 .padding(.horizontal, 12)
@@ -111,14 +112,24 @@ struct ChatCardView: View {
                 .onTapGesture {
                     isFieldFocused = !isFieldFocused
                 }
-                .onSubmit(sendMessage)
-            Button(action: sendMessage) {
-                Image(systemName: "paperplane")
-                    .fontWeight(.semibold)
-                    .font(.title3)
-                    .contentShape(Rectangle())
-                    .foregroundStyle(.secondary)
-            }.buttonStyle(.plain)
+                .onSubmit(send)
+            if vm.bussy {
+                Button(action: cancel) {
+                    Image(systemName: "stop.fill")
+                        .fontWeight(.semibold)
+                        .font(.title3)
+                        .contentShape(Rectangle())
+                        .foregroundStyle(.secondary)
+                }.buttonStyle(.plain)
+            } else {
+                Button(action: send) {
+                    Image(systemName: "paperplane")
+                        .fontWeight(.semibold)
+                        .font(.title3)
+                        .contentShape(Rectangle())
+                        .foregroundStyle(.secondary)
+                }.buttonStyle(.plain)
+            }
         }
     }
     
@@ -158,11 +169,12 @@ struct ChatCardView: View {
         }
     }
     
-    private func sendMessage() {
-        Task { [message] in
-            try! await conversation.sendMessage(prompt: message)
-        }
-        message = ""
+    private func send() {
+        vm.sendMessage(conversation: conversation)
+    }
+    
+    private func cancel() {
+        vm.cancel()
     }
 }
 

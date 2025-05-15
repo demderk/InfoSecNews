@@ -17,8 +17,9 @@ class NewsActionVM {
     var chats: [OllamaConversation] = []
     
     var errorMessage: String?
-    var summarizationTask: Task<Void, any Error>?
+    
     var bussy: Bool = false
+    private var summarizationTask: Task<Void, any Error>?
     
     init() {
 //        ollamaUpdateModels()
