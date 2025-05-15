@@ -1,5 +1,5 @@
 //
-//  NewsActionVM.swift
+//  NewsConversationVM.swift
 //  InfoSecNews
 //
 //  Created by Roman Zheglov on 26.04.2025.
@@ -9,7 +9,7 @@ import Foundation
 import os
 
 @Observable
-class NewsActionVM {
+class NewsConversationVM {
     // TODO: Hardcoded creds still here!
     
     let remote = OllamaRemote(selectedModel: .gemma31b, url: URL(string: "http://127.0.0.1:11434")!)

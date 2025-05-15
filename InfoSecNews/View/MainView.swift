@@ -61,11 +61,11 @@ enum SelectedWindow: CaseIterable, Identifiable {
 }
 
 struct ContentView: View {
-    @State var vm = FeedVM()
+    @State var feedVM = FeedVM()
         
     var body: some View {
         NavigationSplitView(sidebar: {
-            List(selection: $vm.currentWindow) {
+            List(selection: $feedVM.currentWindow) {
                 Section(header: Text("Tools")) {
                     HStack {
                         Image(systemName: SelectedWindow.home.imageString)
@@ -82,13 +82,13 @@ struct ContentView: View {
                         Text(SelectedWindow.conversations.title)
                     }.tag(SelectedWindow.conversations)
                 }
-                if !vm.enabledModules.isEmpty {
+                if !feedVM.enabledModules.isEmpty {
                     Section(header: Text("News Sources")) {
                         ForEach(
                             SelectedWindow.allCases[1..<SelectedWindow.allCases.count-1],
                             id: \.self
                         ) { item in
-                            if let enabled = item.asEnabledModule, vm.enabledModules.contains(enabled) {
+                            if let enabled = item.asEnabledModule, feedVM.enabledModules.contains(enabled) {
                                 HStack {
                                     Image(systemName: item.imageString)
                                         .frame(width: 24)
@@ -100,7 +100,7 @@ struct ContentView: View {
                         }
                     }
                 }
-                if !vm.enabledModules.isEmpty {
+                if !feedVM.enabledModules.isEmpty {
                     Section(header: Text("Misc")) {
                         NavigationLink(value: SelectedWindow.voyager) {
                             HStack {
@@ -116,22 +116,22 @@ struct ContentView: View {
             }
         }, detail: {
             VStack {
-                switch vm.currentWindow {
+                switch feedVM.currentWindow {
                 case .securityMedia:
-                    WebView(vm.secmed.webKit)
+                    WebView(feedVM.secmed.webKit)
                         .navigationTitle("InfoSecNews → Sources → Security Media")
                 case .securityLab:
-                    WebView(vm.seclab.webKit)
+                    WebView(feedVM.seclab.webKit)
                         .navigationTitle("InfoSecNews → Sources → Security Lab")
                 case .antiMalware:
-                    WebView(vm.antMal.webKit)
+                    WebView(feedVM.antMal.webKit)
                         .navigationTitle("InfoSecNews → Sources → Anti-Malware")
                 case .home:
                     FeedView()
-                        .environment(vm)
+                        .environment(feedVM)
                 case .voyager:
-                    if vm.voyager.htmlBody != nil {
-                        WebView(vm.voyager.webKit)
+                    if feedVM.voyager.htmlBody != nil {
+                        WebView(feedVM.voyager.webKit)
                             .navigationTitle("InfoSecNews → Web Voyager")
                     } else {
                         VStack {
@@ -143,7 +143,7 @@ struct ContentView: View {
                         }.navigationTitle("InfoSecNews → Web Voyager")
                     }
                 case .conversations:
-                    NewsConversationView(newsItems: $vm.selectedNews)
+                    NewsConversationView(newsItems: $feedVM.selectedNews)
                 }
                 
             }

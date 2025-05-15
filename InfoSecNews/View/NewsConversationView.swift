@@ -10,7 +10,7 @@ import SwiftUI
 struct NewsConversationView: View {
     @Binding var newsItems: [any NewsBehavior]
     
-    @State var vm: NewsActionVM = NewsActionVM()
+    @State var vm: NewsConversationVM = NewsConversationVM()
     @State var showOriginals = true
     @State var extendedNews = true
     @State var selectedConversation: OllamaConversation?
