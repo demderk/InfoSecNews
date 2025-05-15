@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct FeedView: View {
-    @Environment(MainVM.self) var parentViewModel
+    @Environment(FeedVM.self) var parentViewModel
     
     @State var modulesPopoverPresented: Bool = false
     @State var startSelectedModules: EnabledModules = []
@@ -177,7 +177,7 @@ struct FeedView: View {
 }
 
 #Preview {
-    @Previewable @State var vm = MainVM()
+    @Previewable @State var vm = FeedVM()
     
     FeedView()
         .environment(vm)

@@ -61,7 +61,7 @@ enum SelectedWindow: CaseIterable, Identifiable {
 }
 
 struct ContentView: View {
-    @State var vm = MainVM()
+    @State var vm = FeedVM()
         
     var body: some View {
         NavigationSplitView(sidebar: {

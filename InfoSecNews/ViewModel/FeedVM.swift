@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 @Observable
-class MainVM {
+class FeedVM {
     private let UDSelectedModulesName = "selectedModules"
     
     var enabledModules: EnabledModules = []
