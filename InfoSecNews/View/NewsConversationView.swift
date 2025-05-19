@@ -38,7 +38,9 @@ struct NewsConversationView: View {
         .toolbar {
             ToolbarItem(placement: .navigation) {
                 tools
-                    .opacity(hasItems ? 1 : 0)
+                    .opacity(selectedConversation == nil && hasItems
+                             ? 1
+                             : 0)
                 
             }
             ToolbarItem(placement: .primaryAction) {
@@ -153,7 +155,7 @@ struct NewsConversationView: View {
                     .contentShape(Rectangle())
                     .padding(.horizontal, 8)
             }
-            .opacity(selectedConversation == nil && vm.chats.count > 0
+            .opacity(selectedConversation == nil && hasItems
                      ? 1
                      : 0)
         } else {
@@ -165,7 +167,7 @@ struct NewsConversationView: View {
                     .contentShape(Rectangle())
                     .padding(.horizontal, 8)
             }
-            .opacity(selectedConversation == nil && vm.chats.count > 0
+            .opacity(selectedConversation == nil && hasItems
                      ? 1
                      : 0)
         }
