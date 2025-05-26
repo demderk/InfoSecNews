@@ -136,7 +136,7 @@ struct ChatView: View {
                 ScrollView {
                     VStack {
                         responseHeader
-                        ChatResponse(conversation: conversation,
+                        ChatResponse(conversation: conversation.chatData,
                                      isOriginal: $isOrignalPresented)
                         .matchedGeometryEffect(id: conversation.id, in: parentNameSpace)
                     }

@@ -158,12 +158,12 @@ struct FeedView: View {
     private func bindNewsIsSelected(newsItem: any NewsBehavior) -> Binding<Bool> {
         Binding<Bool>(
             get: {
-                parentViewModel.selectedNews.contains(where: { $0.title == newsItem.title })
+                parentViewModel.hasChat(news: newsItem)
             }, set: { new in
                 if new {
-                    parentViewModel.selectedNews.append(newsItem)
+                    parentViewModel.createChat(news: newsItem)
                 } else {
-                    parentViewModel.selectedNews.removeAll(where: { $0.title == newsItem.title })
+                    parentViewModel.removeChat(news: newsItem)
                 }
             }
         )

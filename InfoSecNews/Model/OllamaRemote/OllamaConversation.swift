@@ -8,62 +8,42 @@
 import Foundation
 import os
 
+enum OllamaError: Error {
+    case emptyModel
+}
+
 @Observable
 class OllamaConversation: Identifiable {
-    let id = UUID()
     
     let remote: OllamaRemote
-    let newsItem: any NewsBehavior
+    let model: MLModel
+    let chatData: ChatData
     
-    private(set) var storage: [ChatMessage] = []
-    
-    // MARK: UI Properties
-    
-    private var selectedResponse: ChatMessage?
-    
-    var selectedContent: String {
-        if let content = selectedResponse {
-            return content.content
-        }
-        if let content = storage.first(where: { $0.role == .assistant })?.content {
-            return content
-        } else {
-            return "This news is still pending delivery to the target"
-        }
-    }
-    
-    var newsContent: String {
-        guard let content = newsItem.full else {
-            // swiftlint:disable:next line_length
-            Logger.UILogger.warning("[OllamaConversation] NewsItem with nil \"full\" was found. Using default \"short\".")
-            return newsItem.short
-        }
-        return content
-    }
-    
-    // END
-    
-    init(ollamaRemote: OllamaRemote, newsItem: any NewsBehavior) {
+    init(ollamaRemote: OllamaRemote, model: MLModel, chatData: ChatData) {
         self.remote = ollamaRemote
-        self.newsItem = newsItem
+        self.model = model
+        self.chatData = chatData
     }
+    
+    @available(*, deprecated)
+    var storage: [ChatMessage] { chatData.messageHistory }
     
     @discardableResult
     func sendMessage(prompt: String, makeSelected: Bool = false) async throws -> ChatMessage {
         let userMessage = ChatMessage(MLMessage(role: .user, content: prompt))
         
         let chatRequest = MLChatRequest(
-            model: remote.selectedModel.name,
-            messages: storage.map({ $0.asMLMessage() }) + [userMessage.asMLMessage()])
+            model: model.name,
+            messages: chatData.messageHistory.map({ $0.asMLMessage() }) + [userMessage.asMLMessage()])
         
         let stream = try await remote.chatStream(chatRequest: chatRequest)
         let assistantMessage = ChatMessage(MLMessage(role: .assistant, content: ""))
         
-        storage.append(userMessage)
-        storage.append(assistantMessage)
+        chatData.messageHistory.append(userMessage)
+        chatData.messageHistory.append(assistantMessage)
         
         if makeSelected {
-            selectedResponse = assistantMessage
+            chatData.selectedMessage = assistantMessage
         }
         
         for try await item in stream {
@@ -74,13 +54,14 @@ class OllamaConversation: Identifiable {
         return assistantMessage
     }
     
+    @available(*, deprecated)
     func pull(role: MLRole, message: String) {
         let message = ChatMessage(role: role, content: message)
-        storage.append(message)
+        chatData.messageHistory.append(message)
     }
     
     func sumarize() async throws {
-        guard let full = newsItem.full else {
+        guard let full = chatData.news.full else {
             throw MLConversationError.emptyNewsBody
         }
         
@@ -89,7 +70,7 @@ class OllamaConversation: Identifiable {
             role: .user,
             content: "Сумаризируй сообщение ниже. Нужно в 2-3 предложения."
         )
-        storage.append(instructions)
+        chatData.messageHistory.append(instructions)
         
         try await sendMessage(prompt: full, makeSelected: true)
     }

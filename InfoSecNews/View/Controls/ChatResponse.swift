@@ -9,7 +9,7 @@ import SwiftUI
 import os
 
 struct ChatResponse: View {
-    @Bindable var conversation: OllamaConversation
+    @Bindable var conversation: ChatData
     
     @Binding var isOriginal: Bool
     
@@ -34,7 +34,7 @@ struct ChatResponse: View {
     /// - Parameters:
     ///     - roExpanded: Read-only Binding: external changes can update the card’s expanded state,
     /// but the card can’t modify the binding. It listens to updates but uses its own state.
-    init(conversation: OllamaConversation,
+    init(conversation: ChatData,
          isOriginal: Binding<Bool>,
          roExpanded: Binding<Bool>? = nil,
     ) {
@@ -45,7 +45,7 @@ struct ChatResponse: View {
         let expanded = roExpanded?.wrappedValue ?? false
         
         if expanded {
-            newsText = conversation.newsItem.short
+            newsText = conversation.news.short
             expandNewsImageName = "chevron.down"
         } else {
             newsText = conversation.newsContent
@@ -59,7 +59,7 @@ struct ChatResponse: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(isOriginal ? conversation.newsItem.title: "Summary")
+            Text(isOriginal ? conversation.news.title: "Summary")
                 .font(.title3)
                 .fontWeight(.semibold)
                 .textSelection(.enabled)
@@ -156,7 +156,7 @@ struct ChatResponse: View {
             copyLinkImageName = "checkmark"
         }
         NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(conversation.newsItem.fullTextLink.absoluteString, forType: .string)
+        NSPasteboard.general.setString(conversation.news.fullTextLink.absoluteString, forType: .string)
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
             withAnimation {
                 copyLinkImageName = "link"
@@ -165,7 +165,7 @@ struct ChatResponse: View {
     }
     
     private func copyText() {
-        if let full = conversation.newsItem.full {
+        if let full = conversation.news.full {
             withAnimation {
                 copyTextImageName = "checkmark"
             }
@@ -182,7 +182,7 @@ struct ChatResponse: View {
     private func changeExpandNewsMode(expand: Bool) {
         withAnimation {
             if expand {
-                newsText = conversation.newsItem.short
+                newsText = conversation.news.short
                 expandNewsImageName = "chevron.down"
             } else {
                 newsText = conversation.newsContent
@@ -214,7 +214,7 @@ extension ChatResponse {
         Button("Change Mode") {
             test = !test
         }
-        ChatResponse(conversation: MockOllamaConversation(), isOriginal: $test)
+        ChatResponse(conversation: MockChatData(), isOriginal: $test)
             .frame(height: 256)
     }
 }

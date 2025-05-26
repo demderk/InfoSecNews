@@ -8,24 +8,24 @@
 import SwiftUI
 
 struct NewsConversationView: View {
-    @Binding var newsItems: [any NewsBehavior]
+    @Binding var chats: [ChatData]
     
     @State var vm: NewsConversationVM = NewsConversationVM()
     @State var showOriginals = true
     @State var extendedNews = true
-    @State var selectedConversation: OllamaConversation?
+    @State var selectedConversation: ChatData?
     
     @Namespace var animationNamespace
     
     private var hasItems: Bool {
-        selectedConversation == nil && vm.chats.count > 0
+        vm.chats.count > 0
     }
     
     var body: some View {
         ZStack {
             if hasItems {
                 if let selected = selectedConversation {
-                    fullscreenChat(conversation: selected)
+                    fullscreenChat(conversation: vm.makeDialog(chatData: selected))
                 }
                 else {
                     conversationList
@@ -46,8 +46,9 @@ struct NewsConversationView: View {
             }
         }
         .onAppear {
-            vm.initChats(news: newsItems)
+            vm.pushChats(chats: chats)
         }
+        
     }
     
     private var nothing: some View {
@@ -172,12 +173,13 @@ struct NewsConversationView: View {
 }
 
 #Preview {
-    @Previewable @State var mocks: [any NewsBehavior] = [
-        MockNewsItem(),
-        MockNewsItem(),
-        MockNewsItem(),
-        MockNewsItem()
+    @Previewable @State var mocks: [ChatData] = [
+        MockChatData(),
+        MockChatData(),
+        MockChatData(),
+        MockChatData(),
+        MockChatData()
     ]
-    NewsConversationView(newsItems: $mocks)
+    NewsConversationView(chats: $mocks)
         .frame(width: 1000, height: 500)
 }

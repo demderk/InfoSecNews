@@ -35,21 +35,20 @@ struct MLChatResponse: Codable {
 
 class OllamaRemote {
     let remoteServerURL: URL
-    var selectedModel: MLModel
     
-    init(selectedModel: MLModel, url: URL) {
-        self.selectedModel = selectedModel
+    init(url: URL) {
         remoteServerURL = url
     }
     
     func generateStream(
         prompt: String,
-        system: String? = nil
+        system: String? = nil,
+        model: MLModel
     ) async throws -> NDJsonStream<OllamaStreamResponse> {
         let generationURL = remoteServerURL.appending(path: "/api/generate")
         
         var requestBody: [String: String] = [
-            "model": selectedModel.name,
+            "model": model.name,
             "prompt": prompt
         ]
         
@@ -68,11 +67,12 @@ class OllamaRemote {
     func generateStream(
         prompt: String,
         system: String? = nil,
+        model: MLModel,
         onDataAppeared: @escaping (String) -> Void
     ) throws {
         Task {
             do {
-                let array = try await generateStream(prompt: prompt, system: system)
+                let array = try await generateStream(prompt: prompt, system: system, model: model)
                 for try await item in array {
                     onDataAppeared(item.response)
                 }

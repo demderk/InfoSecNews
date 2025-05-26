@@ -17,3 +17,9 @@ protocol NewsBehavior: Identifiable, AnyObject {
 
     func loadRemoteData(voyager: WebVoyager) async throws
 }
+
+extension NewsBehavior {
+    func equals(news: any NewsBehavior) -> Bool {
+        self.fullTextLink == news.fullTextLink
+    }
+}

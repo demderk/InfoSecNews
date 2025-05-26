@@ -25,7 +25,7 @@ class FeedVM {
     
     var currentWindow: SelectedWindow = .home
     var bussy: Bool = false
-    var selectedNews: [any NewsBehavior] = []
+    var chats: [ChatData] = []
     
     init() {
         let preferences = UserDefaults.standard
@@ -127,5 +127,17 @@ class FeedVM {
     func saveSelectedModules() {
            let preferences = UserDefaults.standard
            preferences.set(self.enabledModules.rawValue, forKey: UDSelectedModulesName)
-       }
+    }
+    
+    func createChat(news: any NewsBehavior) {
+        chats.append(ChatData(news: news, messageHistory: []))
+    }
+    
+    func removeChat(news: any NewsBehavior) {
+        chats.removeAll(where: { $0.news.equals(news: news) })
+    }
+    
+    func hasChat(news: any NewsBehavior) -> Bool {
+        return chats.contains(where: { $0.news.equals(news: news) })
+    }
 }

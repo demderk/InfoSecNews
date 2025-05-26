@@ -143,7 +143,7 @@ struct ContentView: View {
                         }.navigationTitle("InfoSecNews → Web Voyager")
                     }
                 case .conversations:
-                    NewsConversationView(newsItems: $feedVM.selectedNews)
+                    NewsConversationView(chats: $feedVM.chats)
                 }
                 
             }

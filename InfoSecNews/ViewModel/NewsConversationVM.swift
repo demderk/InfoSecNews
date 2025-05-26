@@ -12,38 +12,18 @@ import os
 class NewsConversationVM {
     // TODO: Hardcoded creds still here!
     
-    let remote = OllamaRemote(selectedModel: .gemma31b, url: URL(string: "http://127.0.0.1:11434")!)
+    let remote = OllamaRemote(url: URL(string: "http://127.0.0.1:11434")!)
 
-//    var availableModels: [MLModel] = []
-
-    var chats: [OllamaConversation] = []
+    var chats: [ChatData] = []
+    var conversations: [ChatData] = []
     
     var errorMessage: String?
     
     var bussy: Bool = false
     private var summarizationTask: Task<Void, any Error>?
     
-    init() {
-//        ollamaUpdateModels()
-    }
-    
-//    func ollamaUpdateModels() {
-//        Task {
-//            do {
-//                availableModels = try await remote.listModels()
-//            } catch {
-//                // swiftlint:disable:next line_length
-//                Logger.ollamaLogger.error("[NewsActionVM] (ollamaUpdateModels) raised an error. AvailableModels not updated. Description: \(error.localizedDescription)")
-//            }
-//        }
-//    }
-    
-    func initChats(news: [any NewsBehavior]) {
-        for item in news {
-            let ollamaConversation = OllamaConversation(ollamaRemote: remote, newsItem: item)
-//            ollamaConversation.pull(role: .system, message: "Разговаривай только на русском языке, представь что ты Марио.")
-            chats.append(ollamaConversation)
-        }
+    func pushChats(chats: [ChatData]) {
+        self.chats = chats
     }
     
     func cancelSummarize() {
@@ -59,10 +39,16 @@ class NewsConversationVM {
         let task = Task {
             bussy = true
             for item in chats {
-                 try await item.sumarize()
+                let conversation = OllamaConversation(ollamaRemote: remote, model: .gemma31b, chatData: item)
+                try await conversation.sumarize()
             }
             bussy = false
         }
         summarizationTask = task
+    }
+    // TODO: Rename OllamaConversation to OllamaDialog
+    func makeDialog(chatData: ChatData) -> OllamaConversation {
+        // Get model
+        return OllamaConversation(ollamaRemote: remote, model: .gemma31b, chatData: chatData)
     }
 }
