@@ -9,7 +9,7 @@ import SwiftUI
 import Foundation
 
 struct ChatView: View {
-    @Bindable var conversation: OllamaConversation
+    @Bindable var conversation: OllamaDialog
     @Bindable var vm: ChatCardVM = ChatCardVM()
     @State var isOrignalPresented: Bool
     

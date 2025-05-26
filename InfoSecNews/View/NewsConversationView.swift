@@ -68,7 +68,7 @@ struct NewsConversationView: View {
         }
     }
     
-    private func fullscreenChat(conversation: OllamaConversation) -> some View {
+    private func fullscreenChat(conversation: OllamaDialog) -> some View {
         ChatView(conversation: conversation,
                      isOrignalPresented: showOriginals,
                      parentNameSpace: animationNamespace)

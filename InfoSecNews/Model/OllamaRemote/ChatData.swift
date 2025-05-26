@@ -35,7 +35,7 @@ class ChatData: Identifiable {
     var newsContent: String {
         guard let content = news.full else {
             // swiftlint:disable:next line_length
-            Logger.UILogger.warning("[OllamaConversation] NewsItem with nil \"full\" was found. Using default \"short\".")
+            Logger.UILogger.warning("[OllamaDialog] NewsItem with nil \"full\" was found. Using default \"short\".")
             return news.short
         }
         return content

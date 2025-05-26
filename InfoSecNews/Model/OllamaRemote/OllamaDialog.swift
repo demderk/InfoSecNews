@@ -1,5 +1,5 @@
 //
-//  OllamaConversation.swift
+//  OllamaDialog.swift
 //  InfoSecNews
 //
 //  Created by Roman Zheglov on 02.05.2025.
@@ -13,7 +13,7 @@ enum OllamaError: Error {
 }
 
 @Observable
-class OllamaConversation: Identifiable {
+class OllamaDialog: Identifiable {
     
     var id: ObjectIdentifier { chatData.id }
     

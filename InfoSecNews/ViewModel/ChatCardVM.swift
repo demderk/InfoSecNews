@@ -15,7 +15,7 @@ class ChatCardVM {
     
     private var sendTask: Task<Void, any Error>?
     
-    func sendMessage(conversation: OllamaConversation) {
+    func sendMessage(conversation: OllamaDialog) {
         let task = Task { [message] in
             bussy = true
             try await conversation.sendMessage(prompt: message)

@@ -39,16 +39,16 @@ class NewsConversationVM {
         let task = Task {
             bussy = true
             for item in chats {
-                let conversation = OllamaConversation(ollamaRemote: remote, model: .gemma31b, chatData: item)
+                let conversation = OllamaDialog(ollamaRemote: remote, model: .gemma31b, chatData: item)
                 try await conversation.sumarize()
             }
             bussy = false
         }
         summarizationTask = task
     }
-    // TODO: Rename OllamaConversation to OllamaDialog
-    func makeDialog(chatData: ChatData) -> OllamaConversation {
+
+    func makeDialog(chatData: ChatData) -> OllamaDialog {
         // Get model
-        return OllamaConversation(ollamaRemote: remote, model: .gemma31b, chatData: chatData)
+        return OllamaDialog(ollamaRemote: remote, model: .gemma31b, chatData: chatData)
     }
 }

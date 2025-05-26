@@ -8,7 +8,7 @@
 import Foundation
 
 // swiftlint:disable line_length
-class MockOllamaConversation: OllamaConversation {
+class MockOllamaConversation: OllamaDialog {
     init() {
         let mockNewsItem = SecurityLabNews(
             source: "debug.fm",
