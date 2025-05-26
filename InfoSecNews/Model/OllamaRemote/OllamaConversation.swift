@@ -27,7 +27,6 @@ class OllamaConversation: Identifiable {
         self.chatData = chatData
     }
     
-    @available(*, deprecated)
     var storage: [ChatMessage] { chatData.messageHistory }
     
     @discardableResult
@@ -56,10 +55,8 @@ class OllamaConversation: Identifiable {
         return assistantMessage
     }
     
-    @available(*, deprecated)
     func pull(role: MLRole, message: String) {
-        let message = ChatMessage(role: role, content: message)
-        chatData.messageHistory.append(message)
+        chatData.pull(role: role, message: message)
     }
     
     func sumarize() async throws {

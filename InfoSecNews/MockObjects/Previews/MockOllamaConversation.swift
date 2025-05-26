@@ -26,7 +26,7 @@ class MockOllamaConversation: OllamaConversation {
 }
 // swiftlint:enable line_length
 
-
+// swiftlint:disable line_length
 class MockChatData: ChatData {
     init() {
         let mockNewsItem = MockNewsItem()
@@ -38,3 +38,4 @@ class MockChatData: ChatData {
         pull(role: .assistant, message: "хз...")
     }
 }
+// swiftlint:enable line_length
