@@ -7,12 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		306E50F52DD6334900620514 /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 306E50F42DD6334900620514 /* ChatMessage.swift */; };
 		30B6EE9E2D5579E700916C75 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 30B6EE9D2D5579E700916C75 /* SwiftSoup */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		306E50F42DD6334900620514 /* ChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
 		30B6EE7E2D55763C00916C75 /* InfoSecNews.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InfoSecNews.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -41,7 +39,6 @@
 			children = (
 				30B6EE802D55763C00916C75 /* InfoSecNews */,
 				30B6EE7F2D55763C00916C75 /* Products */,
-				306E50F42DD6334900620514 /* ChatMessage.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -153,7 +150,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				306E50F52DD6334900620514 /* ChatMessage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

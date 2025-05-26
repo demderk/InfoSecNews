@@ -15,6 +15,8 @@ enum OllamaError: Error {
 @Observable
 class OllamaConversation: Identifiable {
     
+    var id: ObjectIdentifier { chatData.id }
+    
     let remote: OllamaRemote
     let model: MLModel
     let chatData: ChatData
