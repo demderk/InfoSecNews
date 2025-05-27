@@ -13,24 +13,17 @@ struct NewsConversationView: View {
     @State var vm: NewsConversationVM = NewsConversationVM()
     @State var showOriginals = true
     @State var extendedNews = true
-    @State var selectedConversation: ChatData?
     
     @Namespace var animationNamespace
     
-    private var hasItems: Bool {
-        vm.chats.count > 0
-    }
-    
     var body: some View {
         ZStack {
-            if hasItems {
-                if let selected = selectedConversation {
-                    fullscreenChat(conversation: vm.makeDialog(chatData: selected))
-                }
-                else {
-                    conversationList
-                }
-            } else {
+            switch vm.presentedView {
+            case .chat(let conversation):
+                fullscreenChat(conversation: conversation)
+            case .conversations:
+                conversationList
+            case .none:
                 nothing
             }
         }
@@ -38,13 +31,17 @@ struct NewsConversationView: View {
         .toolbar {
             ToolbarItem(placement: .navigation) {
                 tools
-                    .opacity(selectedConversation == nil && hasItems
-                             ? 1
-                             : 0)
+                    .opacity(vm.presentedView.presentTools ? 1 : 0)
+                
+            }
+            ToolbarItem(placement: .secondaryAction) {
+                modelSelection
+                    .opacity(vm.presentedView.presentTools ? 1 : 0)
                 
             }
             ToolbarItem(placement: .primaryAction) {
                 summarizationControl
+                    .opacity(vm.presentedView.presentTools ? 1 : 0)
             }
         }
         .onAppear {
@@ -70,14 +67,13 @@ struct NewsConversationView: View {
     
     private func fullscreenChat(conversation: OllamaDialog) -> some View {
         ChatView(conversation: conversation,
-                     isOrignalPresented: showOriginals,
-                     parentNameSpace: animationNamespace)
+                 isOrignalPresented: showOriginals,
+                 parentNameSpace: animationNamespace)
         .close {
             withAnimation(.bouncy(duration: 0.35)) {
-                selectedConversation = nil
+                vm.presentedView = .conversations
             }
         }
-        .opacity(selectedConversation == nil ? 0 : 1)
         .background(.background)
     }
     
@@ -93,7 +89,7 @@ struct NewsConversationView: View {
                     )
                     .onChatOpen {
                         withAnimation(.bouncy(duration: 0.35)) {
-                            selectedConversation = item
+                            vm.presentChat(item)
                         }
                     }.matchedGeometryEffect(id: item.id, in: animationNamespace)
                 }
@@ -101,7 +97,6 @@ struct NewsConversationView: View {
             .padding(.vertical, 0)
             .padding(.horizontal, 16)
         }
-        .opacity(selectedConversation == nil ? 1 : 0)
         .background(.background)
     }
     
@@ -137,13 +132,65 @@ struct NewsConversationView: View {
             if showOriginals {
                 toolButton(
                     imageName: extendedNews
-                        ? "arrow.up.and.line.horizontal.and.arrow.down"
-                        : "arrow.down.and.line.horizontal.and.arrow.up",
+                    ? "arrow.up.and.line.horizontal.and.arrow.down"
+                    : "arrow.down.and.line.horizontal.and.arrow.up",
                     action: { extendedNews = !extendedNews },
                     imageScale: .medium)
                 .padding(.horizontal, 4)
             }
         }
+    }
+    
+    private var modelSelection: some View {
+        HStack {
+            Button(action: {
+                vm.modelPopoverPresented = true
+            }) {
+                if vm.models.isEmpty {
+                    Text("Models not installed")
+                        .frame(minWidth: 256)
+                } else {
+                    Text(vm.selectedModel)
+                        .frame(minWidth: 256)
+                }
+            }
+            .disabled(vm.models.isEmpty)
+            .popover(isPresented: $vm.modelPopoverPresented, arrowEdge: .bottom) {
+                modelSelectionPicker
+            }
+            Button(action: vm.fetchModels) {
+                Image(systemName: "arrow.clockwise")
+                    .imageScale(.medium)
+            }.help("Fetch models")
+        }
+    }
+    
+    private var modelSelectionPicker: some View {
+        VStack {
+            HStack {
+                Text("Available Models")
+                    .font(.callout)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.secondary)
+                    .padding(.top, 4)
+                    .padding(.leading, 4)
+                Spacer()
+            }
+            VStack(alignment: .leading, spacing: 0) {
+                ForEach(vm.models) { item in
+                    ModelPickerButton(isSelected: .constant(item.name == vm.selectedModel)) {
+                        HStack {
+                            Text(item.name)
+                            Spacer()
+                        }
+                    } action: {
+                        vm.selectedModel = item.name
+                        vm.modelPopoverPresented = false
+                    }
+                }
+            }
+        }.padding(8)
+            .frame(minWidth: 256)
     }
     
     private var summarizationControl: some View {
@@ -155,9 +202,7 @@ struct NewsConversationView: View {
                     .contentShape(Rectangle())
                     .padding(.horizontal, 8)
             }
-            .opacity(selectedConversation == nil && hasItems
-                     ? 1
-                     : 0)
+            .disabled(!vm.executionAvailable)
         } else {
             Button(action: {
                 showOriginals = false
@@ -167,9 +212,7 @@ struct NewsConversationView: View {
                     .contentShape(Rectangle())
                     .padding(.horizontal, 8)
             }
-            .opacity(selectedConversation == nil && hasItems
-                     ? 1
-                     : 0)
+            .disabled(!vm.executionAvailable)
         }
     }
 }

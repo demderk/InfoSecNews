@@ -7,7 +7,9 @@
 
 import Foundation
 
-struct MLModel: Codable {
+struct MLModel: Codable, Identifiable {
+    var id: String { name }
+    
     var name: String
     var details: MLModelDetails
     
