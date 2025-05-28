@@ -65,55 +65,7 @@ struct ContentView: View {
         
     var body: some View {
         NavigationSplitView(sidebar: {
-            List(selection: $feedVM.currentWindow) {
-                Section(header: Text("Tools")) {
-                    HStack {
-                        Image(systemName: SelectedWindow.home.imageString)
-                            .frame(width: 24)
-                            .fontWeight(.black)
-                        Spacer().frame(width: 2)
-                        Text(SelectedWindow.home.title)
-                    }.tag(SelectedWindow.home)
-                    HStack {
-                        Image(systemName: SelectedWindow.conversations.imageString)
-                            .frame(width: 24)
-                            .fontWeight(.semibold)
-                        Spacer().frame(width: 2)
-                        Text(SelectedWindow.conversations.title)
-                    }.tag(SelectedWindow.conversations)
-                }
-                if !feedVM.enabledModules.isEmpty {
-                    Section(header: Text("News Sources")) {
-                        ForEach(
-                            SelectedWindow.allCases[1..<SelectedWindow.allCases.count-1],
-                            id: \.self
-                        ) { item in
-                            if let enabled = item.asEnabledModule, feedVM.enabledModules.contains(enabled) {
-                                HStack {
-                                    Image(systemName: item.imageString)
-                                        .frame(width: 24)
-                                        .fontWeight(.semibold)
-                                    Spacer().frame(width: 2)
-                                    Text(item.title)
-                                }
-                            }
-                        }
-                    }
-                }
-                if !feedVM.enabledModules.isEmpty {
-                    Section(header: Text("Misc")) {
-                        NavigationLink(value: SelectedWindow.voyager) {
-                            HStack {
-                                Image(systemName: SelectedWindow.voyager.imageString)
-                                    .frame(width: 24)
-                                    .fontWeight(.semibold)
-                                Spacer().frame(width: 2)
-                                Text(SelectedWindow.voyager.title)
-                            }.tag(SelectedWindow.voyager)
-                        }
-                    }
-                }
-            }
+            sidebar
         }, detail: {
             VStack {
                 switch feedVM.currentWindow {
@@ -148,6 +100,55 @@ struct ContentView: View {
                 
             }
         })
+    }
+    
+    func makeSidebarItem(title: String, imageSystemName: String, imageSize: CGFloat = 15) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: imageSystemName)
+                .font(.system(size: imageSize))
+                .frame(width: 15, alignment: .leading)
+                .fontWeight(.medium)
+                .padding(.horizontal, 2)
+            Text(title)
+        }
+    }
+    
+    // TODO: Вот это такое говно... Надо переписать
+    
+    var sidebar: some View {
+        List(selection: $feedVM.currentWindow) {
+            Section(header: Text("Tools")) {
+                makeSidebarItem(
+                    title: SelectedWindow.home.title,
+                    imageSystemName: SelectedWindow.home.imageString
+                )
+                .tag(SelectedWindow.home)
+                
+                makeSidebarItem(title: SelectedWindow.conversations.title,
+                                imageSystemName: SelectedWindow.conversations.imageString,
+                                imageSize: 11
+                )
+                .tag(SelectedWindow.conversations)
+            }
+            if !feedVM.enabledModules.isEmpty {
+                Section(header: Text("News Sources")) {
+                    ForEach(
+                        SelectedWindow.allCases[1..<SelectedWindow.allCases.count-1],
+                        id: \.self
+                    ) { item in
+                        if let enabled = item.asEnabledModule, feedVM.enabledModules.contains(enabled) {
+                            makeSidebarItem(title: item.title, imageSystemName: item.imageString)
+                        }
+                    }
+                }
+            }
+            if !feedVM.enabledModules.isEmpty {
+                Section(header: Text("Misc")) {
+                    makeSidebarItem(title: SelectedWindow.voyager.title, imageSystemName: SelectedWindow.voyager.imageString)
+                        .tag(SelectedWindow.voyager)
+                }
+            }
+        }
     }
 }
 
