@@ -47,4 +47,9 @@ class ChatData: Identifiable {
         let message = ChatMessage(role: role, content: message)
         messageHistory.append(message)
     }
+    
+    func clearHistory() {
+        selectedMessage = nil
+        messageHistory.removeAll()
+    }
 }

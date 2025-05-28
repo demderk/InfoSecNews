@@ -11,8 +11,6 @@ struct NewsConversationView: View {
     @Binding var chats: [ChatData]
     
     @State var vm: NewsConversationVM = NewsConversationVM()
-    @State var showOriginals = true
-    @State var extendedNews = true
     
     @Namespace var animationNamespace
     
@@ -28,6 +26,15 @@ struct NewsConversationView: View {
             }
         }
         .navigationTitle("")
+        .confirmationDialog("Regenerate from Scratch", isPresented: $vm.regenerateAlertPresented) {
+            Button("Regenerate", role: .destructive) { vm.regenetateSummaries() }
+            Button("Cancel", role: .cancel) { vm.regenerateAlertPresented = false }
+        } message: {
+            Text("""
+            This will delete all existing summaries and regenerate \
+            them from scratch using the selected model.
+            """)
+        }
         .toolbar {
             ToolbarItem(placement: .navigation) {
                 tools
@@ -40,7 +47,7 @@ struct NewsConversationView: View {
                 
             }
             ToolbarItem(placement: .primaryAction) {
-                summarizationControl
+                generationTools
                     .opacity(vm.presentedView.presentTools ? 1 : 0)
             }
         }
@@ -67,7 +74,7 @@ struct NewsConversationView: View {
     
     private func fullscreenChat(conversation: OllamaDialog) -> some View {
         ChatView(conversation: conversation,
-                 isOrignalPresented: showOriginals,
+                 isOrignalPresented: vm.showOriginals,
                  parentNameSpace: animationNamespace)
         .close {
             withAnimation(.bouncy(duration: 0.35)) {
@@ -84,8 +91,8 @@ struct NewsConversationView: View {
                 ForEach(vm.chats) { item in
                     ChatResponse(
                         conversation: item,
-                        isOriginal: $showOriginals,
-                        roExpanded: $extendedNews
+                        isOriginal: $vm.showOriginals,
+                        roExpanded: $vm.extendedNews
                     )
                     .onChatOpen {
                         withAnimation(.bouncy(duration: 0.35)) {
@@ -121,20 +128,20 @@ struct NewsConversationView: View {
         HStack(spacing: 0) {
             toolButton(
                 imageName: "quote.bubble",
-                action: { showOriginals = false },
-                highlighted: !showOriginals)
+                action: { vm.showOriginals = false },
+                highlighted: !vm.showOriginals)
             Divider()
                 .frame(height: 16)
             toolButton(
                 imageName: "newspaper",
-                action: { showOriginals = true },
-                highlighted: showOriginals)
-            if showOriginals {
+                action: { vm.showOriginals = true },
+                highlighted: vm.showOriginals)
+            if vm.showOriginals {
                 toolButton(
-                    imageName: extendedNews
+                    imageName: vm.extendedNews
                     ? "arrow.up.and.line.horizontal.and.arrow.down"
                     : "arrow.down.and.line.horizontal.and.arrow.up",
-                    action: { extendedNews = !extendedNews },
+                    action: { vm.extendedNews = !vm.extendedNews },
                     imageScale: .medium)
                 .padding(.horizontal, 4)
             }
@@ -159,7 +166,7 @@ struct NewsConversationView: View {
                 modelSelectionPicker
             }
             Button(action: vm.fetchModels) {
-                Image(systemName: "arrow.clockwise")
+                Image(systemName: "arrow.down.to.line.compact")
                     .imageScale(.medium)
             }.help("Fetch models")
         }
@@ -193,7 +200,25 @@ struct NewsConversationView: View {
             .frame(minWidth: 256)
     }
     
-    private var summarizationControl: some View {
+    private var generationTools: some View {
+        HStack(spacing: 0) {
+            regenerateAll
+            summarizeButton
+        }
+    }
+    
+    private var regenerateAll: some View {
+        Button(action: {
+            vm.regenerateAlertPresented = true
+        }) {
+            Image(systemName: "arrow.clockwise")
+                .contentShape(Rectangle())
+                .padding(.horizontal, 8)
+                .imageScale(.medium)
+        }.disabled(!vm.executionAvailable)
+    }
+    
+    private var summarizeButton: some View {
         if vm.bussy {
             Button(action: {
                 vm.cancelSummarize()
@@ -205,7 +230,7 @@ struct NewsConversationView: View {
             .disabled(!vm.executionAvailable)
         } else {
             Button(action: {
-                showOriginals = false
+                vm.showOriginals = false
                 vm.sumarizeAll()
             }) {
                 Image(systemName: "play.fill")

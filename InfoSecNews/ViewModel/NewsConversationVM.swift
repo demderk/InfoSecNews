@@ -34,6 +34,7 @@ class NewsConversationVM {
     
     var executionAvailable: Bool = false
     var modelPopoverPresented: Bool = false
+    var regenerateAlertPresented: Bool = false
     
     var selectedModel: String = "No model available"
     var selectedMLModel: MLModel? {
@@ -42,6 +43,8 @@ class NewsConversationVM {
     
     var presentedView: PresentedView = .none
     var errorMessage: String?
+    var showOriginals = true
+    var extendedNews = true
     
     var bussy: Bool = false
     private var summarizationTask: Task<Void, Never>?
@@ -67,6 +70,7 @@ class NewsConversationVM {
     }
     
     func sumarizeAll() {
+        showOriginals = false
         let task = Task {
             bussy = true
             for item in chats {
@@ -119,5 +123,12 @@ class NewsConversationVM {
             return
         }
         presentedView = .chat(displaying: dialog)
+    }
+    
+    func regenetateSummaries() {
+        for item in chats {
+            item.clearHistory()
+        }
+        sumarizeAll()
     }
 }
