@@ -88,7 +88,7 @@ struct FeedView: View {
                         Text("Start Reading")
                             .padding(.vertical, 8)
                             .padding(.horizontal, 16)
-                            .background(.blue)
+                            .background(Color.accentColor)
                             .foregroundStyle(.white)
                             .clipShape(Capsule())
                     }.buttonStyle(.plain)

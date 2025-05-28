@@ -25,7 +25,7 @@ struct ModelPickerButton<Label: View>: View {
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
         .foregroundStyle(isHovered ? Color.white : Color.primary)
-        .background(isHovered ? Color.blue : Color.clear)
+        .background(isHovered ? Color.accentColor : Color.clear)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .onHover(perform: {
             isHovered = $0

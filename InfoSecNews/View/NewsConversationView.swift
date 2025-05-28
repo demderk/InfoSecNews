@@ -119,7 +119,7 @@ struct NewsConversationView: View {
                 .imageScale(imageScale)
                 .padding(.horizontal, 8)
                 .fontWeight(.medium)
-                .foregroundStyle(highlighted ? .blue : .gray.opacity(0.8))
+                .foregroundStyle(highlighted ? Color.accentColor : .gray.opacity(0.8))
                 .contentShape(Rectangle())
         }.buttonStyle(.plain)
     }
