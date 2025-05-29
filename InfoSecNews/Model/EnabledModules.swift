@@ -16,7 +16,7 @@ struct EnabledModules: OptionSet, Hashable, Identifiable {
     
     static let all: EnabledModules = [.securityMedia, .securityLab, .antiMalware]
     static let allCases: [EnabledModules] = [.securityMedia, .securityLab, .antiMalware]
-    
+        
     var UIName: String {
         switch self {
         case .securityMedia: "SecurityMedia"

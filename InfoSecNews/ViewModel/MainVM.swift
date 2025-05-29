@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 @Observable
-class FeedVM {
+class MainVM {
     private let UDSelectedModulesName = "selectedModules"
     
     var enabledModules: EnabledModules = []
@@ -23,7 +23,8 @@ class FeedVM {
     var antMal = NewsResolver(AntiMalwareModule())
     var voyager = WebVoyager()
     
-    var currentWindow: SelectedWindow = .home
+    var currentWindow: MainViewSelectedDetail = .home
+    var hasVoyager: Bool { voyager.htmlBody != nil }
     var bussy: Bool = false
     var chats: [ChatData] = []
     

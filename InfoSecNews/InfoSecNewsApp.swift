@@ -20,7 +20,7 @@ struct InfoSecNewsApp: App {
     var body: some Scene {
         WindowGroup {
             VStack {
-                ContentView()
+                MainView()
                     .frame(minWidth: 640, minHeight: 420)
             }
         }
