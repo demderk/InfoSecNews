@@ -16,113 +16,129 @@ struct FeedView: View {
     var body: some View {
         VStack {
             if !parentViewModel.enabledModules.isEmpty {
-                ScrollViewReader { proxy in
-                    ScrollView {
-                        LazyVStack(alignment: .leading) {
-                            Spacer().frame(height: 8)
-                            ForEach(parentViewModel.storage, id: \.id) { item in
-                                EquatableView(content:
-                                    NewsCard(newsItem: item,
-                                             voyager: parentViewModel.voyager,
-                                             isSelected: bindNewsIsSelected(newsItem: item)
-                                    )
-                                )
-                                .listRowSeparator(.hidden)
-                                .id(item.id)
-                            }
-                            HStack {
-                                Spacer()
-                                ProgressView()
-                                    .progressViewStyle(.circular)
-                                    .onAppear(perform: parentViewModel.spinnerAppear)
-                                    .opacity(0.9)
-                                    .scaleEffect(0.5)
-                                Spacer()
-                            }
-                            Spacer().frame(height: 8)
-                        }
-                    }.onChange(of: parentViewModel.enabledModules) {
-                        if let id = parentViewModel.storage.first?.id {
-                            withAnimation {
-                                proxy.scrollTo(id)
-                            }
-                        }
-                    }
-                }.background(.background)
+                feed
             } else {
-                HStack {
-                    Spacer()
+                startPage
+            }
+        }
+        .toolbar {
+            ProgressView()
+                .progressViewStyle(.circular)
+                .opacity(parentViewModel.bussy ? 1 : 0)
+                .scaleEffect(0.5)
+            
+            if !parentViewModel.enabledModules.isEmpty {
+                Button(action: {
+                    modulesPopoverPresented.toggle()
+                }, label: {
+                    Image(systemName: "newspaper")
+                })
+                .popover(isPresented: $modulesPopoverPresented) {
+                    newsPickerPopover
                 }
-                Spacer()
+            }
+        }
+    }
+    
+    var feed: some View {
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 8) {
+                    ForEach(parentViewModel.storage, id: \.id) { item in
+                        EquatableView(content:
+                            NewsCard(newsItem: item,
+                                     voyager: parentViewModel.voyager,
+                                     isSelected: bindNewsIsSelected(newsItem: item)
+                            )
+                        )
+                        .listRowSeparator(.hidden)
+                        .id(item.id)
+                    }
+                    HStack {
+                        Spacer()
+                        ProgressView()
+                            .progressViewStyle(.circular)
+                            .onAppear(perform: parentViewModel.spinnerAppear)
+                            .opacity(0.9)
+                            .scaleEffect(0.5)
+                        Spacer()
+                    }
+                }
+            }.onChange(of: parentViewModel.enabledModules) {
+                if let id = parentViewModel.storage.first?.id {
+                    withAnimation {
+                        proxy.scrollTo(id)
+                    }
+                }
+            }
+        }
+        .background(.background)
+    }
+    
+    var newsPickerPopover: some View {
+        VStack(alignment: .leading) {
+            Text("Enabled Sources")
+                .font(.body)
+                .fontWeight(.semibold)
+                .padding(.trailing, 32)
+            Divider()
+            ForEach(EnabledModules.allCases) { module in
+                Toggle(isOn: bindCheckbox(module: module), label: { Text(module.UIName) })
+            }
+        }
+        .padding(16)
+    }
+    
+    var startNewsPicker: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ForEach(Array(EnabledModules.allCases.enumerated()), id: \.offset) { (i, module) in
+                Toggle(isOn: bindStarterCheckbox(module: module), label: {
+                    Text(module.UIName)
+                        .padding(.vertical, 16)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                })
+                if i != (EnabledModules.allCases.count - 1) {
+                    Divider()
+                }
+            }
+        }
+        .padding(.leading, 32)
+        .padding(.vertical, 16)
+        .background(.background.opacity(0.4))
+        .clipShape(RoundedRectangle(cornerSize: CGSize(width: 24, height: 24)))
+        .frame(maxWidth: 512)
+    }
+    
+    var startPage: some View {
+        VStack(spacing: 0) {
+            VStack {
                 Text("No news sources selected")
                     .font(.title)
                     .foregroundStyle(.secondary)
                     .padding(.top, 64)
-                Spacer().frame(height: 8)
                 Text("Pick a news source to get started")
                     .font(.body)
                     .foregroundStyle(.secondary)
-                Spacer().frame(height: 32)
-                VStack(alignment: .leading) {
-                    ForEach(Array(EnabledModules.allCases.enumerated()), id: \.offset) { (i, module) in
-                        Toggle(isOn: bindStarterCheckbox(module: module), label: {
-                            Text(module.UIName)
-                                .padding(.vertical, 16)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        })
-                        Spacer().frame(height: 0)
-                        if i != (EnabledModules.allCases.count - 1) {
-                            Divider()
-                        }
-                        Spacer().frame(height: 0)
-                    }
-                }
-                .padding(.leading, 32)
-                .padding(.vertical, 16)
-                .background(.background.opacity(0.4))
-                .clipShape(RoundedRectangle(cornerSize: CGSize(width: 24, height: 24)))
-                .frame(maxWidth: 512)
-                HStack {
-                    Spacer()
-                    Button(action: onContinue) {
-                        Text("Start Reading")
-                            .padding(.vertical, 8)
-                            .padding(.horizontal, 16)
-                            .background(Color.accentColor)
-                            .foregroundStyle(.white)
-                            .clipShape(Capsule())
-                    }.buttonStyle(.plain)
-                        .disabled(startSelectedModules.isEmpty)
-                }.frame(maxWidth: 512)
-                    .padding(.bottom, 16)
-                    .padding(.top, 8)
+            }
+            startNewsPicker
+                .padding(.top, 32)
+            HStack {
                 Spacer()
-            }
-        }.navigationTitle("InfoSecNews → Feed")
-            .toolbar {
-                ProgressView()
-                    .progressViewStyle(.circular)
-                    .opacity(parentViewModel.bussy ? 1 : 0)
-                    .scaleEffect(0.5)
-                if !parentViewModel.enabledModules.isEmpty {
-                    Button(action: {
-                        modulesPopoverPresented.toggle()
-                    }, label: {
-                        Image(systemName: "newspaper")
-                    }).popover(isPresented: $modulesPopoverPresented) {
-                        VStack(alignment: .leading) {
-                            Text("Enabled Sources")
-                                .font(.body)
-                                .fontWeight(.semibold)
-                                .padding(.trailing, 32)
-                            Divider()
-                            ForEach(EnabledModules.allCases) { module in
-                                Toggle(isOn: bindCheckbox(module: module), label: { Text(module.UIName) })
-                            }
-                        }.padding(16)
-                    }
+                Button(action: onContinue) {
+                    Text("Start Reading")
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 16)
+                        .background(Color.accentColor)
+                        .foregroundStyle(.white)
+                        .clipShape(Capsule())
                 }
+                .buttonStyle(.plain)
+                .disabled(startSelectedModules.isEmpty)
             }
+            .frame(maxWidth: 512)
+            .padding(.bottom, 16)
+            .padding(.top, 16)
+        }
     }
     
     private func bindCheckbox(module: EnabledModules) -> Binding<Bool> {
