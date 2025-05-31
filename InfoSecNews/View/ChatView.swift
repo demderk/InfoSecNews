@@ -45,9 +45,11 @@ struct ChatView: View {
             .clipShape(Capsule())
             Spacer()
             if let action = closeAction {
-                Button(action: {
-                    action()
-                }) {
+                Button(
+                    action: {
+                        action()
+                    }
+                ) {
                     Image(systemName: "xmark")
                         .padding(.vertical, 8)
                         .padding(.horizontal, 8)
@@ -55,7 +57,8 @@ struct ChatView: View {
                         .background(.gray.opacity(0.1))
                         .foregroundStyle(.secondary)
                         .clipShape(Circle())
-                }.buttonStyle(.plain)
+                }
+                .buttonStyle(.plain)
             }
         }
     }
@@ -63,32 +66,51 @@ struct ChatView: View {
     func makeChatBody(scrollProxy proxy: ScrollViewProxy, scrollTo: String) -> some View {
         VStack(alignment: .leading, spacing: 16) {
             ForEach(conversation.storage.filter { $0.role != .system }) { item in
-                HStack {
-                    if item.role == .user {
-                        Spacer()
+                chatBubble(item)
+                    .onChange(of: item.content) {
+                        proxy.scrollTo(scrollTo, anchor: .bottom)
                     }
-                    if item.role == .user {
-                        Text(item.content)
-                            .padding(.vertical, 8)
-                            .padding(.horizontal, 16)
-                            .foregroundStyle(.white)
-                            .background(.blue)
-                            .clipShape(MessageBubble(isUserMessage: true))
-                            .padding(.leading, 128)
-                            .textSelection(.enabled)
-                    } else {
-                        Text(item.content)
-                            .padding(.vertical, 8)
-                            .padding(.horizontal, 16)
-                            .background(.gray.opacity(0.1))
-                            .clipShape(MessageBubble(isUserMessage: false))
-                            .padding(.trailing, 128)
-                            .textSelection(.enabled)
-                            .onChange(of: item.content) {
-                                proxy.scrollTo(scrollTo, anchor: .bottom)
-                            }
+            }
+        }
+    }
+
+    func chatBubble(_ message: ChatMessage) -> some View {
+        HStack {
+            let isUser = message.role == .user
+            if isUser {
+                Spacer()
+            }
+            let body = Text(message.content)
+                .padding(.vertical, 8)
+                .padding(.horizontal, 16)
+                .background(isUser ? Color.blue : .gray.opacity(0.1))
+                .foregroundStyle(isUser ? .white : .primary)
+                .clipShape(MessageBubble(isUserMessage: isUser))
+                .textSelection(.enabled)
+
+            if isUser {
+                body
+                    .padding(.leading, 128)
+            } else {
+                body
+            }
+            
+            if !isUser {
+                Button(
+                    action: {
+                        makeFavorite(message: message)
                     }
+                ) {
+                    Image(systemName: conversation.chatData.selectedMessage == message ? "star.fill" : "star")
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 8)
+                        .fontWeight(.semibold)
+                        .background(.gray.opacity(0.1))
+                        .foregroundStyle(.secondary)
+                        .clipShape(Circle())
                 }
+                .buttonStyle(.plain)
+                .padding(.trailing, 128)
             }
         }
     }
@@ -172,6 +194,10 @@ struct ChatView: View {
 
     private func cancel() {
         vm.cancel()
+    }
+    
+    private func makeFavorite(message: ChatMessage) {
+        conversation.setSelectedMessage(message)
     }
 }
 

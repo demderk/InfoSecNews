@@ -8,7 +8,7 @@
 import Foundation
 
 @Observable
-class ChatMessage: Identifiable {
+class ChatMessage: Identifiable, Equatable {
     var id = UUID()
 
     var role: MLRole
@@ -26,6 +26,10 @@ class ChatMessage: Identifiable {
 
     func asMLMessage() -> MLMessage {
         MLMessage(role: role, content: content)
+    }
+    
+    static func == (lhs: ChatMessage, rhs: ChatMessage) -> Bool {
+        lhs.id == rhs.id
     }
 }
 
