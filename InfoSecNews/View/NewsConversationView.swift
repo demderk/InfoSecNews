@@ -70,15 +70,17 @@ struct NewsConversationView: View {
     }
 
     private func fullscreenChat(conversation: OllamaDialog) -> some View {
-        ChatView(conversation: conversation,
-                 isOrignalPresented: vm.showOriginals,
-                 parentNameSpace: animationNamespace)
-            .close {
-                withAnimation(.bouncy(duration: 0.35)) {
-                    vm.presentedView = .conversations
-                }
+        ChatView(
+            conversation: conversation,
+            isOrignalPresented: vm.showOriginals,
+            parentNameSpace: animationNamespace
+        )
+        .close {
+            withAnimation(.bouncy(duration: 0.35)) {
+                vm.presentedView = .conversations
             }
-            .background(.background)
+        }
+        .background(.background)
     }
 
     private var conversationList: some View {
@@ -185,15 +187,19 @@ struct NewsConversationView: View {
             }
             VStack(alignment: .leading, spacing: 0) {
                 ForEach(vm.models) { item in
-                    ModelPickerButton(isSelected: .constant(item.name == vm.selectedModel)) {
-                        HStack {
-                            Text(item.name)
-                            Spacer()
+                    ModelPickerButton(
+                        isSelected: .constant(item.name == vm.selectedModel),
+                        content: {
+                            HStack {
+                                Text(item.name)
+                                Spacer()
+                            }
+                        },
+                        action: {
+                            vm.selectedModel = item.name
+                            vm.modelPopoverPresented = false
                         }
-                    } action: {
-                        vm.selectedModel = item.name
-                        vm.modelPopoverPresented = false
-                    }
+                    )
                 }
             }
         }.padding(8)
@@ -208,9 +214,9 @@ struct NewsConversationView: View {
     }
 
     private var regenerateAll: some View {
-        Button(action: {
-            vm.regenerateAlertPresented = true
-        }) {
+        Button(
+            action: { vm.regenerateAlertPresented = true }
+        ) {
             Image(systemName: "arrow.clockwise")
                 .contentShape(Rectangle())
                 .padding(.horizontal, 8)
@@ -220,19 +226,21 @@ struct NewsConversationView: View {
 
     private var summarizeButton: some View {
         if vm.bussy {
-            Button(action: {
-                vm.cancelSummarize()
-            }) {
+            Button(
+                action: { vm.cancelSummarize() }
+            ) {
                 Image(systemName: "stop.fill")
                     .contentShape(Rectangle())
                     .padding(.horizontal, 8)
             }
             .disabled(!vm.executionAvailable)
         } else {
-            Button(action: {
-                vm.showOriginals = false
-                vm.sumarizeAll()
-            }) {
+            Button(
+                action: {
+                    vm.showOriginals = false
+                    vm.sumarizeAll()
+                }
+            ) {
                 Image(systemName: "play.fill")
                     .contentShape(Rectangle())
                     .padding(.horizontal, 8)

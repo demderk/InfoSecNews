@@ -46,9 +46,11 @@ struct FeedView: View {
                 LazyVStack(alignment: .leading, spacing: 8) {
                     ForEach(parentViewModel.storage, id: \.id) { item in
                         EquatableView(content:
-                            NewsCard(newsItem: item,
-                                     voyager: parentViewModel.voyager,
-                                     isSelected: bindNewsIsSelected(newsItem: item))
+                            NewsCard(
+                                newsItem: item,
+                                voyager: parentViewModel.voyager,
+                                isSelected: bindNewsIsSelected(newsItem: item)
+                            )
                         )
                         .listRowSeparator(.hidden)
                         .id(item.id)
@@ -91,7 +93,10 @@ struct FeedView: View {
 
     var startNewsPicker: some View {
         VStack(alignment: .leading, spacing: 0) {
-            ForEach(Array(EnabledModules.allCases.enumerated()), id: \.offset) { i, module in
+            ForEach(
+                Array(EnabledModules.allCases.enumerated()),
+                id: \.offset
+            ) { i, module in
                 Toggle(isOn: bindStarterCheckbox(module: module), label: {
                     Text(module.UIName)
                         .padding(.vertical, 16)

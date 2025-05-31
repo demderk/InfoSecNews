@@ -92,40 +92,6 @@ struct MainView: View {
                 }
             }
         }
-
-//        List(selection: $feedVM.currentWindow) {
-//            Section(header: Text("Tools")) {
-//                makeSidebarItem(
-//                    title: SelectedWindow.home.title,
-//                    imageSystemName: SelectedWindow.home.imageString
-//                )
-//                .tag(SelectedWindow.home)
-//
-//                makeSidebarItem(title: SelectedWindow.conversations.title,
-//                                imageSystemName: SelectedWindow.conversations.imageString,
-//                                imageSize: 11
-//                )
-//                .tag(SelectedWindow.conversations)
-//            }
-//            if !feedVM.enabledModules.isEmpty {
-//                Section(header: Text("News Sources")) {
-//                    ForEach(
-//                        SelectedWindow.allCases[1..<SelectedWindow.allCases.count-1],
-//                        id: \.self
-//                    ) { item in
-//                        if let enabled = item.asEnabledModule, feedVM.enabledModules.contains(enabled) {
-//                            makeSidebarItem(title: item.title, imageSystemName: item.imageString)
-//                        }
-//                    }
-//                }
-//            }
-//            if !feedVM.enabledModules.isEmpty {
-//                Section(header: Text("Misc")) {
-//                    makeSidebarItem(title: SelectedWindow.voyager.title, imageSystemName: SelectedWindow.voyager.imageString)
-//                        .tag(SelectedWindow.voyager)
-//                }
-//            }
-//        }
     }
 }
 
