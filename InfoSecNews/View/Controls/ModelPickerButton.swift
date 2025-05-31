@@ -11,10 +11,10 @@ import SwiftUI
 struct ModelPickerButton<Label: View>: View {
     @State private var isHovered: Bool = false
     @Binding var isSelected: Bool
-    
+
     var content: () -> Label
     var action: () -> Void
-    
+
     var body: some View {
         HStack(spacing: 4) {
             Image(systemName: "checkmark")
@@ -39,5 +39,5 @@ struct ModelPickerButton<Label: View>: View {
 #Preview {
     ModelPickerButton(isSelected: .constant(true)) {
         Text("Hello, World!")
-    } action: {  }
+    } action: {}
 }

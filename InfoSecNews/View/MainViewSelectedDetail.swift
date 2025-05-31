@@ -9,14 +9,14 @@ import Foundation
 
 enum MainViewSelectedDetail: CaseIterable, Identifiable {
     var id: Self { self }
-    
+
     case home
     case conversations
     case securityMedia
     case securityLab
     case antiMalware
     case voyager
-    
+
     var title: String {
         switch self {
         case .home:
@@ -33,7 +33,7 @@ enum MainViewSelectedDetail: CaseIterable, Identifiable {
             "Conversations"
         }
     }
-    
+
     var imageString: String {
         switch self {
         case .home:
@@ -46,14 +46,14 @@ enum MainViewSelectedDetail: CaseIterable, Identifiable {
             "bubble.left.and.bubble.right"
         }
     }
-    
+
     var iconSize: CGFloat {
         switch self {
         case .conversations: 11
         default: 15
         }
     }
-    
+
     var asEnabledModule: EnabledModules? {
         switch self {
         case .securityMedia:
@@ -65,12 +65,12 @@ enum MainViewSelectedDetail: CaseIterable, Identifiable {
         default: nil
         }
     }
-    
+
     static var groups: [(name: String, items: [MainViewSelectedDetail])] {
         [
             ("Tools", [.home, .conversations]),
             ("News Sources", [.securityMedia, .securityLab, .antiMalware]),
-            ("Misc", [.voyager])
+            ("Misc", [.voyager]),
         ]
     }
 }

@@ -5,45 +5,45 @@
 //  Created by Roman Zheglov on 08.05.2025.
 //
 
-import SwiftUI
 import os
+import SwiftUI
 
 struct ChatResponse: View {
     @Bindable var conversation: ChatData
-    
+
     @Binding var isOriginal: Bool
-    
+
     var roExpanded: Binding<Bool>?
     @State private var expanded: Bool
-    
+
     private var newsIsExpanded: Binding<Bool> {
         roExpanded ?? .constant(false)
     }
-    
+
     @State private var background: Color = .gray.opacity(0.05)
     @State private var foreground: Color = .primary
     @State private var buttonsBackground: Color = .white.opacity(0.3)
-    
+
     @State private var newsText: String
-    
+
     @State private var copyLinkImageName: String = "link"
     @State private var copyTextImageName: String = "document.on.document"
     @State private var expandNewsImageName: String
-    
+
     /// ChatResponse
     /// - Parameters:
     ///     - roExpanded: Read-only Binding: external changes can update the card’s expanded state,
     /// but the card can’t modify the binding. It listens to updates but uses its own state.
     init(conversation: ChatData,
          isOriginal: Binding<Bool>,
-         roExpanded: Binding<Bool>? = nil,
-    ) {
+         roExpanded: Binding<Bool>? = nil)
+    {
         self.conversation = conversation
         _isOriginal = isOriginal
         self.roExpanded = roExpanded
-        
+
         let expanded = roExpanded?.wrappedValue ?? false
-        
+
         if expanded {
             newsText = conversation.news.short
             expandNewsImageName = "chevron.down"
@@ -53,13 +53,13 @@ struct ChatResponse: View {
         }
         self.expanded = expanded
     }
-    
+
     var onRefresh: (() -> Void)?
     var onChatOpen: (() -> Void)?
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(isOriginal ? conversation.news.title: "Summary")
+            Text(isOriginal ? conversation.news.title : "Summary")
                 .font(.title3)
                 .fontWeight(.semibold)
                 .textSelection(.enabled)
@@ -70,7 +70,7 @@ struct ChatResponse: View {
             HStack(spacing: 4) {
                 makeMiniButton(imageSystemName: copyTextImageName, action: copyText)
                 makeMiniButton(imageSystemName: copyLinkImageName, action: copyLink)
-                
+
                 if let refreshAction = onRefresh {
                     makeMiniButton(imageSystemName: "arrow.clockwise", action: refreshAction)
                 }
@@ -79,7 +79,7 @@ struct ChatResponse: View {
                 }
 
                 Spacer()
-                
+
                 if isOriginal {
                     makeMiniButton(imageSystemName: expandNewsImageName, action: {
                         changeExpandNewsMode(expand: !expanded)
@@ -101,14 +101,14 @@ struct ChatResponse: View {
             changeExpandNewsMode(expand: newsIsExpanded.wrappedValue)
         }
     }
-    
+
     private func viewAppeared() {
         changeMode(isOriginal: isOriginal)
 //        changeExpandNewsMode(expand: newsIsExpanded.wrappedValue)
     }
-    
+
     // TODO: This could be extracted into a separate ButtonStyle
-    
+
     private func makeMiniButton(
         imageSystemName: String,
         action: @escaping () -> Void
@@ -123,21 +123,22 @@ struct ChatResponse: View {
             .background(buttonsBackground)
             .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             .foregroundStyle(foreground.opacity(0.8))
-            
+
         let baseButton = Button(action: action) {
             baseImage
         }.buttonStyle(.plain)
-        
+
         if #available(macOS 15.0, *) {
             return baseButton.contentTransition(
                 .symbolEffect(
                     .replace.magic(fallback: .downUp.byLayer),
-                    options: .nonRepeating))
+                    options: .nonRepeating
+                ))
         } else {
             return baseButton
         }
     }
-    
+
     private func changeMode(isOriginal: Bool) {
         if isOriginal {
             background = .blue.opacity(0.85)
@@ -148,9 +149,8 @@ struct ChatResponse: View {
             foreground = .primary
             buttonsBackground = .white.opacity(0.3)
         }
-        
     }
-    
+
     private func copyLink() {
         withAnimation {
             copyLinkImageName = "checkmark"
@@ -163,7 +163,7 @@ struct ChatResponse: View {
             }
         }
     }
-    
+
     private func copyText() {
         if let full = conversation.news.full {
             withAnimation {
@@ -178,7 +178,7 @@ struct ChatResponse: View {
             }
         }
     }
-    
+
     private func changeExpandNewsMode(expand: Bool) {
         withAnimation {
             if expand {
@@ -199,7 +199,7 @@ extension ChatResponse {
         copy.onChatOpen = action
         return copy
     }
-    
+
     func onRefresh(_ action: @escaping () -> Void) -> Self {
         var copy = self
         copy.onRefresh = action
@@ -208,8 +208,8 @@ extension ChatResponse {
 }
 
 #Preview {
-    @Previewable @State var test: Bool = true
-    
+    @Previewable @State var test = true
+
     VStack {
         Button("Change Mode") {
             test = !test

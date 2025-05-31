@@ -12,27 +12,26 @@ typealias ParseStrategy = (String) -> [any NewsBehavior]
 
 protocol DataVoyager {
     associatedtype RemoteData
-    
+
     func fetch(url: URL) async -> Result<RemoteData, RemoteError>
 }
 
 class WebVoyager: DataVoyager {
-    
-    var url: URL = URL(string: "https://en.wikipedia.org/wiki/Duck")!
+    var url: URL = .init(string: "https://en.wikipedia.org/wiki/Duck")!
     var moduleName: String = "WebVoyager"
-    var webKit: WebKitHead = WebKitHead()
+    var webKit: WebKitHead = .init()
     var htmlBody: String?
-    
+
     var requestTimeout: Duration = .seconds(10)
-    
+
     var bussy: Bool = false
-    
+
     init() {
         webKitSetup()
     }
-    
+
     let mainSemaphore = Semaphore(count: 1)
-    
+
     @MainActor
     func fetch(url: URL) async -> Result<String, RemoteError> {
         await mainSemaphore.wait()
@@ -40,9 +39,9 @@ class WebVoyager: DataVoyager {
             var isCancelled = false
             var isFinished = false
             webKit.load(url: url)
-            webKit.singleLoadAction(action: WebAction({ html, _ in
+            webKit.singleLoadAction(action: WebAction { html, _ in
                 guard !isCancelled else { return }
-                
+
                 guard let html = html else {
                     isFinished = true
                     continuation.resume(returning: .failure(.badResult))
@@ -50,8 +49,7 @@ class WebVoyager: DataVoyager {
                 }
                 isFinished = true
                 continuation.resume(returning: .success(html))
-                return
-            }))
+            })
             Task {
                 try? await Task.sleep(for: requestTimeout)
                 guard !isFinished else { return }
@@ -67,12 +65,12 @@ class WebVoyager: DataVoyager {
         webKit.subscribeDOMUpdateAction(action: WebAction(DOMUpdated))
         webKit.subscribeLoadFinished(action: WebAction(loadFinished))
     }
-    
-    func loadFinished(_ html: String?, _ webView: WKWebView) {
+
+    func loadFinished(_ html: String?, _: WKWebView) {
         htmlBody = html
     }
-    
-    func DOMUpdated(_ html: String?, _ webView: WKWebView) {
+
+    func DOMUpdated(_ html: String?, _: WKWebView) {
         htmlBody = html
     }
 }

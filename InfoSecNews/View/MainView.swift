@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MainView: View {
     @State var vm = MainVM()
-        
+
     var body: some View {
         NavigationSplitView(sidebar: {
             sidebar
@@ -18,7 +18,7 @@ struct MainView: View {
                 .navigationTitle("InfoSecNews → \(vm.currentWindow.title)")
         })
     }
-    
+
     @ViewBuilder
     func drawDetails() -> some View {
         switch vm.currentWindow {
@@ -41,7 +41,7 @@ struct MainView: View {
             }
         }
     }
-    
+
     func voyagerMissingView() -> some View {
         VStack {
             Spacer()
@@ -51,7 +51,7 @@ struct MainView: View {
             Spacer()
         }
     }
-    
+
     func makeSidebarItem(title: String, imageSystemName: String, imageSize: CGFloat = 15) -> some View {
         HStack(spacing: 8) {
             Image(systemName: imageSystemName)
@@ -62,18 +62,19 @@ struct MainView: View {
             Text(title)
         }
     }
-        
+
     func moduleIsPresented(window: MainViewSelectedDetail) -> Bool {
         switch window {
         case .securityLab, .securityMedia, .antiMalware:
             if let module = window.asEnabledModule,
-               vm.enabledModules.contains(module) {
+               vm.enabledModules.contains(module)
+            {
                 return true
             } else { return false }
         default: return true
         }
     }
-    
+
     var sidebar: some View {
         List(selection: $vm.currentWindow) {
             ForEach(MainViewSelectedDetail.groups, id: \.name) { item in
@@ -91,7 +92,7 @@ struct MainView: View {
                 }
             }
         }
-        
+
 //        List(selection: $feedVM.currentWindow) {
 //            Section(header: Text("Tools")) {
 //                makeSidebarItem(
@@ -99,7 +100,7 @@ struct MainView: View {
 //                    imageSystemName: SelectedWindow.home.imageString
 //                )
 //                .tag(SelectedWindow.home)
-//                
+//
 //                makeSidebarItem(title: SelectedWindow.conversations.title,
 //                                imageSystemName: SelectedWindow.conversations.imageString,
 //                                imageSize: 11

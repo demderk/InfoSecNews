@@ -13,14 +13,14 @@ class ChatData: Identifiable {
     var news: any NewsBehavior
     var messageHistory: [ChatMessage]
     var selectedMessage: ChatMessage?
-    
+
     init(news: any NewsBehavior, messageHistory: [ChatMessage]) {
         self.news = news
         self.messageHistory = messageHistory
     }
-    
+
     // MARK: UI Properties
-    
+
     var selectedContent: String {
         if let content = selectedMessage {
             return content.content
@@ -31,7 +31,7 @@ class ChatData: Identifiable {
             return "This news is still pending delivery to the target"
         }
     }
-    
+
     var newsContent: String {
         guard let content = news.full else {
             // swiftlint:disable:next line_length
@@ -40,14 +40,14 @@ class ChatData: Identifiable {
         }
         return content
     }
-    
+
     // END
-    
+
     func pull(role: MLRole, message: String) {
         let message = ChatMessage(role: role, content: message)
         messageHistory.append(message)
     }
-    
+
     func clearHistory() {
         selectedMessage = nil
         messageHistory.removeAll()

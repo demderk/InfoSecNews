@@ -6,22 +6,22 @@
 //
 
 import Foundation
-import WebKit
 import SwiftUICore
+import WebKit
 
 class WKNotificationCenter: NSObject, WKScriptMessageHandler {
     private let webKit: WKWebView
-    
+
     private var arrived: ((String, WKWebView) -> Void)?
-    
+
     init(_ webKit: WKWebView, arrived: ((String, WKWebView) -> Void)? = nil) {
         self.arrived = arrived
         self.webKit = webKit
     }
-    
+
     func userContentController(
-        _ userContentController: WKUserContentController,
-        didReceive message: WKScriptMessage
+        _: WKUserContentController,
+        didReceive _: WKScriptMessage
     ) {
         webKit.evaluateJavaScript("document.documentElement.innerHTML") { [weak self] result, _ in
             guard let self = self else { return }
@@ -30,7 +30,7 @@ class WKNotificationCenter: NSObject, WKScriptMessageHandler {
             }
         }
     }
-    
+
     static func subscribe(_ webView: WKWebView) {
         let preactions = """
         const target = document;
@@ -45,7 +45,7 @@ class WKNotificationCenter: NSObject, WKScriptMessageHandler {
         const observer = new MutationObserver(callback);
         observer.observe(target, config);
         """
-        
+
         webView.evaluateJavaScript(preactions)
     }
 }
@@ -55,8 +55,9 @@ extension WKWebView {
         onMessage: @escaping ((String, WKWebView) -> Void)
     ) {
         WKNotificationCenter.subscribe(self)
-        self.configuration.userContentController.add(
+        configuration.userContentController.add(
             WKNotificationCenter(self, arrived: onMessage),
-            name: "notificationCenter")
+            name: "notificationCenter"
+        )
     }
 }

@@ -23,7 +23,7 @@ actor Semaphore {
     func signal(count: Int = 1) {
         assert(count >= 1)
         self.count += count
-        for _ in 0..<count {
+        for _ in 0 ..< count {
             if waiters.isEmpty { return }
             waiters.removeFirst().resume()
         }

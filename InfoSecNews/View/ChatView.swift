@@ -5,20 +5,20 @@
 ////  Created by Roman Zheglov on 07.05.2025.
 ////
 //
-import SwiftUI
 import Foundation
+import SwiftUI
 
 struct ChatView: View {
     @Bindable var conversation: OllamaDialog
-    @Bindable var vm: ChatCardVM = ChatCardVM()
+    @Bindable var vm: ChatCardVM = .init()
     @State var isOrignalPresented: Bool
-    
+
     @FocusState var isFieldFocused: Bool
-    
+
     var closeAction: (() -> Void)?
-    
+
     var parentNameSpace: Namespace.ID
-    
+
     var responseHeader: some View {
         HStack {
             HStack(spacing: 0) {
@@ -59,10 +59,10 @@ struct ChatView: View {
             }
         }
     }
-    
+
     func makeChatBody(scrollProxy proxy: ScrollViewProxy, scrollTo: String) -> some View {
         VStack(alignment: .leading, spacing: 16) {
-            ForEach(conversation.storage.filter({ $0.role != .system })) { item in
+            ForEach(conversation.storage.filter { $0.role != .system }) { item in
                 HStack {
                     if item.role == .user {
                         Spacer()
@@ -92,7 +92,7 @@ struct ChatView: View {
             }
         }
     }
-    
+
     var chatField: some View {
         HStack(spacing: 8) {
             TextField("Message", text: $vm.message, axis: .vertical)
@@ -129,7 +129,7 @@ struct ChatView: View {
             }
         }
     }
-    
+
     var body: some View {
         ZStack {
             ScrollViewReader { proxy in
@@ -138,7 +138,7 @@ struct ChatView: View {
                         responseHeader
                         ChatResponse(conversation: conversation.chatData,
                                      isOriginal: $isOrignalPresented)
-                        .matchedGeometryEffect(id: conversation.id, in: parentNameSpace)
+                            .matchedGeometryEffect(id: conversation.id, in: parentNameSpace)
                     }
                     .padding(.top, 16)
                     .padding(.horizontal, 16)
@@ -165,11 +165,11 @@ struct ChatView: View {
             }
         }
     }
-    
+
     private func send() {
         vm.sendMessage(conversation: conversation)
     }
-    
+
     private func cancel() {
         vm.cancel()
     }
@@ -185,7 +185,7 @@ extension ChatView {
 
 #Preview {
     @Previewable @Namespace var namespace
-    
+
     ChatView(conversation: MockOllamaConversation(), isOrignalPresented: false, parentNameSpace: namespace)
         .frame(width: 600, height: 600)
         .background(.white)

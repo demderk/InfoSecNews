@@ -7,17 +7,17 @@
 
 import WebKit
 
-class WebAction: Identifiable, Equatable{
+class WebAction: Identifiable, Equatable {
     typealias Action = (_ html: String?, _ webView: WKWebView) -> Void
-    
+
     var id = UUID()
     var action: Action
-    
+
     init(_ action: @escaping Action) {
         self.action = action
     }
-    
-    static func == (lhs: WebAction, rhs: WebAction) -> Bool {
+
+    static func == (lhs: WebAction, _: WebAction) -> Bool {
         lhs.id == lhs.id
     }
 }

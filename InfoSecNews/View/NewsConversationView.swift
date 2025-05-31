@@ -9,15 +9,15 @@ import SwiftUI
 
 struct NewsConversationView: View {
     @Binding var chats: [ChatData]
-    
-    @State var vm: NewsConversationVM = NewsConversationVM()
-    
+
+    @State var vm: NewsConversationVM = .init()
+
     @Namespace var animationNamespace
-    
+
     var body: some View {
         ZStack {
             switch vm.presentedView {
-            case .chat(let conversation):
+            case let .chat(conversation):
                 fullscreenChat(conversation: conversation)
             case .conversations:
                 conversationList
@@ -39,12 +39,10 @@ struct NewsConversationView: View {
             ToolbarItem(placement: .navigation) {
                 tools
                     .opacity(vm.presentedView.presentTools ? 1 : 0)
-                
             }
             ToolbarItem(placement: .secondaryAction) {
                 modelSelection
                     .opacity(vm.presentedView.presentTools ? 1 : 0)
-                
             }
             ToolbarItem(placement: .primaryAction) {
                 generationTools
@@ -54,9 +52,8 @@ struct NewsConversationView: View {
         .onAppear {
             vm.pushChats(chats: chats)
         }
-        
     }
-    
+
     private var nothing: some View {
         VStack {
             Spacer()
@@ -71,19 +68,19 @@ struct NewsConversationView: View {
             Spacer()
         }
     }
-    
+
     private func fullscreenChat(conversation: OllamaDialog) -> some View {
         ChatView(conversation: conversation,
                  isOrignalPresented: vm.showOriginals,
                  parentNameSpace: animationNamespace)
-        .close {
-            withAnimation(.bouncy(duration: 0.35)) {
-                vm.presentedView = .conversations
+            .close {
+                withAnimation(.bouncy(duration: 0.35)) {
+                    vm.presentedView = .conversations
+                }
             }
-        }
-        .background(.background)
+            .background(.background)
     }
-    
+
     private var conversationList: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
@@ -106,7 +103,7 @@ struct NewsConversationView: View {
         }
         .background(.background)
     }
-    
+
     private func toolButton(
         imageName: String,
         action: @escaping () -> Void,
@@ -123,31 +120,34 @@ struct NewsConversationView: View {
                 .contentShape(Rectangle())
         }.buttonStyle(.plain)
     }
-    
+
     private var tools: some View {
         HStack(spacing: 0) {
             toolButton(
                 imageName: "quote.bubble",
                 action: { vm.showOriginals = false },
-                highlighted: !vm.showOriginals)
+                highlighted: !vm.showOriginals
+            )
             Divider()
                 .frame(height: 16)
             toolButton(
                 imageName: "newspaper",
                 action: { vm.showOriginals = true },
-                highlighted: vm.showOriginals)
+                highlighted: vm.showOriginals
+            )
             if vm.showOriginals {
                 toolButton(
                     imageName: vm.extendedNews
-                    ? "arrow.up.and.line.horizontal.and.arrow.down"
-                    : "arrow.down.and.line.horizontal.and.arrow.up",
+                        ? "arrow.up.and.line.horizontal.and.arrow.down"
+                        : "arrow.down.and.line.horizontal.and.arrow.up",
                     action: { vm.extendedNews = !vm.extendedNews },
-                    imageScale: .medium)
+                    imageScale: .medium
+                )
                 .padding(.horizontal, 4)
             }
         }
     }
-    
+
     private var modelSelection: some View {
         HStack {
             Button(action: {
@@ -171,7 +171,7 @@ struct NewsConversationView: View {
             }.help("Fetch models")
         }
     }
-    
+
     private var modelSelectionPicker: some View {
         VStack {
             HStack {
@@ -199,14 +199,14 @@ struct NewsConversationView: View {
         }.padding(8)
             .frame(minWidth: 256)
     }
-    
+
     private var generationTools: some View {
         HStack(spacing: 0) {
             regenerateAll
             summarizeButton
         }
     }
-    
+
     private var regenerateAll: some View {
         Button(action: {
             vm.regenerateAlertPresented = true
@@ -217,7 +217,7 @@ struct NewsConversationView: View {
                 .imageScale(.medium)
         }.disabled(!vm.executionAvailable)
     }
-    
+
     private var summarizeButton: some View {
         if vm.bussy {
             Button(action: {
@@ -248,7 +248,7 @@ struct NewsConversationView: View {
         MockChatData(),
         MockChatData(),
         MockChatData(),
-        MockChatData()
+        MockChatData(),
     ]
     NewsConversationView(chats: $mocks)
         .frame(width: 1000, height: 500)

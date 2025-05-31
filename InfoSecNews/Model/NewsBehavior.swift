@@ -1,5 +1,5 @@
 //
-//  NewsItem.swift
+//  NewsBehavior.swift
 //  InfoSecNews
 //
 //  Created by Roman Zheglov on 07.02.2025.
@@ -20,6 +20,6 @@ protocol NewsBehavior: Identifiable, AnyObject {
 
 extension NewsBehavior {
     func equals(news: any NewsBehavior) -> Bool {
-        self.fullTextLink == news.fullTextLink
+        fullTextLink == news.fullTextLink
     }
 }

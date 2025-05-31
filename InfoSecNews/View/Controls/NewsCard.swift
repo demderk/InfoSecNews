@@ -1,5 +1,5 @@
 //
-//  NewsControl.swift
+//  NewsCard.swift
 //  InfoSecNews
 //
 //  Created by Roman Zheglov on 23.02.2025.
@@ -11,9 +11,9 @@ struct NewsCard: View, Equatable {
     static func == (lhs: NewsCard, rhs: NewsCard) -> Bool {
         lhs.newsItem.title == rhs.newsItem.title
     }
-    
+
     @State var newsItem: any NewsBehavior
-    
+
     @State private var text: String
     @State private var hasFull: Bool = false
     @State private var buttonAngle: Double = 0
@@ -21,23 +21,23 @@ struct NewsCard: View, Equatable {
     @State private var textHeight: CGFloat = 0
     @State private var isLoading: Bool = false
     @State private var failed: Bool = false
-    
+
     @State private var copyLinkImageName: String = "link"
     @State private var copyTextImageName: String = "document.on.document"
     @State private var appendImageName: String = "document.on.document"
-    
+
     @Binding var isSelected: Bool
-    
+
     let voyager: WebVoyager
-    
+
     init(newsItem: any NewsBehavior, voyager: WebVoyager, isSelected: Binding<Bool>) {
         self.newsItem = newsItem
-        self.hasFull = true
+        hasFull = true
         text = newsItem.short
         self.voyager = voyager
-        self._isSelected = isSelected
+        _isSelected = isSelected
     }
-    
+
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
@@ -84,7 +84,7 @@ struct NewsCard: View, Equatable {
             }.frame(minWidth: 256, maxWidth: 896, maxHeight: .infinity, alignment: .leading)
                 .padding(.horizontal, 20)
                 .padding(.vertical, 16)
-            
+
             Spacer()
             VStack(alignment: .trailing) {
                 if opened {
@@ -102,7 +102,8 @@ struct NewsCard: View, Equatable {
                                         .contentTransition(
                                             .symbolEffect(
                                                 .replace.magic(fallback: .downUp.byLayer),
-                                                options: .nonRepeating))
+                                                options: .nonRepeating
+                                            ))
                                 } else {
                                     Image(systemName: copyLinkImageName)
                                         .imageScale(.medium)
@@ -117,7 +118,7 @@ struct NewsCard: View, Equatable {
                             Divider()
                                 .frame(height: 16)
                             Spacer().frame(width: 0)
-                            
+
                             Button(action: copyText) {
                                 if #available(macOS 15.0, *) {
                                     Image(systemName: copyTextImageName)
@@ -127,7 +128,8 @@ struct NewsCard: View, Equatable {
                                         .contentTransition(
                                             .symbolEffect(
                                                 .replace.magic(fallback: .downUp.byLayer),
-                                                options: .nonRepeating))
+                                                options: .nonRepeating
+                                            ))
                                         .padding(.vertical, 8)
                                         .padding(.horizontal, 16)
                                         .background(.gray.opacity(0.03))
@@ -154,7 +156,8 @@ struct NewsCard: View, Equatable {
                                         .contentTransition(
                                             .symbolEffect(
                                                 .replace.magic(fallback: .downUp.byLayer),
-                                                options: .nonRepeating))
+                                                options: .nonRepeating
+                                            ))
                                         .padding(.vertical, 8)
                                         .padding(.horizontal, 16)
                                         .background(.gray.opacity(0.03))
@@ -184,7 +187,6 @@ struct NewsCard: View, Equatable {
                                 .foregroundStyle(.secondary)
                                 .clipShape(Capsule())
                         }.buttonStyle(.plain)
-                        
                     }
                     .opacity(opened ? 1 : 0)
                     Spacer()
@@ -219,11 +221,11 @@ struct NewsCard: View, Equatable {
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
     }
-    
+
     private func openFullText() {
         if !opened {
             if let full = newsItem.full {
-                self.text = full
+                text = full
                 withAnimation {
                     buttonAngle = 180
                     opened = true
@@ -267,9 +269,8 @@ struct NewsCard: View, Equatable {
                 opened = false
             }
         }
-        
     }
-    
+
     private func copyLink() {
         withAnimation {
             copyLinkImageName = "checkmark"
@@ -282,7 +283,7 @@ struct NewsCard: View, Equatable {
             }
         }
     }
-    
+
     private func copyText() {
         if let full = newsItem.full {
             withAnimation {
@@ -297,7 +298,7 @@ struct NewsCard: View, Equatable {
             }
         }
     }
-    
+
     func onAppend() {
         isSelected = !isSelected
     }

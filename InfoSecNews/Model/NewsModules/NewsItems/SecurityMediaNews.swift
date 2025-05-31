@@ -15,7 +15,7 @@ final class SecurityMediaNews: NewsBehavior {
     var short: String
     var fullTextLink: URL
     var full: String?
-    
+
     init(source: String, title: String, date: Date, short: String, fullTextLink: URL) {
         self.source = source
         self.title = title
@@ -23,23 +23,22 @@ final class SecurityMediaNews: NewsBehavior {
         self.short = short
         self.fullTextLink = fullTextLink
     }
-    
+
     func loadRemoteData(voyager: WebVoyager) async throws {
         let input = await voyager.fetch(url: fullTextLink)
-        
+
         switch input {
-        case .success(let html):
+        case let .success(html):
             parseFullArticle(html: html)
-        case .failure(let failure):
+        case let .failure(failure):
             throw failure
         }
     }
-    
+
     private func parseFullArticle(html: String) {
-        
         let htDoc = try! SwiftSoup.parse(html)
         let htmlNews = try! htDoc.select(".detail_item")
-                
+
         for item in htmlNews {
             var newsFull: String?
             if let full = try? item.select(".article-detail").first() {

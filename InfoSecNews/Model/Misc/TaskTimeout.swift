@@ -41,27 +41,24 @@ private func withTimeout<Return: Sendable>(
     sleep: @escaping @isolated(any) () async throws -> Void,
     @_inheritActorContext _ operation: @escaping @Sendable () async throws -> Return
 ) async throws -> Return {
-    
-    let task = Ref<Task<(), Never>>(value: nil)
-    let timeoutTask = Ref<Task<(), any Error>>(value: nil)
-    
+    let task = Ref<Task<Void, Never>>(value: nil)
+    let timeoutTask = Ref<Task<Void, any Error>>(value: nil)
+
     let flag = Flag()
-    
+
     return try await withTaskCancellationHandler {
-        
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Return, Error>) in
-            
             do {
                 try Task.checkCancellation()
             } catch {
                 continuation.resume(throwing: error)
                 return
             }
-            
+
             let internalTask = Task {
                 do {
                     let taskResult = try await operation()
-                    
+
                     await flag.performIf(expected: false) {
                         continuation.resume(returning: taskResult)
                         return true
@@ -73,20 +70,19 @@ private func withTimeout<Return: Sendable>(
                     }
                 }
             }
-            
+
             task.value = internalTask
-            
+
             let internalTimeoutTask = Task {
                 try await sleep()
                 internalTask.cancel()
-                
+
                 await flag.performIf(expected: false) {
                     continuation.resume(throwing: TimeoutHandlerError.timeoutOccured)
                     return true
                 }
-                
             }
-            
+
             timeoutTask.value = internalTimeoutTask
         }
     } onCancel: {
@@ -97,7 +93,7 @@ private func withTimeout<Return: Sendable>(
 
 private final class Ref<T>: @unchecked Sendable {
     var value: T?
-    
+
     init(value: T?) {
         self.value = value
     }
@@ -105,11 +101,11 @@ private final class Ref<T>: @unchecked Sendable {
 
 private actor Flag {
     var value: Bool = false
-    
+
     func set(value: Bool) {
         self.value = value
     }
-    
+
     func performIf(expected: Bool, perform: @Sendable () -> Bool) {
         if value == expected {
             value = perform()

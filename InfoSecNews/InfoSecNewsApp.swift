@@ -8,7 +8,7 @@
 import SwiftUI
 
 class AppDelegate: NSObject, NSApplicationDelegate {
-    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+    func applicationShouldTerminateAfterLastWindowClosed(_: NSApplication) -> Bool {
         return true
     }
 }
@@ -16,7 +16,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 @main
 struct InfoSecNewsApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-        
+
     var body: some Scene {
         WindowGroup {
             VStack {

@@ -17,7 +17,7 @@ struct MessageBubble: Shape {
     func path(in rect: CGRect) -> Path {
         let width = rect.width
         let height = rect.height
-        
+
         let bezierPath = NSBezierPath()
         if !isUserMessage {
             bezierPath.move(to: CGPoint(x: 20, y: height))
@@ -49,4 +49,5 @@ struct MessageBubble: Shape {
         return Path(bezierPath.cgPath)
     }
 }
+
 // swiftlint:enable line_length

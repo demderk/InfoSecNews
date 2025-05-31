@@ -1,5 +1,5 @@
 //
-//  HomeView.swift
+//  FeedView.swift
 //  InfoSecNews
 //
 //  Created by Roman Zheglov on 07.03.2025.
@@ -9,10 +9,10 @@ import SwiftUI
 
 struct FeedView: View {
     @Environment(MainVM.self) var parentViewModel
-    
+
     @State var modulesPopoverPresented: Bool = false
     @State var startSelectedModules: EnabledModules = []
-    
+
     var body: some View {
         VStack {
             if !parentViewModel.enabledModules.isEmpty {
@@ -26,7 +26,7 @@ struct FeedView: View {
                 .progressViewStyle(.circular)
                 .opacity(parentViewModel.bussy ? 1 : 0)
                 .scaleEffect(0.5)
-            
+
             if !parentViewModel.enabledModules.isEmpty {
                 Button(action: {
                     modulesPopoverPresented.toggle()
@@ -39,7 +39,7 @@ struct FeedView: View {
             }
         }
     }
-    
+
     var feed: some View {
         ScrollViewReader { proxy in
             ScrollView {
@@ -48,8 +48,7 @@ struct FeedView: View {
                         EquatableView(content:
                             NewsCard(newsItem: item,
                                      voyager: parentViewModel.voyager,
-                                     isSelected: bindNewsIsSelected(newsItem: item)
-                            )
+                                     isSelected: bindNewsIsSelected(newsItem: item))
                         )
                         .listRowSeparator(.hidden)
                         .id(item.id)
@@ -75,7 +74,7 @@ struct FeedView: View {
         }
         .background(.background)
     }
-    
+
     var newsPickerPopover: some View {
         VStack(alignment: .leading) {
             Text("Enabled Sources")
@@ -89,10 +88,10 @@ struct FeedView: View {
         }
         .padding(16)
     }
-    
+
     var startNewsPicker: some View {
         VStack(alignment: .leading, spacing: 0) {
-            ForEach(Array(EnabledModules.allCases.enumerated()), id: \.offset) { (i, module) in
+            ForEach(Array(EnabledModules.allCases.enumerated()), id: \.offset) { i, module in
                 Toggle(isOn: bindStarterCheckbox(module: module), label: {
                     Text(module.UIName)
                         .padding(.vertical, 16)
@@ -109,7 +108,7 @@ struct FeedView: View {
         .clipShape(RoundedRectangle(cornerSize: CGSize(width: 24, height: 24)))
         .frame(maxWidth: 512)
     }
-    
+
     var startPage: some View {
         VStack(spacing: 0) {
             VStack {
@@ -141,7 +140,7 @@ struct FeedView: View {
             .padding(.top, 16)
         }
     }
-    
+
     private func bindCheckbox(module: EnabledModules) -> Binding<Bool> {
         Binding<Bool>(
             get: {
@@ -155,9 +154,10 @@ struct FeedView: View {
                     parentViewModel.enabledModules.remove(module)
                 }
                 parentViewModel.saveSelectedModules()
-            })
+            }
+        )
     }
-    
+
     private func bindStarterCheckbox(module: EnabledModules) -> Binding<Bool> {
         Binding<Bool>(
             get: {
@@ -169,9 +169,10 @@ struct FeedView: View {
                 } else {
                     startSelectedModules.remove(module)
                 }
-            })
+            }
+        )
     }
-    
+
     private func bindNewsIsSelected(newsItem: any NewsBehavior) -> Binding<Bool> {
         Binding<Bool>(
             get: {
@@ -185,7 +186,7 @@ struct FeedView: View {
             }
         )
     }
-    
+
     private func onContinue() {
         parentViewModel.enabledModules = startSelectedModules
         parentViewModel.saveSelectedModules()
@@ -195,7 +196,7 @@ struct FeedView: View {
 
 #Preview {
     @Previewable @State var vm = MainVM()
-    
+
     FeedView()
         .environment(vm)
 }

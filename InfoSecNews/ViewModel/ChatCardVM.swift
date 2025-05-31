@@ -12,9 +12,9 @@ import os
 class ChatCardVM {
     var message: String = ""
     var bussy: Bool = false
-    
+
     private var sendTask: Task<Void, any Error>?
-    
+
     func sendMessage(conversation: OllamaDialog) {
         let task = Task { [message] in
             bussy = true
@@ -24,7 +24,7 @@ class ChatCardVM {
         message = ""
         sendTask = task
     }
-    
+
     func cancel() {
         if let task = sendTask {
             task.cancel()
