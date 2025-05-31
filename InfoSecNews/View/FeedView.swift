@@ -64,6 +64,7 @@ struct FeedView: View {
                         Spacer()
                     }
                 }
+                .padding(.vertical, 16)
             }.onChange(of: parentViewModel.enabledModules) {
                 if let id = parentViewModel.storage.first?.id {
                     withAnimation {
