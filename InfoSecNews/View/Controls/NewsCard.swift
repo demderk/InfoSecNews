@@ -62,7 +62,9 @@ struct NewsCard: View, Equatable {
             Spacer()
             VStack(alignment: .trailing) {
                 toolBox
-                Spacer()
+                if opened {
+                    Spacer()
+                }
                 if hasFull {
                     expansionButton
                 }
