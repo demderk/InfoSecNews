@@ -41,176 +41,33 @@ struct NewsCard: View, Equatable {
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
-                HStack(alignment: .center) {
-                    Image(systemName: "calendar")
-                        .fontWeight(.semibold)
-                    Spacer().frame(width: 4)
-                    Text(newsItem.date.formatted(date: .complete, time: .omitted))
-                    Spacer().frame(width: 16)
-                    Image(systemName: "newspaper")
-                        .fontWeight(.semibold)
-                    Spacer().frame(width: 4)
-                    Text(newsItem.source)
-                    Spacer().frame(width: 16)
-                }.foregroundStyle(.secondary)
-                    .padding([.bottom], 4)
-                HStack {
-                    Text(newsItem.title)
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                        .multilineTextAlignment(.leading)
-                        .textSelection(.enabled)
-                        .layoutPriority(1)
-                }
-                Spacer().frame(height: 8)
-                if opened {
-                    Text(text)
-                        .multilineTextAlignment(.leading)
-                        .font(.title3)
-                        .frame(maxHeight: .infinity)
-                        .textSelection(.enabled)
-                        .transition(.opacity)
-                        .layoutPriority(0)
-                } else {
-                    Text(newsItem.short)
-                        .multilineTextAlignment(.leading)
-                        .font(.title3)
-                        .textSelection(.enabled)
-                        .frame(maxHeight: .infinity)
-                        .transition(.opacity)
-                        .animation(nil, value: newsItem.short)
-                        .layoutPriority(0)
-                }
-            }.frame(minWidth: 256, maxWidth: 896, maxHeight: .infinity, alignment: .leading)
-                .padding(.horizontal, 20)
-                .padding(.vertical, 16)
+                newsInfo
+                Text(newsItem.title)
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                    .multilineTextAlignment(.leading)
+                    .textSelection(.enabled)
+                    .layoutPriority(1)
+                newsBody(opened ? text : newsItem.short)
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 16)
+            .frame(
+                minWidth: 256,
+                maxWidth: 896,
+                maxHeight: .infinity,
+                alignment: .leading
+            )
 
             Spacer()
             VStack(alignment: .trailing) {
-                if opened {
-                    HStack {
-                        HStack(alignment: .center) {
-                            Button(action: copyLink) {
-                                if #available(macOS 15.0, *) {
-                                    Image(systemName: copyLinkImageName)
-                                        .imageScale(.medium)
-                                        .fontWeight(.bold)
-                                        .frame(width: 11, height: 11)
-                                        .padding(.vertical, 8)
-                                        .padding(.horizontal, 16)
-                                        .background(.gray.opacity(0.03))
-                                        .contentTransition(
-                                            .symbolEffect(
-                                                .replace.magic(fallback: .downUp.byLayer),
-                                                options: .nonRepeating
-                                            ))
-                                } else {
-                                    Image(systemName: copyLinkImageName)
-                                        .imageScale(.medium)
-                                        .fontWeight(.bold)
-                                        .frame(width: 11, height: 11)
-                                        .padding(.vertical, 8)
-                                        .padding(.horizontal, 16)
-                                        .background(.gray.opacity(0.03))
-                                }
-                            }.buttonStyle(.plain)
-                            Spacer().frame(width: 0)
-                            Divider()
-                                .frame(height: 16)
-                            Spacer().frame(width: 0)
-
-                            Button(action: copyText) {
-                                if #available(macOS 15.0, *) {
-                                    Image(systemName: copyTextImageName)
-                                        .imageScale(.medium)
-                                        .fontWeight(.bold)
-                                        .frame(width: 11, height: 11)
-                                        .contentTransition(
-                                            .symbolEffect(
-                                                .replace.magic(fallback: .downUp.byLayer),
-                                                options: .nonRepeating
-                                            ))
-                                        .padding(.vertical, 8)
-                                        .padding(.horizontal, 16)
-                                        .background(.gray.opacity(0.03))
-                                } else {
-                                    Image(systemName: copyTextImageName)
-                                        .imageScale(.medium)
-                                        .fontWeight(.bold)
-                                        .frame(width: 11, height: 11)
-                                        .padding(.vertical, 8)
-                                        .padding(.horizontal, 16)
-                                        .background(.gray.opacity(0.03))
-                                }
-                            }.buttonStyle(.plain)
-                            Spacer().frame(width: 0)
-                            Divider()
-                                .frame(height: 16)
-                            Spacer().frame(width: 0)
-                            Button(action: onAppend) {
-                                if #available(macOS 15.0, *) {
-                                    Image(systemName: isSelected ? "checkmark.square" : "minus.square")
-                                        .imageScale(.medium)
-                                        .fontWeight(.bold)
-                                        .frame(width: 11, height: 11)
-                                        .contentTransition(
-                                            .symbolEffect(
-                                                .replace.magic(fallback: .downUp.byLayer),
-                                                options: .nonRepeating
-                                            ))
-                                        .padding(.vertical, 8)
-                                        .padding(.horizontal, 16)
-                                        .background(.gray.opacity(0.03))
-                                } else {
-                                    Image(systemName: isSelected ? "checkmark.square" : "square")
-                                        .imageScale(.medium)
-                                        .fontWeight(.bold)
-                                        .frame(width: 11, height: 11)
-                                        .padding(.vertical, 8)
-                                        .padding(.horizontal, 16)
-                                        .background(.gray.opacity(0.03))
-                                }
-                            }.buttonStyle(.plain)
-                        }
-                        .background(.gray.opacity(0.03))
-                        .foregroundStyle(.secondary)
-                        .clipShape(Capsule())
-                        Button(action: openFullText) {
-                            Image(systemName: "xmark")
-                                .imageScale(.medium)
-                                .fontWeight(.bold)
-                                .frame(width: 11, height: 11)
-                                .padding(4)
-                                .padding(.vertical, 8)
-                                .padding(.horizontal, 8)
-                                .background(.gray.opacity(0.03))
-                                .foregroundStyle(.secondary)
-                                .clipShape(Capsule())
-                        }.buttonStyle(.plain)
-                    }
-                    .opacity(opened ? 1 : 0)
-                    Spacer()
-                }
+                toolBox
+                Spacer()
                 if hasFull {
-                    Button(action: openFullText) {
-                        ZStack {
-                            Image(systemName: failed ? "xmark" : "chevron.down")
-                                .font(.system(size: 20, weight: .medium))
-                                .opacity(isLoading ? 0 : 1)
-                            ProgressView().progressViewStyle(.circular)
-                                .opacity(isLoading ? 0.9 : 0)
-                                .scaleEffect(0.5)
-                        }.foregroundStyle(.secondary)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 8)
-                            .background(.gray.opacity(0.03))
-                            .rotationEffect(.degrees(buttonAngle))
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
-                    }
-                    .padding(.leading, 96)
-                    .buttonStyle(.plain)
+                    expansionButton
                 }
-            }.padding(32)
+            }
+            .padding(32)
         }
         .background(.background)
         .cornerRadius(20)
@@ -220,6 +77,127 @@ struct NewsCard: View, Equatable {
         )
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
+    }
+
+    var newsInfo: some View {
+        HStack(alignment: .center, spacing: 16) {
+            HStack(spacing: 4) {
+                Image(systemName: "calendar")
+                    .fontWeight(.semibold)
+                Text(newsItem.date.formatted(date: .complete, time: .omitted))
+            }
+            HStack(spacing: 4) {
+                Image(systemName: "newspaper")
+                    .fontWeight(.semibold)
+                Text(newsItem.source)
+            }
+        }
+        .foregroundStyle(.secondary)
+        .padding(.bottom, 4)
+    }
+
+    func newsBody(_ text: String) -> some View {
+        Text(text)
+            .multilineTextAlignment(.leading)
+            .font(.title3)
+            .frame(maxHeight: .infinity)
+            .textSelection(.enabled)
+            .transition(.opacity)
+            .layoutPriority(0)
+    }
+
+    var expansionButton: some View {
+        Button(action: openFullText) {
+            ZStack {
+                Image(systemName: failed ? "xmark" : "chevron.down")
+                    .font(.system(size: 20, weight: .medium))
+                    .opacity(isLoading ? 0 : 1)
+                ProgressView().progressViewStyle(.circular)
+                    .opacity(isLoading ? 0.9 : 0)
+                    .scaleEffect(0.5)
+            }.foregroundStyle(.secondary)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .background(.gray.opacity(0.03))
+                .rotationEffect(.degrees(buttonAngle))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+        }
+        .padding(.leading, 96)
+        .buttonStyle(.plain)
+    }
+
+    @ViewBuilder
+    func buildToolButton(
+        action: @escaping () -> Void,
+        systemImageName: String
+    )
+        -> some View
+    {
+        Button(action: action) {
+            if #available(macOS 15.0, *) {
+                Image(systemName: systemImageName)
+                    .imageScale(.medium)
+                    .fontWeight(.bold)
+                    .frame(width: 11, height: 11)
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 16)
+                    .background(.gray.opacity(0.03))
+                    .contentTransition(
+                        .symbolEffect(
+                            .replace.magic(fallback: .downUp.byLayer),
+                            options: .nonRepeating
+                        ))
+            } else {
+                Image(systemName: systemImageName)
+                    .imageScale(.medium)
+                    .fontWeight(.bold)
+                    .frame(width: 11, height: 11)
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 16)
+                    .background(.gray.opacity(0.03))
+            }
+        }.buttonStyle(.plain)
+    }
+
+    var toolBox: some View {
+        HStack {
+            if opened {
+                HStack(alignment: .center, spacing: 0) {
+                    buildToolButton(
+                        action: copyLink,
+                        systemImageName: copyLinkImageName
+                    )
+                    Divider()
+                        .frame(height: 16)
+                    buildToolButton(
+                        action: copyText,
+                        systemImageName: copyTextImageName
+                    )
+                    Divider()
+                        .frame(height: 16)
+                    buildToolButton(
+                        action: onAppend,
+                        systemImageName: isSelected ? "checkmark.square" : "minus.square"
+                    )
+                }
+                .background(.gray.opacity(0.03))
+                .foregroundStyle(.secondary)
+                .clipShape(Capsule())
+                Button(action: openFullText) {
+                    Image(systemName: "xmark")
+                        .imageScale(.medium)
+                        .fontWeight(.bold)
+                        .frame(width: 11, height: 11)
+                        .padding(4)
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 8)
+                        .background(.gray.opacity(0.03))
+                        .foregroundStyle(.secondary)
+                        .clipShape(Capsule())
+                }.buttonStyle(.plain)
+            }
+        }
+        .opacity(opened ? 1 : 0)
     }
 
     private func openFullText() {
@@ -306,18 +284,27 @@ struct NewsCard: View, Equatable {
 
 #Preview {
     VStack {
-        NewsCard(newsItem: MockNewsItem(),
-                 voyager: WebVoyager(),
-                 isSelected: Binding.constant(false))
-        NewsCard(newsItem: MockNewsItem(),
-                 voyager: WebVoyager(),
-                 isSelected: Binding.constant(false))
-        NewsCard(newsItem: MockNewsItem(),
-                 voyager: WebVoyager(),
-                 isSelected: Binding.constant(false))
-        NewsCard(newsItem: MockNewsItem(),
-                 voyager: WebVoyager(),
-                 isSelected: Binding.constant(false))
-    }.frame(width: 1024)
-        .background(.background)
+        NewsCard(
+            newsItem: MockNewsItem(),
+            voyager: WebVoyager(),
+            isSelected: Binding.constant(false)
+        )
+        NewsCard(
+            newsItem: MockNewsItem(),
+            voyager: WebVoyager(),
+            isSelected: Binding.constant(false)
+        )
+        NewsCard(
+            newsItem: MockNewsItem(),
+            voyager: WebVoyager(),
+            isSelected: Binding.constant(false)
+        )
+        NewsCard(
+            newsItem: MockNewsItem(),
+            voyager: WebVoyager(),
+            isSelected: Binding.constant(false)
+        )
+    }
+    .frame(width: 1024)
+    .background(.background)
 }
