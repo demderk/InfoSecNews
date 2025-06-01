@@ -200,8 +200,7 @@ struct NewsConversationView: View {
                             }
                         },
                         action: {
-                            vm.selectedModel = item.name
-                            vm.modelPopoverPresented = false
+                            vm.setModel(model: item)
                         }
                     )
                 }
@@ -226,8 +225,7 @@ struct NewsConversationView: View {
                             }
                         },
                         action: {
-                            vm.selectedModel = item.name
-                            vm.modelPopoverPresented = false
+                            vm.setModel(model: item)
                         }
                     )
                 }

@@ -36,7 +36,7 @@ class NewsConversationVM {
     var modelPopoverPresented: Bool = false
     var regenerateAlertPresented: Bool = false
 
-    var selectedModel: String = "No model available"
+    private(set) var selectedModel: String = "No model available"
     var selectedMLModel: MLModel? {
         models.first(where: { $0.name == selectedModel })
     }
@@ -90,7 +90,10 @@ class NewsConversationVM {
         Task {
             models = try await remote.listModels()
             if let modelName = models.first?.name {
-                if !models.contains(where: { $0.name == selectedModel }) {
+                if let savedModel = getSavedModelSelection(),
+                   models.contains(where: { $0.name == savedModel }) {
+                    selectedModel = savedModel
+                } else if !models.contains(where: { $0.name == selectedModel }) {
                     selectedModel = modelName
                 }
                 executionAvailable = true
@@ -130,5 +133,26 @@ class NewsConversationVM {
             item.clearHistory()
         }
         sumarizeAll()
+    }
+    
+    func saveModelSelection() {
+        guard let selectedMLModel else {
+            Logger.UILogger.error("Trying to write nil selectedMLModel to UserDefaults. Canceled.")
+            return
+        }
+        UserDefaults.standard.set(selectedMLModel.name, forKey: "selectedModel")
+    }
+    
+    func getSavedModelSelection() -> String? {
+        if let savedModelName = UserDefaults.standard.string(forKey: "selectedModel") {
+            return savedModelName
+        }
+        return nil
+    }
+    
+    func setModel(model: MLModel) {
+        selectedModel = model.name
+        modelPopoverPresented = false
+        saveModelSelection()
     }
 }
