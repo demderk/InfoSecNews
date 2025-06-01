@@ -91,7 +91,8 @@ class NewsConversationVM {
             models = try await remote.listModels()
             if let modelName = models.first?.name {
                 if let savedModel = getSavedModelSelection(),
-                   models.contains(where: { $0.name == savedModel }) {
+                   models.contains(where: { $0.name == savedModel })
+                {
                     selectedModel = savedModel
                 } else if !models.contains(where: { $0.name == selectedModel }) {
                     selectedModel = modelName
@@ -134,7 +135,7 @@ class NewsConversationVM {
         }
         sumarizeAll()
     }
-    
+
     func saveModelSelection() {
         guard let selectedMLModel else {
             Logger.UILogger.error("Trying to write nil selectedMLModel to UserDefaults. Canceled.")
@@ -142,14 +143,14 @@ class NewsConversationVM {
         }
         UserDefaults.standard.set(selectedMLModel.name, forKey: "selectedModel")
     }
-    
+
     func getSavedModelSelection() -> String? {
         if let savedModelName = UserDefaults.standard.string(forKey: "selectedModel") {
             return savedModelName
         }
         return nil
     }
-    
+
     func setModel(model: MLModel) {
         selectedModel = model.name
         modelPopoverPresented = false

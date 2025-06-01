@@ -190,7 +190,7 @@ struct NewsConversationView: View {
                 Spacer()
             }
             VStack(alignment: .leading, spacing: 0) {
-                ForEach(vm.models.filter({ $0.alias != nil })) { item in
+                ForEach(vm.models.filter { $0.alias != nil }) { item in
                     ModelPickerButton(
                         isSelected: .constant(item.name == vm.selectedModel),
                         content: {
@@ -215,7 +215,7 @@ struct NewsConversationView: View {
                 Spacer()
             }
             VStack(alignment: .leading, spacing: 0) {
-                ForEach(vm.models.filter({ $0.alias == nil })) { item in
+                ForEach(vm.models.filter { $0.alias == nil }) { item in
                     ModelPickerButton(
                         isSelected: .constant(item.name == vm.selectedModel),
                         content: {
@@ -284,7 +284,7 @@ struct NewsConversationView: View {
         MockChatData(),
         MockChatData(),
         MockChatData(),
-        MockChatData(),
+        MockChatData()
     ]
     NewsConversationView(chats: $mocks)
         .frame(width: 1000, height: 500)

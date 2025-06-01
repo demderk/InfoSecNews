@@ -70,7 +70,7 @@ enum MainViewSelectedDetail: CaseIterable, Identifiable {
         [
             ("Tools", [.home, .conversations]),
             ("News Sources", [.securityMedia, .securityLab, .antiMalware]),
-            ("Misc", [.voyager]),
+            ("Misc", [.voyager])
         ]
     }
 }

@@ -94,7 +94,7 @@ struct ChatView: View {
             } else {
                 body
             }
-            
+
             if !isUser {
                 Button(
                     action: {
@@ -195,7 +195,7 @@ struct ChatView: View {
     private func cancel() {
         vm.cancel()
     }
-    
+
     private func makeFavorite(message: ChatMessage) {
         conversation.setSelectedMessage(message)
     }

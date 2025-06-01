@@ -49,7 +49,7 @@ class OllamaRemote {
 
         var requestBody: [String: String] = [
             "model": model.name,
-            "prompt": prompt,
+            "prompt": prompt
         ]
 
         if let system = system {
@@ -111,7 +111,7 @@ class OllamaRemote {
     }
 
     func chatStream(
-        chatRequest: MLChatRequest,
+        chatRequest: MLChatRequest
     ) async throws -> NDJsonStream<MLChatResponse> {
         let chatURL = remoteServerURL.appending(path: "/api/chat")
 
