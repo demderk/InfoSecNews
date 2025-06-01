@@ -83,7 +83,7 @@ class OllamaDialog: Identifiable {
 
         try await sendMessage(prompt: full, makeSelected: true)
     }
-    
+
     func setSelectedMessage(_ message: ChatMessage) {
         chatData.selectedMessage = message
     }

@@ -97,7 +97,15 @@ class OllamaRemote {
         let decoded = try decoder.decode([String: [MLModel]].self, from: data)
 
         if let models = decoded["models"] {
-            return models
+            var tempStorage: [MLModel] = []
+            for model in models {
+                if let wellKnownModel = MLModel.wellKnownModels.first(where: { $0 == model }) {
+                    tempStorage.append(wellKnownModel)
+                } else {
+                    tempStorage.append(model)
+                }
+            }
+            return tempStorage
         }
         return []
     }

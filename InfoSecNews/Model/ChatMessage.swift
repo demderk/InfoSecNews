@@ -27,7 +27,7 @@ class ChatMessage: Identifiable, Equatable {
     func asMLMessage() -> MLMessage {
         MLMessage(role: role, content: content)
     }
-    
+
     static func == (lhs: ChatMessage, rhs: ChatMessage) -> Bool {
         lhs.id == rhs.id
     }

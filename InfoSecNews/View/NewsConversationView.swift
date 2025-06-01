@@ -159,8 +159,12 @@ struct NewsConversationView: View {
                     Text("Models not installed")
                         .frame(minWidth: 256)
                 } else {
-                    Text(vm.selectedModel)
-                        .frame(minWidth: 256)
+                    Text(
+                        vm.selectedMLModel?.alias
+                            ?? vm.selectedMLModel?.name
+                            ?? "Select a model"
+                    )
+                    .frame(minWidth: 256)
                 }
             }
             .disabled(vm.models.isEmpty)
@@ -177,6 +181,32 @@ struct NewsConversationView: View {
     private var modelSelectionPicker: some View {
         VStack {
             HStack {
+                Text("Recomended Models")
+                    .font(.callout)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.secondary)
+                    .padding(.top, 4)
+                    .padding(.leading, 4)
+                Spacer()
+            }
+            VStack(alignment: .leading, spacing: 0) {
+                ForEach(vm.models.filter({ $0.alias != nil })) { item in
+                    ModelPickerButton(
+                        isSelected: .constant(item.name == vm.selectedModel),
+                        content: {
+                            HStack {
+                                Text(item.alias ?? item.name)
+                                Spacer()
+                            }
+                        },
+                        action: {
+                            vm.selectedModel = item.name
+                            vm.modelPopoverPresented = false
+                        }
+                    )
+                }
+            }
+            HStack {
                 Text("Available Models")
                     .font(.callout)
                     .fontWeight(.medium)
@@ -186,12 +216,12 @@ struct NewsConversationView: View {
                 Spacer()
             }
             VStack(alignment: .leading, spacing: 0) {
-                ForEach(vm.models) { item in
+                ForEach(vm.models.filter({ $0.alias == nil })) { item in
                     ModelPickerButton(
                         isSelected: .constant(item.name == vm.selectedModel),
                         content: {
                             HStack {
-                                Text(item.name)
+                                Text(item.alias ?? item.name)
                                 Spacer()
                             }
                         },
