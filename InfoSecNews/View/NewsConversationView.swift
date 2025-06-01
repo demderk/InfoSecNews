@@ -149,25 +149,37 @@ struct NewsConversationView: View {
             }
         }
     }
-
+    
+    private var statusMessage: some View {
+        Text(vm.errorMessage ?? "")
+            .foregroundColor(.red)
+            .font(.caption)
+            .padding(.horizontal)
+    }
+    
     private var modelSelection: some View {
         HStack {
             Button(action: {
                 vm.modelPopoverPresented = true
             }) {
-                if vm.models.isEmpty {
-                    Text("Models not installed")
-                        .frame(minWidth: 256)
+                if let errorMessage = vm.errorMessage {
+                    Text(errorMessage)
+                        .frame(minWidth: 384)
                 } else {
-                    Text(
-                        vm.selectedMLModel?.alias
+                    if vm.models.isEmpty {
+                        Text("Models not installed")
+                            .frame(minWidth: 384)
+                    } else {
+                        Text(
+                            vm.selectedMLModel?.alias
                             ?? vm.selectedMLModel?.name
                             ?? "Select a model"
-                    )
-                    .frame(minWidth: 256)
+                        )
+                        .frame(minWidth: 384)
+                    }
                 }
             }
-            .disabled(vm.models.isEmpty)
+            .disabled(vm.models.isEmpty || !vm.serverAvailable)
             .popover(isPresented: $vm.modelPopoverPresented, arrowEdge: .bottom) {
                 modelSelectionPicker
             }

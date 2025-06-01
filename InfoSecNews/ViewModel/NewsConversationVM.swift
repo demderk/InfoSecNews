@@ -35,6 +35,7 @@ class NewsConversationVM {
     var executionAvailable: Bool = false
     var modelPopoverPresented: Bool = false
     var regenerateAlertPresented: Bool = false
+    var serverAvailable: Bool = false
 
     private(set) var selectedModel: String = "No model available"
     var selectedMLModel: MLModel? {
@@ -79,6 +80,7 @@ class NewsConversationVM {
                     try await conversation.sumarize()
                 } catch {
                     errorMessage = error.localizedDescription
+                    serverAvailable = false
                 }
             }
             bussy = false
@@ -88,7 +90,17 @@ class NewsConversationVM {
 
     func fetchModels() {
         Task {
-            models = try await remote.listModels()
+            do {
+                models = try await remote.listModels()
+            } catch {
+                errorMessage = "Failed to connect ollama server"
+                serverAvailable = false
+                return
+            }
+            
+            errorMessage = nil
+            serverAvailable = true
+            
             if let modelName = models.first?.name {
                 if let savedModel = getSavedModelSelection(),
                    models.contains(where: { $0.name == savedModel })
