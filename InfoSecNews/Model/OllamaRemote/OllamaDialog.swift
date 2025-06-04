@@ -8,20 +8,6 @@
 import Foundation
 import os
 
-enum OllamaError: Error {
-    case emptyModel
-    case missingModel
-
-    var localizedDescription: String {
-        switch self {
-        case .emptyModel:
-            return "Empty model"
-        case .missingModel:
-            return "Model was not found in the ollama tags list"
-        }
-    }
-}
-
 @Observable
 class OllamaDialog: Identifiable {
     var id: ObjectIdentifier { chatData.id }
