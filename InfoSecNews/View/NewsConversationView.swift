@@ -149,14 +149,14 @@ struct NewsConversationView: View {
             }
         }
     }
-    
+
     private var statusMessage: some View {
         Text(vm.errorMessage ?? "")
             .foregroundColor(.red)
             .font(.caption)
             .padding(.horizontal)
     }
-    
+
     private var modelSelection: some View {
         HStack {
             Button(action: {
@@ -172,8 +172,8 @@ struct NewsConversationView: View {
                     } else {
                         Text(
                             vm.selectedMLModel?.alias
-                            ?? vm.selectedMLModel?.name
-                            ?? "Select a model"
+                                ?? vm.selectedMLModel?.name
+                                ?? "Select a model"
                         )
                         .frame(minWidth: 384)
                     }

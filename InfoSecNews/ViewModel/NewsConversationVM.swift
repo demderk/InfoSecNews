@@ -25,9 +25,7 @@ class NewsConversationVM {
         }
     }
 
-    // TODO: Hardcoded creds still here!
-
-    let remote = OllamaRemote(url: URL(string: "http://127.0.0.1:11434")!)
+    private(set) var remote: OllamaRemote?
 
     var chats: [ChatData] = []
     var models: [MLModel] = []
@@ -40,6 +38,10 @@ class NewsConversationVM {
     private(set) var selectedModel: String = "No model available"
     var selectedMLModel: MLModel? {
         models.first(where: { $0.name == selectedModel })
+    }
+
+    var systemMessage: String {
+        UserDefaults.standard.string(forKey: "systemMessage") ?? ""
     }
 
     var presentedView: PresentedView = .none
@@ -77,7 +79,8 @@ class NewsConversationVM {
             for item in chats {
                 do {
                     let conversation = try makeDialog(chatData: item)
-                    try await conversation.sumarize()
+                    try await conversation.sumarize(systemMessage: systemMessage)
+                    print(systemMessage)
                 } catch {
                     errorMessage = error.localizedDescription
                     serverAvailable = false
@@ -89,6 +92,17 @@ class NewsConversationVM {
     }
 
     func fetchModels() {
+        if let savedURL = UserDefaults.standard.string(forKey: "serverURL"),
+           let url = URL(string: savedURL)
+        {
+            remote = OllamaRemote(url: url)
+        }
+
+        guard let remote else {
+            errorMessage = "No Ollama server URL configured"
+            return
+        }
+
         Task {
             do {
                 models = try await remote.listModels()
@@ -97,10 +111,10 @@ class NewsConversationVM {
                 serverAvailable = false
                 return
             }
-            
+
             errorMessage = nil
             serverAvailable = true
-            
+
             if let modelName = models.first?.name {
                 if let savedModel = getSavedModelSelection(),
                    models.contains(where: { $0.name == savedModel })
@@ -117,7 +131,7 @@ class NewsConversationVM {
     }
 
     func makeDialog(chatData: ChatData) throws -> OllamaDialog {
-        guard let model = selectedMLModel else {
+        guard let model = selectedMLModel, let remote = remote else {
             throw OllamaError.missingModel
         }
 

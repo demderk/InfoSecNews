@@ -24,5 +24,10 @@ struct InfoSecNewsApp: App {
                     .frame(minWidth: 640, minHeight: 420)
             }
         }
+
+        Settings {
+            SettingsView()
+                .frame(minWidth: 640)
+        }
     }
 }

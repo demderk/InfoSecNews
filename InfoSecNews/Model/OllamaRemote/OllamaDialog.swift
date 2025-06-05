@@ -55,17 +55,18 @@ class OllamaDialog: Identifiable {
         chatData.pull(role: role, message: message)
     }
 
-    func sumarize() async throws {
+    func sumarize(systemMessage: String) async throws {
         guard let full = chatData.news.full else {
             throw MLConversationError.emptyNewsBody
         }
 
-        // TODO: Import system message for summarization
-        let instructions = ChatMessage(
-            role: .user,
-            content: "Сумаризируй сообщение ниже. Нужно в 2-3 предложения."
-        )
-        chatData.messageHistory.append(instructions)
+        if !systemMessage.isEmpty {
+            let instructions = ChatMessage(
+                role: .system,
+                content: systemMessage
+            )
+            chatData.messageHistory.append(instructions)
+        }
 
         try await sendMessage(prompt: full, makeSelected: true)
     }

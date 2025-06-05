@@ -109,15 +109,15 @@ class OllamaRemote {
         }
         return []
     }
-    
+
     func version() async throws -> String {
         let versionURL = remoteServerURL.appending(path: "/api/version")
         var request = URLRequest(url: versionURL)
         request.httpMethod = "GET"
-        
+
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
-        
+
         let (data, _) = try await URLSession.shared.data(for: request)
         let response = try decoder.decode([String: String].self, from: data)
         if let version = response["version"] {
@@ -126,7 +126,7 @@ class OllamaRemote {
             throw OllamaError.badRequest
         }
     }
-    
+
     func chatStream(
         chatRequest: MLChatRequest
     ) async throws -> NDJsonStream<MLChatResponse> {
