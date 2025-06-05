@@ -66,6 +66,7 @@ struct ChatResponse: View {
                 .transaction { $0.animation = nil }
             Text(isOriginal ? newsText : conversation.selectedContent)
                 .fixedSize(horizontal: false, vertical: true)
+                .textSelection(.enabled)
                 .transaction { $0.animation = nil }
             HStack(spacing: 4) {
                 makeMiniButton(imageSystemName: copyTextImageName, action: copyText)
