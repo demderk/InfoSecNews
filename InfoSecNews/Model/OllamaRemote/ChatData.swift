@@ -10,9 +10,15 @@ import os
 
 @Observable
 class ChatData: Identifiable {
-    var news: any NewsBehavior
-    var messageHistory: [ChatMessage]
-    var selectedMessage: ChatMessage?
+    let news: any NewsBehavior
+    private var messageHistory: [ChatMessage]
+    private(set) var selectedMessage: ChatMessage?
+
+    private var internalSystemMessage: ChatMessage?
+
+    var systemMessage: ChatMessage? {
+        internalSystemMessage
+    }
 
     init(news: any NewsBehavior, messageHistory: [ChatMessage]) {
         self.news = news
@@ -21,7 +27,7 @@ class ChatData: Identifiable {
 
     // MARK: UI Properties
 
-    var selectedContent: String {
+    var UISelectedContent: String {
         if let content = selectedMessage {
             return content.content
         }
@@ -32,7 +38,7 @@ class ChatData: Identifiable {
         }
     }
 
-    var newsContent: String {
+    var UINewsContent: String {
         guard let content = news.full else {
             // swiftlint:disable:next line_length
             Logger.UILogger.warning("[OllamaDialog] NewsItem with nil \"full\" was found. Using default \"short\".")
@@ -43,13 +49,45 @@ class ChatData: Identifiable {
 
     // END
 
-    func pull(role: MLRole, message: String) {
+    func push(role: MLRole, message: String) {
         let message = ChatMessage(role: role, content: message)
+        messageHistory.append(message)
+    }
+
+    func push(message: ChatMessage) {
         messageHistory.append(message)
     }
 
     func clearHistory() {
         selectedMessage = nil
         messageHistory.removeAll()
+    }
+
+    func setSystemMessage(_ message: String) {
+        internalSystemMessage = ChatMessage(
+            role: .system,
+            content: message
+        )
+    }
+
+    func selectMessage(_ message: ChatMessage) {
+        selectedMessage = message
+    }
+
+    func history() -> [ChatMessage] {
+        if let system = internalSystemMessage {
+            return [system] + messageHistory
+        } else {
+            return messageHistory
+        }
+    }
+
+    func history(appending: ChatMessage) -> [ChatMessage] {
+        history() + [appending]
+    }
+
+    func mlHistory(appending: ChatMessage) -> [MLMessage] {
+        history(appending: appending)
+            .map { $0.asMLMessage() }
     }
 }

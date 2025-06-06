@@ -22,7 +22,7 @@ class OllamaDialog: Identifiable {
         self.chatData = chatData
     }
 
-    var storage: [ChatMessage] { chatData.messageHistory }
+    var storage: [ChatMessage] { chatData.history() }
 
     @discardableResult
     func sendMessage(prompt: String, makeSelected: Bool = false) async throws -> ChatMessage {
@@ -30,29 +30,28 @@ class OllamaDialog: Identifiable {
 
         let chatRequest = MLChatRequest(
             model: model.name,
-            messages: chatData.messageHistory.map { $0.asMLMessage() } + [userMessage.asMLMessage()]
+            messages: chatData.mlHistory(appending: userMessage)
         )
 
         let stream = try await remote.chatStream(chatRequest: chatRequest)
         let assistantMessage = ChatMessage(MLMessage(role: .assistant, content: ""))
 
-        chatData.messageHistory.append(userMessage)
-        chatData.messageHistory.append(assistantMessage)
+        chatData.push(message: userMessage)
+        chatData.push(message: assistantMessage)
 
         if makeSelected {
-            chatData.selectedMessage = assistantMessage
+            chatData.selectMessage(assistantMessage)
         }
 
         for try await item in stream {
             assistantMessage.content += item.message.content
-            print(assistantMessage.content)
         }
 
         return assistantMessage
     }
 
     func pull(role: MLRole, message: String) {
-        chatData.pull(role: role, message: message)
+        chatData.push(role: role, message: message)
     }
 
     func sumarize(systemMessage: String) async throws {
@@ -61,17 +60,13 @@ class OllamaDialog: Identifiable {
         }
 
         if !systemMessage.isEmpty {
-            let instructions = ChatMessage(
-                role: .system,
-                content: systemMessage
-            )
-            chatData.messageHistory.append(instructions)
+            chatData.setSystemMessage(systemMessage)
         }
 
         try await sendMessage(prompt: full, makeSelected: true)
     }
 
     func setSelectedMessage(_ message: ChatMessage) {
-        chatData.selectedMessage = message
+        chatData.selectMessage(message)
     }
 }

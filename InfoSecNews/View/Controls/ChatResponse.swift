@@ -48,7 +48,7 @@ struct ChatResponse: View {
             newsText = conversation.news.short
             expandNewsImageName = "chevron.down"
         } else {
-            newsText = conversation.newsContent
+            newsText = conversation.UINewsContent
             expandNewsImageName = "chevron.up"
         }
         self.expanded = expanded
@@ -64,7 +64,7 @@ struct ChatResponse: View {
                 .fontWeight(.semibold)
                 .textSelection(.enabled)
                 .transaction { $0.animation = nil }
-            Text(isOriginal ? newsText : conversation.selectedContent)
+            Text(isOriginal ? newsText : conversation.UISelectedContent)
                 .fixedSize(horizontal: false, vertical: true)
                 .textSelection(.enabled)
                 .transaction { $0.animation = nil }
@@ -186,7 +186,7 @@ struct ChatResponse: View {
                 newsText = conversation.news.short
                 expandNewsImageName = "chevron.down"
             } else {
-                newsText = conversation.newsContent
+                newsText = conversation.UINewsContent
                 expandNewsImageName = "chevron.up"
             }
             expanded = expand
