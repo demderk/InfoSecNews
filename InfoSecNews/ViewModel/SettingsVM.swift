@@ -103,4 +103,10 @@ class SettingsVM {
         }
         return message
     }
+    
+    func useDefaultSettings() {
+        AppDefaults.setDefaultOlamaSettings()
+        systemMessage = readSystemMessage() ?? ""
+        url = readURL()?.absoluteString ?? ""
+    }
 }

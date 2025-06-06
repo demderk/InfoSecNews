@@ -30,7 +30,7 @@ struct SettingsView: View {
     var ollamaSettings: some View {
         VStack(spacing: 16) {
             HStack(alignment: .firstTextBaseline) {
-                Text("Remote Address")
+                Text("Remote Address:")
                     .frame(width: 160, alignment: .trailing)
                 VStack(alignment: .trailing) {
                     TextField("http://127.0.0.1:11434", text: $vm.url)
@@ -52,7 +52,7 @@ struct SettingsView: View {
                 }
             }
             HStack {
-                Text("Model system message")
+                Text("Model system message:")
                     .frame(width: 160, alignment: .trailing)
                 TextEditor(text: $vm.systemMessage)
                     .frame(width: 384, height: 128)
@@ -67,6 +67,21 @@ struct SettingsView: View {
                     }
             }
             .padding(.horizontal, 16)
+            HStack {
+                Text("Default Settings:")
+                    .frame(width: 160, alignment: .trailing)
+                Button(
+                    action: {
+                        vm.useDefaultSettings()
+                    },
+                    label: {
+                        Text("Use Default Settings")
+                            .padding(.horizontal, 16)
+                    }
+                )
+                .frame(width: 384, alignment: .leading)
+
+            }
         }
     }
 }
