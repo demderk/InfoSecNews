@@ -80,7 +80,6 @@ struct SettingsView: View {
                     }
                 )
                 .frame(width: 384, alignment: .leading)
-
             }
         }
     }
