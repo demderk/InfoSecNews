@@ -8,11 +8,15 @@
 import os
 
 class AppLog {
-    static func error(message: String, location: String = #function) {
+    static func error(_ message: String, location: String = #function) {
         Logger.appLog.error("[AppLog Error] [\(location)] \(message)")
     }
-    
-    static func warning(location: String, message: String) {
+
+    static func warning(_ message: String, location: String = #function) {
         Logger.appLog.warning("[AppLog Warning] [\(location)] \(message)")
+    }
+
+    static func info(_ message: String, location: String = #function) {
+        Logger.appLog.warning("[Info] [\(location)] \(message)")
     }
 }

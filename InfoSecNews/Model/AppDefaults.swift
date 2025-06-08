@@ -29,9 +29,9 @@ class AppDefaults {
         summary, wait for the user's instructions and apply any editing \
         requests carefully.
         """
-
+    
     private static let defaultRemote = URL(string: "http://127.0.0.1:11434")!
-
+    
     static func setDefaultOlamaSettings() {
         UserDefaults.standard.set(defaultSystemMessage, forKey: "systemMessage")
         UserDefaults.standard.set(defaultRemote.absoluteString, forKey: "serverURL")
