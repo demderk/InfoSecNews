@@ -54,7 +54,7 @@ extension WKWebView {
     func enableNotificationCenter(
         onMessage: @escaping ((String, WKWebView) -> Void)
     ) {
-        WKNotificationCenter.subscribe(self)
+//        WKNotificationCenter.subscribe(self)
         configuration.userContentController.add(
             WKNotificationCenter(self, arrived: onMessage),
             name: "notificationCenter"
