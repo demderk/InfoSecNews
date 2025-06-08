@@ -12,8 +12,8 @@ final class SecurityMediaModule: NewsProvider {
     var moduleName: String = "SecurityMedia"
 
     var pageNumber: Int = 0
-    var currentUrlString: URL { URL(string: "https://securitymedia.org/news/?PAGEN_3=\(pageNumber)")! }
-    var nextUrlString: URL { URL(string: "https://securitymedia.org/news/?PAGEN_3=\(pageNumber + 1)")! }
+    var currentUrlString: URL { URL(string: "https://securitymedia.org/news/?PAGEN_2=\(pageNumber)")! }
+    var nextUrlString: URL { URL(string: "https://securitymedia.org/news/?PAGEN_2=\(pageNumber + 1)")! }
 
     func parse(input html: String) -> [SecurityMediaNews] {
         guard let htDoc = try? SwiftSoup.parse(html),
