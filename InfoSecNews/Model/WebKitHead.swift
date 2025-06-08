@@ -10,6 +10,10 @@ import WebKit
 class WKWebViewNavigationCoordinator: NSObject, WKNavigationDelegate {
     var finished: WebAction
 
+    let challengesIndicators: [any RegexComponent] = [
+        try! Regex("qrator")
+    ]
+
     init(finished: WebAction) {
         self.finished = finished
     }
@@ -18,7 +22,16 @@ class WKWebViewNavigationCoordinator: NSObject, WKNavigationDelegate {
         webView.evaluateJavaScript("document.documentElement.outerHTML.toString()") { [weak self] result, _ in
             guard let self = self else { return }
             if let html = result as? String {
-                finished.action(html, webView)
+                for challengesIndicator in challengesIndicators where html.contains(challengesIndicator) {
+                    finished.skip = true
+                    AppLog.info("Skipping due to challenge indicator")
+                }
+
+                if finished.skip {
+                    finished.skip = false
+                } else {
+                    finished.action(html, webView)
+                }
             }
         }
     }
@@ -52,7 +65,7 @@ class WebKitHead {
     private func executeFinishActions(html: String?, _ webView: WKWebView) {
         WKNotificationCenter.subscribe(webView)
 
-        for n in loadFinisedActions {
+        for n in loadFinisedActions where n.skip == false {
             loadFinisedActions.removeAll(where: {
                 if $0 == n {
                     n.action(html, webView)

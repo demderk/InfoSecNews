@@ -12,6 +12,7 @@ class WebAction: Identifiable, Equatable {
 
     var id = UUID()
     var action: Action
+    var skip: Bool = false
 
     init(_ action: @escaping Action) {
         self.action = action
