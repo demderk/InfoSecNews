@@ -80,7 +80,6 @@ class NewsConversationVM {
                 do {
                     let conversation = try makeDialog(chatData: item)
                     try await conversation.sumarize(systemMessage: systemMessage)
-                    print(systemMessage)
                 } catch {
                     errorMessage = error.localizedDescription
                     serverAvailable = false
