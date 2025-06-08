@@ -21,49 +21,51 @@ final class NewsResolver<T: NewsProvider> {
         self.newsProvider = newsProvider
     }
 
-    func fetch() async {
+    func fetch() async throws {
         let remoteResult = await dataVoyager.fetch(url: newsProvider.nextUrlString)
-        guard case let .success(remoteHTML) = remoteResult else {
-            return
-        }
+
+        let remoteHTML = try remoteResult.get()
 
         let parsedResults = newsProvider.parse(input: remoteHTML)
-        guard !parsedResults.isEmpty else { return }
+        guard !parsedResults.isEmpty else {
+            throw RemoteError.emptyParsedData
+        }
 
         newsProvider.pageNumber += 1
         newsCollection.append(contentsOf: parsedResults)
     }
 
-    func fetch(until: Date) async {
-        while true {
-            await fetch()
+    func fetch(until: Date, maxAttempts: Int = 3) async throws {
+        var attempts = 0
+
+        while attempts < maxAttempts {
+            try await fetch()
+            attempts += 1
             let lastDate = newsCollection
                 .sorted(by: { $0.date > $1.date })
                 .last?
                 .date
 
-            guard let lastDate = lastDate else { return }
+            guard let lastDate = lastDate else {
+                AppLog.error("Last date is nil")
+                throw RemoteError.lastDateIsNil
+            }
 
             let components = Calendar.current.dateComponents([.day], from: lastDate, to: until)
             if let days = components.day, days >= 1 {
-                break
+                return
             }
             try? await Task.sleep(for: pagesDelay)
         }
+        AppLog.error("Max attempts reached")
+        throw RemoteError.maxAttemptsReached
     }
 
-    func fetch(daysAgo: Int) async {
+    func fetch(daysAgo: Int, maxAttempts: Int = 3) async throws {
         let date = Date()
         guard let dateTo = Calendar.current.date(byAdding: .day, value: -daysAgo, to: date) else {
             return
         }
-        await fetch(until: dateTo)
-    }
-
-    func preloaded() -> Self {
-        Task {
-            await fetch()
-        }
-        return self
+        try await fetch(until: dateTo, maxAttempts: maxAttempts)
     }
 }

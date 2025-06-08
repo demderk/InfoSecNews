@@ -12,6 +12,8 @@ import Foundation
 class MainVM {
     private let UDSelectedModulesName = "selectedModules"
 
+    let maxConnectionAttempts: Int = 3
+
     var enabledModules: EnabledModules = []
 
     var daysToFetch = 2
@@ -52,19 +54,40 @@ class MainVM {
         return newsStorage
     }
 
-    func fetchTask(_ forModule: EnabledModules, daysToFetch: Int = 2) async {
-        switch forModule {
-        case .antiMalware:
-            await antMal.fetch(daysAgo: daysToFetch)
-        case .securityLab:
-            await seclab.fetch(daysAgo: daysToFetch)
-        case .securityMedia:
-            await secmed.fetch(daysAgo: daysToFetch)
-        default:
-            print("[FetchTask] Unknown method. Aborting")
-            return
+    @discardableResult
+    func fetchTask(_ forModule: EnabledModules, daysToFetch: Int = 2, recursive: Bool = true) async -> Bool {
+        do {
+            switch forModule {
+            case .antiMalware:
+                try await antMal.fetch(daysAgo: daysToFetch, maxAttempts: 6)
+            case .securityLab:
+                try await seclab.fetch(daysAgo: daysToFetch, maxAttempts: 6)
+            case .securityMedia:
+                try await secmed.fetch(daysAgo: daysToFetch)
+            default:
+                AppLog.error("Unknown method. Aborting")
+                return false
+            }
+        } catch {
+            AppLog.error("Failed to fetch news for \(forModule)")
+
+            if let remoteError = error as? RemoteError,
+               case remoteError = RemoteError.maxAttemptsReached
+            {
+                return false
+            }
+
+            guard recursive else { return false }
+            for _ in 0 ..< maxConnectionAttempts {
+                let result = await fetchTask(forModule, daysToFetch: daysToFetch, recursive: false)
+                if result {
+                    return true
+                }
+            }
+            return false
         }
         daysFetched[forModule] = (daysFetched[forModule] ?? 0) + daysToFetch
+        return true
     }
 
     // For UI purposes

@@ -8,4 +8,14 @@
 enum RemoteError: Error {
     case badResult
     case timeout
+
+    // MARK: News Resolver Errors
+
+    case emptyParsedData
+    case lastDateIsNil
+    case maxAttemptsReached
+
+    enum NewsResolver: Error {
+        case shitHappened
+    }
 }
